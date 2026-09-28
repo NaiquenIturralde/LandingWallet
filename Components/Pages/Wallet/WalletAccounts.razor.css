@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Cuentas — App Wallet (rol usuario)
+   Mobile-first: los paneles se apilan y el detalle pasa a dos columnas desde
+   768px.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Aclaración sobre el saldo.
+   Es común a todas las cuentas y se muestra una sola vez, al cerrar el bloque
+   de cuentas: el margen negativo compensa la separación entre paneles para que
+   quede asociada al bloque y no parezca un panel más.
+   -------------------------------------------------------------------------- */
+.accounts__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ws-space-3);
+    margin: calc(var(--ws-space-2) * -1) 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border-left: 2px solid var(--ws-cyan);
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text);
+}
+
+.accounts__note-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Lista de movimientos: cada fila aporta su propio padding.
+   -------------------------------------------------------------------------- */
+.accounts__list {
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Carga: bloques que reservan el espacio del detalle de cada cuenta.
+   -------------------------------------------------------------------------- */
+.accounts__skeleton {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Acción al pie del panel de movimientos.
+   Usa el mismo inset que las filas y el encabezado del panel al ras, así que
+   queda alineada con ambos.
+   -------------------------------------------------------------------------- */
+.accounts__actions {
+    padding: var(--ws-space-4) var(--wallet-panel-inset, var(--ws-space-5)) var(--ws-space-6);
+}
+
+/* --------------------------------------------------------------------------
+   Tablet
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .accounts__note {
+        font-size: var(--ws-fs-sm);
+    }
+}

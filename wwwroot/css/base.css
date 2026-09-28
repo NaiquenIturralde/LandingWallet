@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Wallet Squad 1 — Base
+   Reset acotado, fundamentos tipográficos y comportamiento global del
+   documento. Depende de tokens.css.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Reset acotado
+   No se usa un reset agresivo para no pelear con los estilos scoped de los
+   componentes Razor ni con el CSS de aislamiento de Blazor.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Compensa el header sticky al navegar a un anchor */
+    scroll-padding-top: calc(var(--ws-header-h) + var(--ws-space-4));
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--ws-background);
+    color: var(--ws-text);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-regular);
+    line-height: var(--ws-lh-normal);
+    letter-spacing: var(--ws-ls-normal);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Tipografía
+   Montserrat SemiBold para títulos, Inter para texto e interfaz.
+   -------------------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-snug);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: var(--ws-fs-5xl);
+    line-height: var(--ws-lh-tight);
+}
+
+h2 {
+    font-size: var(--ws-fs-4xl);
+    line-height: var(--ws-lh-tight);
+}
+
+h3 {
+    font-size: var(--ws-fs-2xl);
+}
+
+h4 {
+    font-size: var(--ws-fs-xl);
+}
+
+h5 {
+    font-size: var(--ws-fs-lg);
+}
+
+h6 {
+    font-size: var(--ws-fs-base);
+    letter-spacing: var(--ws-ls-normal);
+}
+
+p {
+    margin: 0;
+    text-wrap: pretty;
+}
+
+p + p {
+    margin-top: var(--ws-space-4);
+}
+
+small {
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}
+
+strong,
+b {
+    font-weight: var(--ws-weight-semibold);
+}
+
+code,
+kbd,
+pre,
+samp {
+    font-family: var(--ws-font-mono);
+    font-size: 0.92em;
+}
+
+/* --------------------------------------------------------------------------
+   Listas: se neutralizan por defecto porque las listas de la landing se
+   construyen con tarjetas y grillas.
+   -------------------------------------------------------------------------- */
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   Medios
+   -------------------------------------------------------------------------- */
+img,
+svg,
+video,
+canvas {
+    display: block;
+    max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
+}
+
+svg {
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Enlaces
+   -------------------------------------------------------------------------- */
+a {
+    color: var(--ws-text-accent);
+    text-decoration: none;
+    transition: color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+a:hover {
+    color: var(--ws-text);
+}
+
+/* --------------------------------------------------------------------------
+   Formularios e interactivos
+   -------------------------------------------------------------------------- */
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Foco accesible
+   h1:focus { outline: none } se conserva en app.css porque lo requiere
+   FocusOnNavigate Selector="h1" del Router.
+   -------------------------------------------------------------------------- */
+:focus-visible {
+    outline: var(--ws-focus-ring);
+    outline-offset: var(--ws-focus-offset);
+    border-radius: var(--ws-radius-xs);
+}
+
+/* --------------------------------------------------------------------------
+   Selección de texto
+   -------------------------------------------------------------------------- */
+::selection {
+    background-color: rgba(18, 217, 255, 0.28);
+    color: var(--ws-white);
+}
+
+/* --------------------------------------------------------------------------
+   Scrollbar (progresiva, no rompe nada si el navegador la ignora)
+   -------------------------------------------------------------------------- */
+* {
+    scrollbar-color: var(--ws-border-strong) transparent;
+    scrollbar-width: thin;
+}
+
+/* --------------------------------------------------------------------------
+   Accesibilidad: respeta la preferencia de movimiento reducido.
+   Cubre el scroll suave y cualquier animación/transición declarada.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

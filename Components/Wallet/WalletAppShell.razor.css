@@ -1,0 +1,494 @@
+/* ==========================================================================
+   WalletAppShell — contenedor de pantalla de la App Wallet
+   Mobile-first. El contenido se limita a un ancho cómodo y, desde 768px,
+   aparece la segunda columna que ya definen las secciones.
+   ========================================================================== */
+
+.wallet-app {
+    width: 100%;
+    max-width: var(--ws-container-max);
+    margin-inline: auto;
+    padding-inline: var(--ws-container-pad);
+    /* El espacio de la barra inferior ya lo reserva WalletLayout: acá solo
+       queda el margen de respiro del contenido. */
+    padding-bottom: var(--ws-space-4);
+}
+
+/* --------------------------------------------------------------------------
+   Barra superior
+   -------------------------------------------------------------------------- */
+.wallet-app__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ws-space-4);
+    min-height: var(--ws-header-h);
+    border-bottom: var(--ws-hairline) solid var(--ws-border);
+
+    /* Pegada al toque: la barra permanece visible con contenido normal y con
+       los iframes de Looker. Fondo translúcido + blur (mismo lenguaje que la
+       navegación inferior) para que el contenido pase por debajo sin leerse
+       encima. El margen negativo la estira al ancho del contenedor y el
+       padding devuelve la alineación original del contenido. */
+    position: sticky;
+    top: 0;
+    z-index: var(--ws-z-sticky);
+    margin-inline: calc(var(--ws-container-pad) * -1);
+    padding-inline: var(--ws-container-pad);
+    background-color: var(--ws-surface-translucent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+
+.wallet-app__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-3);
+    min-height: 44px;
+    padding-block: var(--ws-space-2);
+    color: var(--ws-text);
+    /* Puede contraerse: el header nunca debe empujar el ancho de la pantalla.
+       Si falta espacio, cede la marca (ver __brand-text), no la caja externa. */
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wallet-app__brand:hover {
+    color: var(--ws-text);
+}
+
+.wallet-app__mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ws-radius-sm);
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-bold);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.wallet-app__brand-text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ws-space-2);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    /* Sin nowrap: en pantallas muy angostas las dos palabras de la marca pasan a
+       dos líneas en lugar de desbordar el header o recortar el texto. El alto
+       del header no cambia porque ya reserva --ws-header-h. */
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.wallet-app__brand-word--accent {
+    color: var(--ws-text-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Pantallas angostas (≤359px)
+
+   El topbar ya lleva cuatro controles de 44px (Atrás, Adelante, Notificaciones
+   y avatar) = 192px de acciones fijas. Con --ws-container-pad a 20px por lado
+   quedan 72px de marca a 320px: ni "WALLET" ni "SQUAD 1" entran en los 28px
+   restantes después del monograma. Se cede el texto y queda la "W", que sigue
+   siendo un enlace con nombre accesible (aria-label del propio enlace).
+   Por encima de 360px la marca entra y se recupera completa.
+   -------------------------------------------------------------------------- */
+@media (max-width: 359px) {
+    .wallet-app__brand-text {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Acciones del header
+   -------------------------------------------------------------------------- */
+.wallet-app__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ws-space-1);
+    flex-shrink: 0;
+}
+
+/* Historial de navegación (Atrás / Adelante): par de botones discretos que
+   comparten grupo para que se lean como una sola unidad y no se mezclen con
+   notificaciones o el avatar. Los botones conservan los 44px de área táctil
+   mínima que fija el Design System: el agrupamiento usa gap, no tamaño. */
+.wallet-app__history {
+    display: flex;
+    align-items: center;
+    gap: var(--ws-space-1);
+    flex-shrink: 0;
+}
+
+/* Avatar decorativo (NO interactivo): /wallet/perfil todavía no existe, así
+   que no navega, no tiene hover ni cursor de clic. Conserva el mismo radio y
+   tamaño que los botones de solo icono para no romper la fila de acciones. */
+.wallet-app__avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado de la pantalla
+   -------------------------------------------------------------------------- */
+.wallet-app__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    padding-block: var(--ws-space-5) var(--ws-space-6);
+}
+
+.wallet-app__title {
+    /* Un <h1> global es display grande: acá se ajusta a escala de app */
+    font-size: var(--ws-fs-2xl);
+    line-height: var(--ws-lh-tight);
+    letter-spacing: var(--ws-ls-tight);
+    overflow-wrap: anywhere;
+}
+
+.wallet-app__subtitle {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Cuerpo: apila las secciones de la pantalla
+   -------------------------------------------------------------------------- */
+.wallet-app__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-6);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Navegación inferior
+   Fija al pie: WalletLayout reserva el espacio para no tapar contenido.
+   z-index alto (overlay): siempre por encima de cards, gráficos e iframes
+   de Looker. En desktop (≥1024) y en el modo embebido esta regla se
+   sobreescribe con --ws-z-sticky: la sidebar y la nav contenida de la
+   Landing no necesitan este nivel.
+   -------------------------------------------------------------------------- */
+.wallet-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--ws-z-overlay);
+    /* El reporte de Looker (iframe) puede robar el foco a un control suyo y
+       provocar que el navegador desplace el documento del PADRE para dejar ese
+       control a la vista; al mover el documento, la barra fija parece saltar.
+       Fijar la barra a su propio bloque de contención impide que cualquier
+       ancestro futuro con transform/filter/contain la despegue del viewport. */
+    contain: layout paint;
+    /* Padding lateral mínimo: el ancho que no se gasta acá es ancho útil para
+       las etiquetas, que es el recurso escaso a 320px. */
+    padding-inline: var(--ws-space-1);
+    /* La barra nunca supera lo que reserva el layout: el alto mínimo lo fija el
+       mismo token que usa WalletLayout para dejar el espacio libre. */
+    min-height: var(--ws-bottom-nav-h);
+    padding-block: var(--ws-space-2);
+    padding-bottom: calc(var(--ws-space-2) + env(safe-area-inset-bottom, 0px));
+    background-color: var(--ws-surface-translucent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border-top: var(--ws-hairline) solid var(--ws-border);
+}
+
+.wallet-nav__list {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    /* Separación mínima: se prioriza el ancho de las etiquetas */
+    gap: 2px;
+    width: 100%;
+    max-width: var(--ws-container-narrow);
+    margin-inline: auto;
+}
+
+.wallet-nav__item {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Ítems solo desktop (grupo DASHBOARDS e Inversiones): ocultos en la barra
+   inferior mobile. La bottom nav queda con 4 accesos —Inicio, Cuentas,
+   Transferir, Más— y los accesos secundarios se alcanzan desde Más. La
+   sidebar desktop (≥1024px) los vuelve a mostrar (ver su media query). */
+.wallet-nav__item--desktop-only {
+    display: none;
+}
+
+/* Label de grupo ("DASHBOARDS"): pequeño, discreto, uppercase, color
+   secundario. Es un <span>: no es clickeable ni focusable. Solo desktop. */
+.wallet-nav__section {
+    display: block;
+    padding: var(--ws-space-4) var(--ws-space-3) var(--ws-space-1);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Ítems de la barra.
+   ::deep es necesario en los elementos que renderiza NavLink: al ser un
+   componente de framework, su elemento raíz no recibe el atributo de scope de
+   este archivo, así que un selector scoped no lo alcanzaría. Las reglas
+   aplican igual a los ítems sin ruta, que sí son texto propio.
+   -------------------------------------------------------------------------- */
+::deep .wallet-nav__entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ws-space-1);
+    /* Área táctil mínima de la barra */
+    min-height: 64px;
+    padding: var(--ws-space-2) 2px;
+    border-radius: var(--ws-radius-sm);
+    /* El color lo define la barra, no el acento global de los <a> */
+    color: var(--ws-text-muted);
+    text-decoration: none;
+    text-align: center;
+    transition: color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+::deep a.wallet-nav__entry:hover {
+    color: var(--ws-text);
+    background-color: var(--ws-grid-line);
+}
+
+/* La sección actual se marca con aria-current="page" y con color: el color no
+   es el único indicador. Conserva su tratamiento al pasar el cursor. */
+::deep .wallet-nav__entry--current,
+::deep a.wallet-nav__entry--current:hover {
+    color: var(--ws-cyan);
+    background-color: var(--ws-cyan-soft);
+}
+
+/* El icono y la etiqueta los define este archivo, así que sí llevan el scope. */
+.wallet-nav__icon {
+    display: grid;
+    place-items: center;
+    color: inherit;
+}
+
+.wallet-nav__label {
+    /* Tipografía fluida: a 320px reduce lo justo para que "Inversiones" entre
+       completa, y desde 430px vuelve al tamaño de etiqueta de la App Wallet. */
+    font-size: clamp(0.625rem, 2.5vw + 0.1rem, 0.75rem);
+    font-weight: var(--ws-weight-medium);
+    line-height: var(--ws-lh-snug);
+    /* Una palabra nunca se parte por dentro: si no entra, el ajuste se hace
+       por tamaño de fuente, no cortando el texto. */
+    overflow-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: el contenido se abre en dos columnas dentro de cada sección.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .wallet-app {
+        padding-bottom: var(--ws-space-6);
+    }
+
+    .wallet-app__body {
+        gap: var(--ws-space-8);
+    }
+
+    .wallet-app__intro {
+        padding-block: var(--ws-space-8) var(--ws-space-6);
+    }
+
+    .wallet-app__title {
+        font-size: var(--ws-fs-3xl);
+    }
+
+    /* En tablet sobra ancho: la etiqueta vuelve a su tamaño de lectura pleno */
+    .wallet-nav__label {
+        font-size: var(--ws-fs-xs);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop y presentación (1024px en adelante): SIDEBAR vertical.
+
+   Es el MISMO sistema de navegación de siempre (WalletNavigationItem +
+   NavLink + iconos existentes): en móvil es la barra fija al pie y en desktop
+   se transforma en una columna lateral fija a la izquierda. NO hay una segunda
+   navegación paralela: cambia únicamente la presentación CSS. WalletLayout
+   reserva --ws-sidebar-w (padding-left) para que el contenido no quede debajo.
+
+   Solo ofrece destinos REALES: las secciones sin Href siguen siendo texto
+   (el rol admin conserva sus ítems no habilitados como texto, nunca como
+   enlaces falsos).
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .wallet-app {
+        max-width: var(--ws-container-wide);
+    }
+
+    .wallet-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: auto;
+        bottom: 0;
+        z-index: var(--ws-z-sticky);
+        /* Columna vertical: los insets de la barra inferior no aplican. */
+        display: flex;
+        flex-direction: column;
+        gap: var(--ws-space-5);
+        width: var(--ws-sidebar-w);
+        min-height: 0;
+        padding: var(--ws-space-5) var(--ws-space-3);
+        border-top: 0;
+        border-right: var(--ws-hairline) solid var(--ws-border);
+        /* La columna puede desplazarse si no entra en pantallas bajas. */
+        overflow-y: auto;
+        contain: layout paint;
+    }
+
+    .wallet-nav__list {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: var(--ws-space-2);
+        width: 100%;
+        max-width: none;
+    }
+
+    .wallet-nav__item {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    /* En la sidebar desktop el grupo DASHBOARDS y sus hijos (y las
+       Inversiones) vuelven a mostrarse: la barra inferior mobile los oculta. */
+    .wallet-nav__item--desktop-only {
+        display: block;
+    }
+
+    /* Ítem vertical: fila COMPLETA de navegación, icono + etiqueta alineados
+       a la izquierda. width100% + box-sizing border-box y padding horizontal
+       uniforme (--ws-space-4): el fondo activo ocupa todo el ancho útil de la
+       sidebar y termina con el mismo margen a izquierda y a derecha (el gutter
+       lateral de --ws-space-3 lo aporta la nav, no se duplica acá). */
+    ::deep .wallet-nav__entry {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: var(--ws-space-3);
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: var(--ws-space-2) var(--ws-space-4);
+        border-radius: var(--ws-radius-md);
+        text-align: left;
+    }
+
+    .wallet-nav__label {
+        font-size: var(--ws-fs-sm);
+    }
+}
+
+/* ==========================================================================
+   Modo EMBEDDED (solo la Landing, sección "Explorá Wallet").
+
+   El shell conserva SU navegación real (mismos ítems, iconos y estados de
+   WalletUserNavigation / WalletAdminNavigation) pero CONTENIDA dentro del
+   marco de la sección: aquí la navegación nunca es position: fixed, así no
+   compite con la navbar sticky de la Landing ni con la navegación fixed de
+   las rutas. Las rutas no llevan la clase --embedded: su comportamiento no
+   cambia.
+   ========================================================================== */
+
+.wallet-app--embedded {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* El contenedor de la sección ya aporta el padding lateral: sin él, los
+       paneles quedan alineados con los títulos de la Landing. */
+    padding-inline: 0;
+}
+
+/* La barra superior sobra dentro del marco: la Landing ya tiene la suya. */
+.wallet-app--embedded .wallet-app__topbar {
+    display: none;
+}
+
+/* Móvil embebido: la navegación se coloca al pie del marco (order) y queda
+   sticky DENTRO de la sección: visible mientras se recorre el dashboard y
+   liberada al salir de la sección. z-index por debajo de la navbar de la
+   Landing (z-header) para no pisarse nunca. */
+.wallet-app--embedded .wallet-nav {
+    position: sticky;
+    left: auto;
+    right: auto;
+    bottom: 0;
+    order: 10;
+    contain: none;
+    z-index: var(--ws-z-sticky);
+}
+
+@media (min-width: 1024px) {
+    /* Desktop embebido: sidebar vertical dentro del marco (grid de2
+       columnas: navegación | contenido). La barra queda sticky bajo la
+       navbar de la Landing (top: --ws-header-h): nunca fixed y nunca fuera
+       de la sección. */
+    .wallet-app--embedded {
+        display: grid;
+        grid-template-columns: var(--ws-sidebar-w) minmax(0, 1fr);
+        column-gap: var(--ws-space-6);
+        padding-inline: 0;
+    }
+
+    .wallet-app--embedded .wallet-nav {
+        position: sticky;
+        top: var(--ws-header-h);
+        bottom: auto;
+        left: auto;
+        align-self: start;
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        /* La columna nunca supera el viewport mientras el marco hace scroll. */
+        max-height: calc(100vh - var(--ws-header-h));
+        overflow-y: auto;
+        border-right: var(--ws-hairline) solid var(--ws-border);
+    }
+
+    .wallet-app--embedded .wallet-app__intro {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .wallet-app--embedded .wallet-app__body {
+        grid-column: 2;
+        grid-row: 2;
+    }
+}

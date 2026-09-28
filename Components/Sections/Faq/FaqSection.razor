@@ -1,0 +1,53 @@
+@namespace LandingWallet.Components.Sections
+
+@* ==========================================================================
+   Sección — Preguntas frecuentes.
+
+   Solo preguntas cuya respuesta se respalda con la APLICACIÓN REAL (cuentas
+   multi-moneda, consulta de cuentas, movimientos recientes, contenido del
+   dashboard, inversiones y rol admin). Las preguntas sobre transferencias
+   ejecutadas, destinatarios o cuentas externas se omitieron: esas funciones
+   todavía no existen y no se presentan como terminadas.
+   ========================================================================== *@
+
+<SectionShell Id="ayuda" HeadingId="ayuda-title" CssClass="faq-section">
+    <div class="faq">
+
+        <SectionHeading HeadingId="ayuda-title" Eyebrow="AYUDA" Title="Preguntas frecuentes"
+                        Description="¿Necesitás ayuda? Estas son las respuestas que la propia aplicación puede respaldar hoy." />
+
+        <div class="faq__list">
+            @foreach (var entry in Entries)
+            {
+                <FaqItem Question="@entry.Question" Answer="@entry.Answer" />
+            }
+        </div>
+
+    </div>
+</SectionShell>
+
+@code {
+    /// <summary>
+    /// Preguntas verificables contra el comportamiento real de la aplicación.
+    /// No se listan funciones que aún no existen (transferencias ejecutadas,
+    /// destinatarios guardados, cuentas externas).
+    /// </summary>
+    private static readonly IReadOnlyList<FaqEntry> Entries =
+    [
+        new("¿Puedo tener cuentas en diferentes monedas?",
+            "Sí. Wallet informa tus cuentas en pesos y en dólares por separado: cada moneda muestra su propio saldo y las distintas monedas nunca se suman ni se convierten entre sí."),
+        new("¿Cómo consulto mis cuentas?",
+            "Desde el panel «Tus cuentas» del dashboard o desde la sección Cuentas. Cada cuenta muestra tipo, alias, CBU, moneda, estado y saldo actual."),
+        new("¿Dónde puedo ver mis movimientos recientes?",
+            "El panel «Movimientos recientes» del dashboard muestra los últimos movimientos con tipo, dirección e importe. El listado completo se habilitará en una etapa futura."),
+        new("¿Qué información muestra el dashboard?",
+            "Saldo disponible por cuenta, resumen del período (ingresos, egresos y balance), cuentas, movimientos recientes, inversiones y el reporte de actividad en Looker Studio."),
+        new("¿Cómo funcionan las inversiones disponibles?",
+            "La sección Inversiones lista tus colocaciones reales: tipo, estado, monto invertido, tasa de rendimiento y monto resultante, tal como los informa el sistema."),
+        new("¿Quién puede ver el panel de administración?",
+            "El rol administrador. Concentra indicadores del sistema —usuarios, cuentas, transacciones, auditorías y alertas— con sus distribuciones y el reporte analítico de Looker Studio."),
+    ];
+
+    /// <summary>Par pregunta/respuesta de la FAQ.</summary>
+    private sealed record FaqEntry(string Question, string Answer);
+}

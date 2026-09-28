@@ -1,0 +1,221 @@
+/* ==========================================================================
+   WalletAccountCard — tarjeta de cuenta
+   El saldo actual es el dato principal: se muestra en cifra de display.
+   ========================================================================== */
+
+.wallet-account {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    /* La card nunca supera a su contenedor ni se dimensiona por su contenido */
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    /* Iluminación de acento: se pinta como fondo propio de la card.
+       Antes era un ::before con z-index negativo que, con el fondo opaco que
+       aporta .ws-card, quedaba oculto detrás de la superficie (el glow
+       desaparecía). Como fondo no necesita recortes y se respeta el
+       border-radius sin recurrir a overflow: hidden, que recortaba el
+       contenido en lugar de dejar que reflowara. */
+    background-image: var(--ws-glow-cyan);
+    background-repeat: no-repeat;
+    background-position: right -35% top -70%;
+    background-size: 115% 135%;
+    /* La utilidad .ws-card aporta superficie y borde. El padding sigue el
+       ritmo único de las cards de Wallet: 20px (--ws-space-5) en móvil y
+       24px desde 430px (ver el bloque @media más abajo). */
+    padding: var(--ws-space-5);
+}
+
+.wallet-account--alt {
+    background-image: var(--ws-glow-purple);
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado: icono + tipo/alias + moneda.
+   Envolvente: mientras no entren el bloque principal y el chip de moneda en
+   una fila, el chip baja a la siguiente en lugar de comprimir el nombre de la
+   cuenta hasta partirlo (a 320px quedaban ~70px de ancho para el texto).
+   -------------------------------------------------------------------------- */
+.wallet-account__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-account__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+.wallet-account--alt .wallet-account__icon {
+    background-color: color-mix(in srgb, var(--ws-purple) 12%, transparent);
+    border-color: color-mix(in srgb, var(--ws-purple) 36%, transparent);
+    color: var(--ws-text);
+}
+
+.wallet-account__ident {
+    /* Base mínima legible: si no entra junto al chip, el head envuelve en lugar
+       de partir el nombre de la cuenta en trozos de dos o tres letras. */
+    flex: 1 1 12ch;
+    min-width: 0;
+}
+
+.wallet-account__type {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-medium);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.wallet-account__alias {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+/* La moneda va como chip con código en texto: no depende del color. */
+.wallet-account__currency {
+    display: inline-grid;
+    place-items: center;
+    min-width: 46px;
+    padding: var(--ws-space-1) var(--ws-space-2);
+    border-radius: var(--ws-radius-xs);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-bold);
+    letter-spacing: var(--ws-ls-chip);
+    /* El chip conserva su tamaño natural: nunca se comprime ni se recorta, y
+       se alinea al extremo cuando comparte fila con el nombre. */
+    flex-shrink: 0;
+    margin-inline-start: auto;
+}
+
+.wallet-account--alt .wallet-account__currency {
+    background-color: color-mix(in srgb, var(--ws-purple) 12%, transparent);
+    border-color: color-mix(in srgb, var(--ws-purple) 36%, transparent);
+    color: var(--ws-text);
+}
+
+/* --------------------------------------------------------------------------
+   Saldo actual
+   -------------------------------------------------------------------------- */
+.wallet-account__balance {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+    min-width: 0;
+    padding-block: var(--ws-space-2);
+    border-top: var(--ws-hairline) solid var(--ws-border);
+    border-bottom: var(--ws-hairline) solid var(--ws-border);
+}
+
+.wallet-account__balance-label {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+}
+
+.wallet-account__balance-value {
+    margin: 0;
+    /* Ocupa una fila completa y es el dato protagonista */
+    max-width: 100%;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-xl);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-tight);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   Metadatos
+   Mobile-first: una columna mientras el ancho sea reducido. Recién desde
+   768px hay espacio para dos columnas sin partir el CBU ni comprimir la
+   moneda.
+   -------------------------------------------------------------------------- */
+.wallet-account__attrs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-3);
+    margin: 0;
+    min-width: 0;
+}
+
+.wallet-account__attr {
+    min-width: 0;
+}
+
+.wallet-account__attr dt {
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+}
+
+.wallet-account__attr dd {
+    margin: var(--ws-space-1) 0 0;
+    max-width: 100%;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text);
+    /* Los valores largos envuelven de forma controlada sin ensanchar la card */
+    overflow-wrap: anywhere;
+}
+
+/* CBU: 22 dígitos. Puede partirse si el ancho es insuficiente, pero nunca
+   empuja la card ni desborda la fila. */
+.wallet-account__cbu {
+    font-family: var(--ws-font-mono);
+    font-size: var(--ws-fs-xs);
+    letter-spacing: 0.02em;
+    word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   Desde 430px hay margen para agrandar el saldo (sigue en una sola línea).
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    /* Desde la referencia principal hay ancho para el padding de card completo. */
+    .wallet-account {
+        padding: var(--ws-space-6);
+    }
+
+    .wallet-account__balance-value {
+        font-size: var(--ws-fs-2xl);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet y desktop: dos columnas para los metadatos.
+   El CBU ocupa la fila completa porque sus 22 dígitos no entran en media
+   columna. Moneda y Estado comparten la segunda fila: el badge conserva su
+   tamaño natural (es shrink-to-fit) sin deformarse ni dejar huecos.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .wallet-account__attrs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: var(--ws-space-4);
+    }
+
+    .wallet-account__attr:first-child {
+        grid-column: 1 / -1;
+    }
+}

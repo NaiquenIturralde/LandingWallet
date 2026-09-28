@@ -1,0 +1,83 @@
+@* ==========================================================================
+   WalletPeriodSummaryCard — resumen del período de una cuenta.
+   Ingresos, egresos y balance del período como TRES MÉTRICAS dentro de un
+   mismo bloque, no como tres tarjetas independientes.
+
+   NO CALCULA NADA: los tres importes llegan resueltos por la fuente de datos
+   (ver WalletPeriodSummary) y solo se les da formato. El balance es el
+   resultado del período (ingresos − egresos), que NO es el saldo de la cuenta.
+
+   El resultado se comunica con signo, icono y texto además del color: nunca
+   depende solo del color.
+   ========================================================================== *@
+
+<div class="wallet-period-summary">
+    <div class="wallet-period-summary__grid">
+
+        <div class="wallet-period-summary__metric">
+            <p class="wallet-period-summary__label">
+                <span class="wallet-period-summary__icon" aria-hidden="true">
+                    <Icon Name="IconName.Receive" Size="16" Decorative="true" />
+                </span>
+                <span>Ingresos</span>
+            </p>
+            <p class="wallet-period-summary__value">@WalletFormat.Money(Summary.Income, Summary.CurrencyCode)</p>
+        </div>
+
+        <div class="wallet-period-summary__metric">
+            <p class="wallet-period-summary__label">
+                <span class="wallet-period-summary__icon" aria-hidden="true">
+                    <Icon Name="IconName.Send" Size="16" Decorative="true" />
+                </span>
+                <span>Egresos</span>
+            </p>
+            <p class="wallet-period-summary__value">@WalletFormat.Money(Summary.Expense, Summary.CurrencyCode)</p>
+        </div>
+
+        @* Balance: métrica principal del bloque. *@
+        <div class="wallet-period-summary__metric wallet-period-summary__metric--balance">
+            <p class="wallet-period-summary__label">
+                <span>Balance</span>
+            </p>
+            <p class="wallet-period-summary__value wallet-period-summary__value--balance">
+                @WalletFormat.MoneySigned(Summary.Balance, Summary.CurrencyCode)
+            </p>
+            <p class="wallet-period-summary__result @ResultCssClass">
+                <span class="wallet-period-summary__result-icon" aria-hidden="true">
+                    <Icon Name="@ResultIcon" Size="16" Decorative="true" />
+                </span>
+                <span>@ResultText</span>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    /// <summary>Resumen del período, ya resuelto por la fuente de datos.</summary>
+    [Parameter, EditorRequired]
+    public WalletPeriodSummary Summary { get; set; } = null!;
+
+    // El resultado se describe con texto e icono: el signo del importe y el
+    // color son refuerzos, no el único canal.
+    private string ResultText => Summary.Balance switch
+    {
+        > 0 => "Resultado positivo",
+        < 0 => "Resultado negativo",
+        _ => "Sin variación",
+    };
+
+    private IconName ResultIcon => Summary.Balance switch
+    {
+        > 0 => IconName.TrendingUp,
+        < 0 => IconName.TrendingDown,
+        _ => IconName.TrendingFlat,
+    };
+
+    private string ResultCssClass => Summary.Balance switch
+    {
+        > 0 => "wallet-period-summary__result--up",
+        < 0 => "wallet-period-summary__result--down",
+        _ => "wallet-period-summary__result--neutral",
+    };
+}

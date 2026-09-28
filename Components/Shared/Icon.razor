@@ -1,0 +1,112 @@
+@* ==========================================================================
+   Icon — Material Symbols Outlined (fuente oficial de Google).
+   Única API pública de iconografía de Wallet Squad 1: los consumidores usan
+   <Icon Name="IconName.Home" /> y no escriben spans de Material Symbols.
+   El tamaño y el color se controlan por CSS/tokens (currentColor).
+   ========================================================================== *@
+
+<span class="material-symbols-outlined icon" style="font-size:@(Size)px" aria-hidden="@AriaHidden" role="@Role"
+      aria-label="@ResolvedAriaLabel">@SymbolName</span>
+
+@code {
+    /// <summary>Icono a renderizar.</summary>
+    [Parameter, EditorRequired]
+    public IconName Name { get; set; }
+
+    /// <summary>Tamaño en píxeles (ancho y alto).</summary>
+    [Parameter]
+    public int Size { get; set; } = 24;
+
+    /// <summary>
+    /// Si es <c>true</c>, el icono es decorativo: se oculta a lectores de pantalla
+    /// y se ignora <see cref="AriaLabel"/>.
+    /// </summary>
+    [Parameter]
+    public bool Decorative { get; set; } = true;
+
+    /// <summary>Etiqueta accesible. Obligatoria si <see cref="Decorative"/> es <c>false</c>.</summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    // Un icono informativo sin etiqueta sería inaccesible: se detecta en
+    // desarrollo en lugar de degradar silenciosamente a decorativo.
+    protected override void OnParametersSet()
+    {
+        if (!Decorative && string.IsNullOrWhiteSpace(AriaLabel))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(Icon)} requiere un {nameof(AriaLabel)} no vacío cuando " +
+                $"{nameof(Decorative)} es false: un icono informativo sin nombre accesible " +
+                "no puede anunciarse a lectores de pantalla.");
+        }
+    }
+
+    private bool IsDecorative => Decorative;
+
+    private string AriaHidden => IsDecorative ? "true" : "false";
+
+    private string? Role => IsDecorative ? null : "img";
+
+    private string? ResolvedAriaLabel => IsDecorative ? null : AriaLabel;
+
+    // Nombre oficial del símbolo en Material Symbols. El consumidor nunca
+    // necesita conocer este valor: solo usa el enum tipado IconName.
+    private string SymbolName => Name switch
+    {
+        // --- Base de la landing ---
+        IconName.Wallet => "account_balance_wallet",
+        IconName.Transfer => "swap_horiz",
+        IconName.Account => "account_balance",
+        IconName.Security => "shield",
+        IconName.Analytics => "insights",
+        IconName.Help => "help",
+        IconName.Check => "check",
+        IconName.CheckCircle => "check_circle",
+        IconName.Warning => "warning",
+        IconName.Error => "error",
+        IconName.Info => "info",
+        IconName.Refresh => "refresh",
+        IconName.Arrow => "arrow_forward",
+        IconName.Currency => "payments",
+        IconName.ExpandMore => "expand_more",
+
+        // --- Navegación y acciones de la App Wallet ---
+        IconName.Home => "home",
+        IconName.Send => "send",
+        IconName.Receive => "call_received",
+        IconName.Transactions => "receipt_long",
+        IconName.Person => "person",
+        IconName.Add => "add",
+        IconName.Search => "search",
+        IconName.Filter => "filter_list",
+        IconName.Settings => "settings",
+        IconName.Profile => "account_circle",
+        IconName.Notifications => "notifications",
+        IconName.CurrencyExchange => "currency_exchange",
+        IconName.TrendingUp => "trending_up",
+        IconName.TrendingDown => "trending_down",
+        IconName.TrendingFlat => "trending_flat",
+        IconName.Close => "close",
+        IconName.ArrowBack => "arrow_back",
+        IconName.ArrowForward => "arrow_forward",
+        IconName.More => "more_vert",
+
+        // --- Tipos de movimiento de la App Wallet ---
+        IconName.Deposit => "savings",
+        IconName.Withdrawal => "local_atm",
+        IconName.Subscription => "subscriptions",
+        IconName.Purchase => "shopping_cart",
+        IconName.ServicePayment => "receipt",
+        IconName.Salary => "work",
+        IconName.Refund => "undo",
+
+        // --- Admin ---
+        IconName.Dashboard => "dashboard",
+        IconName.Accounts => "account_balance_wallet",
+        IconName.Users => "group",
+        IconName.Audit => "fact_check",
+        IconName.Logout => "logout",
+
+        _ => "help",
+    };
+}

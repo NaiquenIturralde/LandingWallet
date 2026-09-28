@@ -1,0 +1,58 @@
+@namespace LandingWallet.Components.Sections
+
+@* ==========================================================================
+   Sección 01 — Hero
+   Portada de la landing. Excepción al patrón de encabezado: contiene el
+   ÚNICO <h1> de la página. La Wallet real se muestra en la sección
+   siguiente (ShowcaseSection): el Hero no lleva maquetas ni capturas.
+   ========================================================================== *@
+
+<SectionShell Id="inicio" HeadingId="hero-title" CssClass="hero-section">
+    <div class="hero">
+
+        @* Fondo tecnológico decorativo *@
+        <div class="hero__backdrop" aria-hidden="true"></div>
+
+        <div class="hero__layout">
+
+            @* ---------- Columna de contenido ---------- *@
+            <div class="hero__content">
+
+                <p class="ws-eyebrow hero__eyebrow">WALLET · SQUAD 1</p>
+
+                <h1 id="hero-title" class="hero__title">
+                    @* Dos spans: en móvil envuelven naturalmente, en desktop cada uno
+                       ocupa su propia línea. Evita quiebres feos a 390px. *@
+                    <span class="hero__title-line">Una billetera digital</span>
+                    <span class="hero__title-line">para un <span class="ws-gradient-text">mundo en
+                        movimiento.</span></span>
+                    </h1>
+
+                    <p class="hero__lead">
+                        Wallet centraliza cuentas, transferencias, monedas y operaciones financieras
+                        en una experiencia digital simple, clara y trazable.
+                    </p>
+
+                    <p class="hero__meta">
+                        Billetera digital · BigQuery · Business Intelligence
+                    </p>
+
+                    <div class="hero__actions">
+                        <GradientButton Text="Explorar Wallet" Href="#explora" Variant="ButtonVariant.Primary"
+                                        ShowArrow="true" />
+
+                        <GradientButton Text="Ver Analytics" Href="/admin/dashboard" Variant="ButtonVariant.Secondary" />
+                    </div>
+
+                    <p class="hero__origin">
+                        <span class="hero__origin-line" aria-hidden="true"></span>
+                        <span class="hero__origin-text">Desde Argentina para el mundo</span>
+                        @* La bandera es decorativa: el texto ya nombra el país. *@
+                        <span class="hero__origin-flag" aria-hidden="true">🇦🇷</span>
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+    </SectionShell>

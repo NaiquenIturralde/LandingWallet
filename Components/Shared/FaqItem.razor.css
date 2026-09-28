@@ -1,0 +1,97 @@
+/* ==========================================================================
+   FaqItem — acordeón de preguntas frecuentes
+   Botón real con aria-expanded; respuesta asociada por id (aria-controls).
+   ========================================================================== */
+
+.faq-item {
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+}
+
+.faq-item + .faq-item {
+    margin-top: var(--ws-space-3);
+}
+
+.faq-item__heading {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/* El botón ocupa toda la fila: área táctil cómoda y target real. */
+.faq-item__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ws-space-3);
+    width: 100%;
+    min-height: 52px;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border: 0;
+    border-radius: var(--ws-radius-md);
+    background: none;
+    color: var(--ws-text);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.faq-item__trigger:hover {
+    background-color: var(--ws-grid-line);
+}
+
+.faq-item__question {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Chevron hacia abajo que rota 180° al abrir: animación breve y sutil del
+   propio icono del sistema (expand_more), sin "+". */
+.faq-item__mark {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+    transition: transform var(--ws-dur-base) var(--ws-ease-out);
+}
+
+.faq-item__trigger[aria-expanded="true"] .faq-item__mark {
+    transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   Panel: apertura moderada con grid-template-rows. El estado cerrado usa
+   visibility: hidden para que el texto colapsado salga del árbol de
+   accesibilidad; base.css acorta las transiciones con reduced-motion.
+   -------------------------------------------------------------------------- */
+.faq-item__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--ws-dur-base) var(--ws-ease-out),
+                visibility 0s linear var(--ws-dur-base);
+}
+
+.faq-item__panel[data-open="true"] {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows var(--ws-dur-base) var(--ws-ease-out),
+                visibility 0s linear 0s;
+}
+
+.faq-item__panel-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.faq-item__answer {
+    margin: 0;
+    padding: 0 var(--ws-space-4) var(--ws-space-4);
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}

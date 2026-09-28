@@ -1,0 +1,56 @@
+/* ==========================================================================
+   StatusBadge — estado visual
+   Contraste: el texto usa --ws-text (blanco) sobre un fondo translúcido del
+   color de estado, así el color aporta énfasis pero no carga con el contraste.
+   ========================================================================== */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+    padding: var(--ws-space-1) var(--ws-space-3);
+    border: var(--ws-hairline) solid;
+    border-radius: var(--ws-radius-pill);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-normal);
+    white-space: nowrap;
+}
+
+.status-badge__text {
+    /* El texto siempre en blanco: garantiza AA sobre todos los fondos */
+    color: var(--ws-text);
+}
+
+.status-badge--success {
+    background-color: var(--ws-success-soft);
+    border-color: var(--ws-success-border);
+    color: var(--ws-success);
+}
+
+.status-badge--error {
+    background-color: var(--ws-danger-soft);
+    border-color: var(--ws-danger-border);
+    color: var(--ws-danger);
+}
+
+.status-badge--pending {
+    background-color: var(--ws-warning-soft);
+    border-color: var(--ws-warning-border);
+    color: var(--ws-warning);
+}
+
+.status-badge--neutral {
+    background-color: var(--ws-neutral-soft);
+    border-color: var(--ws-border-strong);
+    color: var(--ws-text-muted);
+}
+
+/* El icono hereda el color de la variante */
+.status-badge__icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: inherit;
+}

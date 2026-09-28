@@ -1,0 +1,117 @@
+@page "/wallet/mas"
+@layout WalletLayout
+
+<PageTitle>Más — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Más — App Wallet (rol usuario).
+   Accesos secundarios de la Wallet. Primero los accesos REALES (dashboards e
+   inversiones, que navegan de verdad); después las secciones contempladas por
+   el modelo funcional que todavía no tienen pantalla: se muestran como
+   pendientes, nunca como enlaces falsos. Ni Perfil ni Movimientos funcionales
+   si no existen.
+   ========================================================================== *@
+
+<WalletAppShell Title="Más" Subtitle="Otros accesos de tu Wallet" Eyebrow="MÁS" HeadingId="wallet-more-page-title">
+
+    @* ---------- Accesos reales ---------- *@
+    @* En mobile la barra inferior muestra solo Inicio, Cuentas, Transferir y
+       Más: estos accesos son la vía a los dashboards y a inversiones. *@
+    <WalletPanel HeadingId="more-dashboards-title" Title="Dashboards" Flush="true">
+        <div class="more__group">
+            <WalletMenuList Items="DashboardItems" ShowStatus="false" />
+        </div>
+    </WalletPanel>
+
+    <WalletPanel HeadingId="more-others-title" Title="Otros" Flush="true">
+        <div class="more__group">
+            <WalletMenuList Items="OtherItems" ShowStatus="false" />
+        </div>
+    </WalletPanel>
+
+    @* ---------- Estado de las secciones pendientes ---------- *@
+    @* El estado se explica una sola vez y al principio de los pendientes: así
+       queda claro antes de recorrer los accesos, sin repetir un badge ni un
+       rótulo en cada fila. *@
+    <WalletPanel HeadingId="more-status-title" Title="Estado de las secciones" IconName="IconName.Info">
+        <p class="more__text">
+            Estas secciones ya están contempladas por la Wallet, pero todavía no tienen
+            una pantalla habilitada en esta etapa del proyecto.
+        </p>
+    </WalletPanel>
+
+    @* ---------- Movimientos y operaciones ---------- *@
+    <WalletPanel HeadingId="more-activity-title" Title="Movimientos y operaciones" Flush="true">
+        <div class="more__group">
+            <WalletMenuList Items="ActivityItems" ShowStatus="false" />
+        </div>
+    </WalletPanel>
+
+    @* ---------- Cuentas y destinatarios ---------- *@
+    <WalletPanel HeadingId="more-accounts-title" Title="Cuentas y destinatarios" Flush="true">
+        <div class="more__group">
+            <WalletMenuList Items="AccountsItems" ShowStatus="false" />
+        </div>
+    </WalletPanel>
+
+    @* ---------- Seguridad y ayuda ---------- *@
+    <WalletPanel HeadingId="more-support-title" Title="Seguridad y ayuda" Flush="true">
+        <div class="more__group">
+            <WalletMenuList Items="SupportItems" ShowStatus="false" />
+        </div>
+    </WalletPanel>
+
+    @* ---------- Vuelta al inicio ---------- *@
+    @* "Inicio" es la Landing (presentación general): misma semántica que el
+       ítem Inicio de la navegación. *@
+    <div class="more__back">
+        <GradientButton Text="Volver al inicio" Href="/" Variant="ButtonVariant.Secondary" />
+    </div>
+
+</WalletAppShell>
+
+@code {
+    // Accesos REALES: navegan de verdad (usados como accesos secundarios en
+    // mobile, donde no viven en la barra inferior).
+    private static readonly IReadOnlyList<WalletMenuItem> DashboardItems =
+    [
+        new("Dashboard Usuario", IconName.Wallet,
+            Description: "Tu resumen financiero: saldo, período y movimientos.",
+            Href: "/wallet/dashboard"),
+        new("Dashboard Admin", IconName.Dashboard,
+            Description: "Indicadores generales y analítica del sistema.",
+            Href: "/admin/dashboard"),
+    ];
+
+    private static readonly IReadOnlyList<WalletMenuItem> OtherItems =
+    [
+        new("Inversiones", IconName.Analytics,
+            Description: "Seguimiento de tus colocaciones registradas.",
+            Href: "/wallet/inversiones"),
+    ];
+
+    // Solo secciones definidas en el modelo funcional del proyecto.
+    private static readonly IReadOnlyList<WalletMenuItem> ActivityItems =
+    [
+        new("Movimientos", IconName.Transactions,
+            Description: "Historial completo de movimientos registrados."),
+        new("Operaciones", IconName.Analytics,
+            Description: "Operaciones financieras contempladas por el modelo."),
+    ];
+
+    private static readonly IReadOnlyList<WalletMenuItem> AccountsItems =
+    [
+        new("Destinatarios guardados", IconName.Accounts,
+            Description: "CBU o alias de terceros para reutilizar en transferencias."),
+        new("Cambio de moneda", IconName.CurrencyExchange,
+            Description: "Conversión entre monedas según la cotización de Wallet."),
+    ];
+
+    private static readonly IReadOnlyList<WalletMenuItem> SupportItems =
+    [
+        new("Seguridad", IconName.Security,
+            Description: "Validaciones, trazabilidad y alertas de la cuenta."),
+        new("Ayuda", IconName.Help,
+            Description: "Preguntas frecuentes sobre el uso de la Wallet."),
+    ];
+}

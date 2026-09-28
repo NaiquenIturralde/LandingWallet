@@ -1,0 +1,57 @@
+@* ==========================================================================
+   WalletSpinner — indicador de operación en curso.
+   No establece aria-busy: ese atributo pertenece al contenedor que realiza la
+   operación, no al indicador.
+   ========================================================================== *@
+
+<span class="@CssClass" style="--spinner-size:@(Size)px" role="@Role" aria-hidden="@AriaHidden">
+    <span class="wallet-spinner__ring" aria-hidden="true"></span>
+
+    @if (!IsDecorative)
+    {
+        <span class="ws-sr-only">@ResolvedLabel</span>
+    }
+</span>
+
+@code {
+    /// <summary>Tamaño del indicador en píxeles.</summary>
+    [Parameter]
+    public int Size { get; set; } = 24;
+
+    /// <summary>
+    /// Texto accesible. Obligatorio cuando el spinner es informativo
+    /// (<see cref="Decorative"/> = <c>false</c>).
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Si es <c>true</c>, el spinner es puramente visual: se oculta a lectores
+    /// de pantalla porque otro elemento ya comunica la carga.
+    /// </summary>
+    [Parameter]
+    public bool Decorative { get; set; }
+
+    // Un spinner informativo sin etiqueta sería inaccesible: se detecta en
+    // desarrollo en lugar de degradar silenciosamente a decorativo.
+    protected override void OnParametersSet()
+    {
+        if (!Decorative && string.IsNullOrWhiteSpace(Label))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(WalletSpinner)} requiere un {nameof(Label)} no vacío cuando " +
+                $"{nameof(Decorative)} es false: un indicador informativo sin nombre accesible " +
+                "no puede anunciarse a lectores de pantalla.");
+        }
+    }
+
+    private bool IsDecorative => Decorative;
+
+    private string AriaHidden => IsDecorative ? "true" : "false";
+
+    private string? Role => IsDecorative ? null : "status";
+
+    private string ResolvedLabel => Label!;
+
+    private string CssClass => IsDecorative ? "wallet-spinner wallet-spinner--decorative" : "wallet-spinner";
+}

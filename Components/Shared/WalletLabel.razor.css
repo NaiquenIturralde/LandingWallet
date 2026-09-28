@@ -1,0 +1,25 @@
+/* ==========================================================================
+   WalletLabel — etiqueta de campo
+   ========================================================================== */
+
+.wallet-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ws-space-1);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-medium);
+    line-height: var(--ws-lh-snug);
+    color: var(--ws-text);
+}
+
+.wallet-label__text {
+    /* Permite que etiquetas largas envuelvan sin desbordar */
+    overflow-wrap: anywhere;
+}
+
+/* El asterisco no es el único indicador: va acompañado de texto accesible */
+.wallet-label__required {
+    color: var(--ws-danger);
+    font-weight: var(--ws-weight-semibold);
+}

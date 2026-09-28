@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Wallet Squad 1 — Utilidades
+   Helpers genéricos y reutilizables. Depende de tokens.css.
+   Prefijo ws- para no colisionar con estilos scoped de componentes.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Contenedores
+   -------------------------------------------------------------------------- */
+.ws-container {
+    width: 100%;
+    max-width: var(--ws-container-max);
+    margin-inline: auto;
+    padding-inline: var(--ws-container-pad);
+}
+
+.ws-container--narrow {
+    max-width: var(--ws-container-narrow);
+}
+
+/* --------------------------------------------------------------------------
+   Ritmo vertical: apila hijos con separación uniforme
+   -------------------------------------------------------------------------- */
+.ws-flow > * + * {
+    margin-top: var(--ws-space-4);
+}
+
+.ws-flow--lg > * + * {
+    margin-top: var(--ws-space-8);
+}
+
+.ws-flow--xl > * + * {
+    margin-top: var(--ws-space-12);
+}
+
+/* --------------------------------------------------------------------------
+   Grillas responsivas (mobile-first)
+   -------------------------------------------------------------------------- */
+.ws-grid {
+    display: grid;
+    gap: var(--ws-space-6);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .ws-grid--2,
+    .ws-grid--3,
+    .ws-grid--4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .ws-grid--3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ws-grid--4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Texto degradado cyan → blue → purple
+   Se usa solo en display grande: el degradado no garantiza contraste AA en
+   tamaños de cuerpo.
+   -------------------------------------------------------------------------- */
+.ws-gradient-text {
+    background-image: var(--ws-gradient-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Eyebrow: rótulo corto sobre un título
+   -------------------------------------------------------------------------- */
+.ws-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Texto
+   -------------------------------------------------------------------------- */
+.ws-text-muted {
+    color: var(--ws-text-muted);
+}
+
+.ws-text-lead {
+    font-size: var(--ws-fs-lg);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+.ws-text-balance {
+    text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Accesibilidad: contenido solo para lectores de pantalla
+   -------------------------------------------------------------------------- */
+.ws-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Skip link: visible solo al recibir foco por teclado */
+.ws-skip-link {
+    position: absolute;
+    left: var(--ws-space-4);
+    top: var(--ws-space-4);
+    z-index: var(--ws-z-modal);
+    padding: var(--ws-space-3) var(--ws-space-5);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-card);
+    color: var(--ws-text);
+    font-weight: var(--ws-weight-semibold);
+    box-shadow: var(--ws-shadow-lg);
+    transform: translateY(calc(-100% - var(--ws-space-6)));
+    transition: transform var(--ws-dur-base) var(--ws-ease-out);
+}
+
+.ws-skip-link:focus-visible {
+    transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Superficies
+   -------------------------------------------------------------------------- */
+.ws-surface {
+    background-color: var(--ws-surface);
+}
+
+.ws-card {
+    background-color: var(--ws-card);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-lg);
+    /* Elevación persistente de las cards (no solo en hover): da profundidad
+       hacia la derecha y hacia abajo sin aplanar la superficie. El valor vive
+       en --ws-shadow-card, así que se ajusta una sola vez para todo el sistema.
+       No se usa overflow ni transform: la sombra se pinta fuera de la caja y no
+       altera tamaños ni radios. */
+    box-shadow: var(--ws-shadow-card);
+}
+
+/* --------------------------------------------------------------------------
+   Interacción táctil de una superficie.
+   Se aplica a un contenedor que ES clickeable (una card hecha enlace, una
+   acción). No se usa en .ws-card a secas: una card no interactiva no debe
+   reaccionar al toque. El gesto es deliberadamente leve para no romper la
+   sensación premium del dashboard.
+   -------------------------------------------------------------------------- */
+.ws-pressable {
+    transition: transform var(--ws-dur-fast) var(--ws-ease-out),
+                border-color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.ws-pressable:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ws-pressable:active {
+        transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Borde degradado (hairline) reutilizable
+   -------------------------------------------------------------------------- */
+.ws-gradient-border {
+    position: relative;
+}
+
+.ws-gradient-border::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: var(--ws-hairline);
+    background-image: var(--ws-gradient-border);
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}

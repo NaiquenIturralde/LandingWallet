@@ -1,0 +1,231 @@
+@* ==========================================================================
+   WalletAppShell — contenedor de pantalla de la App Wallet (usuario y admin).
+   Aporta la barra superior, el encabezado de la pantalla y la navegación
+   inferior. No contiene datos ni lógica de negocio.
+
+   NAVEGACIÓN CENTRALIZADA: la barra vive acá y se renderiza una sola vez para
+   todas las pantallas. Las secciones con ruta se resuelven con NavLink, que
+   determina por sí mismo la sección activa y expone aria-current="page". Las
+   secciones sin ruta se muestran como texto: nunca como enlace falso.
+   Por defecto se usa el menú del rol usuario (WalletUserNavigation).
+
+   LA NAV VIVE DENTRO DE .wallet-app (justo debajo de la barra superior):
+     · En móvil es position: fixed al pie, así que su lugar en el DOM no cambia
+       nada visualmente, pero sí mejora el orden de tabulación.
+     · En desktop (≥1024px) pasa a sticky arriba: así nunca queda al final de
+       un documento largo, que era el problema original.
+   ========================================================================== *@
+
+@inject IJSRuntime JS
+
+<div class="@RootClass">
+
+    <header class="wallet-app__topbar">
+        <a class="wallet-app__brand" href="/" aria-label="Wallet Squad 1 — volver a la página de inicio">
+            <span class="wallet-app__mark" aria-hidden="true">W</span>
+            <span class="wallet-app__brand-text">
+                <span class="wallet-app__brand-word">WALLET</span>
+                <span class="wallet-app__brand-word wallet-app__brand-word--accent">SQUAD 1</span>
+            </span>
+        </a>
+
+        <div class="wallet-app__actions">
+            @* Historial REAL del navegador (history.back / history.forward):
+               no son rutas simuladas, recorren el historial que ya existe.
+               Blazor no expone ese historial, por eso se invoca por JS interop. *@
+            <div class="wallet-app__history" role="group" aria-label="Historial de navegación">
+                <WalletIconButton IconName="IconName.ArrowBack" AriaLabel="Atrás" OnClick="GoBackAsync" />
+                <WalletIconButton IconName="IconName.ArrowForward" AriaLabel="Adelante" OnClick="GoForwardAsync" />
+            </div>
+
+            @* No existe todavía una sección de notificaciones: el acceso se
+               muestra deshabilitado en lugar de simular un destino. *@
+            <WalletIconButton IconName="IconName.Notifications" AriaLabel="Notificaciones (todavía no disponible)"
+                              Disabled="true" />
+
+            @* Avatar decorativo: /wallet/perfil todavía no existe, así que el
+               avatar NO navega ni simula una acción (sin href, sin nombre
+               accesible de perfil, sin hover ni cursor de clic). *@
+            <span class="wallet-app__avatar">
+                <Icon Name="IconName.Profile" Size="24" Decorative="true" />
+            </span>
+        </div>
+    </header>
+
+    <nav class="wallet-nav" aria-label="@NavigationLabel">
+        <ul class="wallet-nav__list">
+            @foreach (var item in NavigationItems)
+            {
+                @if (item.IsSectionLabel)
+                {
+                    @* Encabezado de grupo: texto pequeño, no clickeable y sin
+                       foco (span simple). Solo se muestra en la sidebar
+                       desktop (ver clase --desktop-only en el CSS). *@
+                    <li class="@ItemCssClass(item)">
+                        <span class="wallet-nav__section">@item.Label</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="@ItemCssClass(item)">
+                        @if (item.IsLink)
+                        {
+                            @* Inicio ("/") usa Match=All: con Prefix sería
+                               prefijo de TODAS las rutas y quedaría activo
+                               junto a Dashboard Usuario. El resto conserva
+                               Prefix para marcarse también en sus rutas
+                               derivadas. *@
+                            <NavLink class="wallet-nav__entry" ActiveClass="wallet-nav__entry--current"
+                                     Match="@(item.Href == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix)" href="@item.Href">
+                                @if (item.Icon is { } icon)
+                                {
+                                    <span class="wallet-nav__icon" aria-hidden="true">
+                                        <Icon Name="@icon" Size="22" Decorative="true" />
+                                    </span>
+                                }
+                                <span class="wallet-nav__label">@item.Label</span>
+                            </NavLink>
+                        }
+                        else
+                        {
+                            <span class="@NavEntryCssClass(item)" aria-current="@(item.IsCurrent ? "page" : null)">
+                                @if (item.Icon is { } icon)
+                                {
+                                    <span class="wallet-nav__icon" aria-hidden="true">
+                                        <Icon Name="@icon" Size="22" Decorative="true" />
+                                    </span>
+                                }
+                                <span class="wallet-nav__label">@item.Label</span>
+                            </span>
+                        }
+                    </li>
+                }
+            }
+        </ul>
+
+        @if (HasUnlinkedItems)
+        {
+            @* Solo se anuncia lo que realmente falta, sin inventar disponibilidad. *@
+            <p class="ws-sr-only">
+                Algunas secciones de esta navegación todavía no tienen una ruta habilitada
+                y se muestran como texto.
+            </p>
+        }
+    </nav>
+
+    <div class="wallet-app__intro">
+        @if (!string.IsNullOrWhiteSpace(Eyebrow))
+        {
+            <p class="ws-eyebrow">@Eyebrow</p>
+        }
+
+        <h1 id="@HeadingId" class="wallet-app__title">@Title</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p class="wallet-app__subtitle">@Subtitle</p>
+        }
+    </div>
+
+    <div class="wallet-app__body">
+        @ChildContent
+    </div>
+
+</div>
+
+@code {
+    /// <summary>Título principal de la pantalla. Se renderiza como &lt;h1&gt;.</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Bajada breve de la pantalla.</summary>
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    /// <summary>Rótulo corto sobre el título.</summary>
+    [Parameter]
+    public string? Eyebrow { get; set; }
+
+    /// <summary>Id del &lt;h1&gt;.</summary>
+    [Parameter, EditorRequired]
+    public string HeadingId { get; set; } = string.Empty;
+
+    /// <summary>Nombre accesible de la navegación inferior.</summary>
+    [Parameter]
+    public string NavigationLabel { get; set; } = "Secciones de la Wallet";
+
+    /// <summary>
+    /// Secciones de la navegación inferior. Por defecto, el menú del rol usuario:
+    /// las pantallas del usuario no repiten la lista.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<WalletNavigationItem> NavigationItems { get; set; } = WalletUserNavigation.Items;
+
+    /// <summary>Contenido de la pantalla.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Modo embebido (solo la Landing, sección "Explorá Wallet"): el shell se
+    /// muestra contenido dentro del marco de la sección. Oculta la barra
+    /// superior (la Landing ya tiene la suya) vía CSS y activa los estilos de
+    /// navegación CONTENIDA —sidebar sticky / barra inferior sticky dentro de
+    /// la sección— para no competir con los elementos position:fixed de las
+    /// rutas. Las rutas NO usan esta bandera: su comportamiento (sidebar fija
+    /// / barra inferior fija con reserva de espacio) no cambia.
+    /// </summary>
+    [Parameter]
+    public bool Embedded { get; set; }
+
+    /// <summary>Clase raíz: variante embedded solo cuando se pide.</summary>
+    private string RootClass => Embedded ? "wallet-app wallet-app--embedded" : "wallet-app";
+
+    // Con al menos una sección sin ruta hay que explicarlo a lectores de pantalla.
+    private bool HasUnlinkedItems => NavigationItems.Any(item => !item.IsLink);
+
+    /// <summary>
+    /// Retrocede en el historial REAL del navegador (history.back()).
+    /// No se simula con rutas: si no hay entrada anterior, el navegador no hace
+    /// nada y la pantalla queda donde está.
+    /// </summary>
+    private Task GoBackAsync() => JS.InvokeVoidAsync("walletNav.back").AsTask();
+
+    /// <summary>
+    /// Avanza en el historial REAL del navegador (history.forward()).
+    /// Solo tiene efecto después de haber retrocedido; es el mismo comportamiento
+    /// que los botones nativos del navegador.
+    /// </summary>
+    private Task GoForwardAsync() => JS.InvokeVoidAsync("walletNav.forward").AsTask();
+
+    private static string NavEntryCssClass(WalletNavigationItem item)
+        => item.IsCurrent
+            ? "wallet-nav__entry wallet-nav__entry--current"
+            : "wallet-nav__entry";
+
+    /// <summary>
+    /// Clases del &lt;li&gt; según el rol del ítem: label de grupo, ítem solo
+    /// desktop (oculto en la barra inferior mobile) e ítem hijo de un grupo
+    /// (sangría leve en la sidebar).
+    /// </summary>
+    private static string ItemCssClass(WalletNavigationItem item)
+    {
+        var classes = "wallet-nav__item";
+
+        if (item.IsSectionLabel)
+        {
+            classes += " wallet-nav__item--section";
+        }
+
+        if (item.DesktopOnly)
+        {
+            classes += " wallet-nav__item--desktop-only";
+        }
+
+        if (item.IsSectionChild)
+        {
+            classes += " wallet-nav__item--child";
+        }
+
+        return classes;
+    }
+}

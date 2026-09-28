@@ -1,0 +1,371 @@
+@* ==========================================================================
+   WalletDashboardBody — contenido REAL del Dashboard de Usuario.
+
+   ÚNICA implementación del dashboard de usuario: la consume la ruta
+   /wallet/dashboard (dentro de WalletAppShell) Y la Landing (sección
+   "Explorá Wallet", ShowcaseSection). Cambiar este componente cambia ambas
+   superficies: no hay dos copias del mismo contenido.
+
+   No incluye el chrome de la app (topbar/navegación): eso pertenece a la ruta.
+
+   JERARQUÍA (el orden responde a lo que el usuario necesita primero):
+     1. Saldo disponible        → WalletBalanceHero (dato protagonista)
+     2. Métricas del período    → WalletPeriodSummaryCard (ingresos, egresos, balance)
+     3. Acciones                → WalletQuickActions (solo rutas reales)
+     4. Cuentas                 → WalletAccountCard
+     5. Movimientos recientes   → WalletTransactionList (ancho completo)
+     6. Tu actividad            → AnalyticsHeader + WalletLookerCard ×3 (modular)
+
+   La representación de inversiones se eliminó de ESTE inicio (su
+   funcionalidad vive en /wallet/inversiones); no se consulta
+   vw_inversiones_reporting desde acá.
+
+   DATOS: TODOS provienen de BigQuery a través de IWalletDashboardService
+   (vw_dashboard_usuario, vw_saldo_cuentas, vw_transacciones_reporting).
+   No hay valores hardcodeados ni datos demo.
+
+   ESTADOS: carga, error con reintento y sin datos. El reporte de Looker Studio
+   queda fuera de esos estados porque no depende de la carga financiera.
+   ========================================================================== *@
+
+@inject IWalletDashboardService DashboardService
+
+@if (ShowCurrencySelector)
+{
+    @* Selector global de moneda [ ARS | USD ]: filtra TODOS los datos del
+       dashboard (saldo, resumen, cuentas y movimientos) por moneda. NO
+       convierte valores. Vive acá, no en cada card: un solo estado. En móvil
+       queda debajo del título y antes de las métricas; en desktop se alinea a
+       la derecha (ver CSS). La Landing lo oculta con ShowCurrencySelector. *@
+    <div class="wallet-dashboard__currency">
+        @* Value lleva @: en un parámetro de tipo string, Razor pasaría el
+           literal "_selectedCurrency" en lugar de la variable. *@
+        <WalletCurrencySelector Value="@_selectedCurrency" ValueChanged="OnCurrencyChanged" />
+    </div>
+}
+
+@if (_loadFailed)
+{
+    @* Un solo error por pantalla: no se repite el mismo mensaje en cada
+       bloque. El reporte de Looker Studio se sigue mostrando más abajo. *@
+    <WalletAlert Variant="AlertVariant.Error" Title="No pudimos cargar tus datos"
+                 Text="Hubo un problema al obtener tu resumen financiero. Podés intentar de nuevo.">
+        <WalletButton Text="Reintentar" Variant="WalletButtonVariant.Secondary" IconName="IconName.Refresh"
+                      OnClick="LoadAsync" />
+    </WalletAlert>
+}
+else
+{
+    @* ---------- 1 y 2. Saldo disponible + métricas del período ---------- *@
+    <div class="wallet-dashboard__top">
+
+        @if (_isLoading)
+        {
+            <div class="wallet-dashboard__skeleton" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+            </div>
+        }
+        else if (_accounts.Count > 0)
+        {
+            @* El saldo lo resuelve la fuente; el componente no lo deriva. Con
+               el filtro por moneda, la lista trae solo cuentas de la moneda
+               seleccionada: nunca se suman ARS y USD. *@
+            <WalletBalanceHero Accounts="_accounts" />
+        }
+        else
+        {
+            @* No existe cuenta de la moneda seleccionada: estado vacío real,
+               nunca un saldo ARS presentado como USD. *@
+            <WalletEmptyState IconName="IconName.Account" Title="@NoAccountTitle" Description="@NoAccountDescription" />
+        }
+
+        <WalletPanel HeadingId="wallet-period-title" Title="@PeriodTitle" Hint="@PeriodHint" IconName="IconName.Analytics">
+
+            @if (_isLoading)
+            {
+                <div class="wallet-dashboard__skeleton" aria-busy="true">
+                    <WalletSkeleton Shape="SkeletonShape.Block" Height="150px" />
+                </div>
+            }
+            else if (_periodSummary is { } summary)
+            {
+                <WalletPeriodSummaryCard Summary="summary" />
+
+                @* Distinción explícita entre balance del período y saldo de la
+                   cuenta: son dos datos distintos y no deben confundirse. *@
+                <p class="wallet-dashboard__note">
+                    <span class="wallet-dashboard__note-icon" aria-hidden="true">
+                        <Icon Name="IconName.Info" Size="16" Decorative="true" />
+                    </span>
+                    <span>
+                        El balance es el resultado del período: ingresos menos egresos.
+                        No es el saldo actual de la cuenta.
+                    </span>
+                </p>
+            }
+            else
+            {
+                <WalletEmptyState IconName="IconName.Analytics" Title="Todavía no hay un resumen del período"
+                                  Description="Cuando se registren movimientos del período, vas a ver acá los ingresos, los egresos y el balance."
+                                  Compact="true" />
+            }
+        </WalletPanel>
+    </div>
+
+    @* ---------- 3. Acciones rápidas ---------- *@
+    <WalletPanel HeadingId="wallet-actions-title" Title="Acciones rápidas" IconName="IconName.Transfer">
+        <WalletQuickActions />
+    </WalletPanel>
+
+    @* ---------- 4. Mis cuentas ---------- *@
+    <WalletPanel HeadingId="wallet-accounts-title" Title="Tus cuentas" Hint="@_selectedCurrency"
+                 IconName="IconName.Account">
+
+        @if (_isLoading)
+        {
+            <div class="wallet-dashboard__skeleton" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+            </div>
+        }
+        else if (_accounts.Count == 0)
+        {
+            <WalletEmptyState IconName="IconName.Account" Title="@NoAccountTitle" Description="@NoAccountDescription" />
+        }
+        else
+        {
+            <div class="wallet-dashboard__accounts">
+                @foreach (var account in _accounts)
+                {
+                    @* La cuenta en dólares usa el acento alternativo para
+                       distinguirse sin depender del código de moneda. *@
+                    <WalletAccountCard Account="account" AlternateAccent="@(account.CurrencyCode != "ARS")" />
+                }
+            </div>
+
+            <p class="wallet-dashboard__note">
+                <span class="wallet-dashboard__note-icon" aria-hidden="true">
+                    <Icon Name="IconName.Info" Size="16" Decorative="true" />
+                </span>
+                <span>
+                    El saldo se obtiene a partir de los movimientos registrados de la cuenta.
+                    Cada moneda se informa por separado: nunca se suman ni se convierten.
+                </span>
+            </p>
+        }
+    </WalletPanel>
+
+    @* ---------- 5. Movimientos recientes: ancho completo ---------- *@
+    <WalletPanel HeadingId="wallet-movements-title" Title="Movimientos recientes" Hint="@MovementsHint" Flush="true">
+
+        @if (_isLoading)
+        {
+            <div class="wallet-dashboard__skeleton wallet-dashboard__skeleton--rows" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Line" Lines="5" Height="44px" />
+            </div>
+        }
+        else
+        {
+            @* La lista presenta los movimientos que recibe y ya resuelve
+               estado vacío: la pantalla no repite ese mensaje. El estado vacío
+               es por moneda: nunca se muestran movimientos ARS como USD. *@
+            <div class="wallet-dashboard__list">
+                <WalletTransactionList Movements="_movements" EmptyTitle="@NoMovementsTitle"
+                                       EmptyDescription="@NoMovementsDescription" />
+            </div>
+
+            <div class="wallet-dashboard__actions">
+                @* No existe todavía el listado completo: la acción queda
+                   visible pero deshabilitada, no como enlace falso. *@
+                <WalletButton Text="Ver todos los movimientos" Variant="WalletButtonVariant.Secondary" IconName="IconName.Arrow"
+                              Disabled="true" FullWidth="true" />
+
+                <p class="wallet-dashboard__pending">
+                    El listado completo estará disponible cuando se habilite la sección de movimientos.
+                </p>
+            </div>
+        }
+    </WalletPanel>
+}
+
+@* ---------- 6. Analítica Looker MODULAR: un card por reporte real ---------- *@
+@* Los3 reportes individuales del rol usuario, cada uno en SU card
+   (WalletLookerCard): el principal a ancho completo (jerarquía máxima) y los
+   dos secundarios en dos columnas — la composición de la referencia visual.
+   Sin capa intermedia: encabezado compacto y gráficos inmediatos. Los datos
+   los sirve Looker Studio; el viewport de cada card usa la relación nativa
+   del lienzo (360/340) sin scroll horizontal. *@
+<AnalyticsHeader HeadingId="wallet-activity-title" Title="Tu actividad" />
+
+<WalletLookerCard Report="WalletLookerReports.User[0]" />
+
+<div class="ws-grid ws-grid--2">
+    <WalletLookerCard Report="WalletLookerReports.User[1]" />
+    <WalletLookerCard Report="WalletLookerReports.User[2]" />
+</div>
+
+@code {
+    /// <summary>
+    /// Cantidad de movimientos recientes que se muestran en la pantalla de
+    /// inicio. El recorte lo resuelve la fuente de datos.
+    /// </summary>
+    private const int RecentMovementCount = 5;
+
+    /// <summary>
+    /// Moneda seleccionada en el dashboard. Un solo estado para todas las
+    /// secciones: saldo, resumen, cuentas y movimientos responden a esta misma
+    /// moneda. Default ARS. Solo ARS o USD (allowlist).
+    /// </summary>
+    private string _selectedCurrency = WalletCurrency.Ars;
+
+    /// <summary>
+    /// Muestra el selector de moneda. La ruta /wallet/dashboard lo activa; la
+    /// Landing (ShowcaseSection) lo deja en false para no introducir el
+    /// selector dentro de "Explorá Wallet". Es un parámetro de presentación,
+    /// no una detección de URL.
+    /// </summary>
+    [Parameter]
+    public bool ShowCurrencySelector { get; set; }
+
+    private IReadOnlyList<WalletPresentationAccount> _accounts = [];
+    private IReadOnlyList<WalletPresentationMovement> _movements = [];
+    private WalletPeriodSummary? _periodSummary;
+    private WalletPeriodRange? _periodRange;
+
+    private bool _isLoading = true;
+    private bool _loadFailed;
+    private CancellationTokenSource? _loadCts;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    /// <summary>
+    /// Cambio de moneda en el selector: actualiza el estado y recarga TODOS
+    /// los datos como una unidad coherente (saldo, resumen, cuentas y
+    /// movimientos de la nueva moneda). Nunca se mezclan monedas.
+    /// </summary>
+    private async Task OnCurrencyChanged(string currencyCode)
+    {
+        if (currencyCode == _selectedCurrency)
+        {
+            return;
+        }
+
+        _selectedCurrency = WalletCurrency.RequireAllowed(currencyCode);
+        await LoadAsync();
+    }
+
+    /// <summary>
+    /// Carga el resumen del usuario para la moneda seleccionada. Se usa también
+    /// como acción de reintento.
+    /// </summary>
+    private async Task LoadAsync()
+    {
+        // Un reintento o un cambio de moneda cancela la carga anterior: no se
+        // solapan dos peticiones. El último selector elegido es la única
+        // respuesta que termina mostrándose (ver el guard en finally).
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+
+        var cts = new CancellationTokenSource();
+        _loadCts = cts;
+        var token = cts.Token;
+
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            // Las consultas son independientes: se resuelven en paralelo. Todas
+            // llevan la MISMA moneda: nunca se mezclan ARS y USD.
+            var accountsTask = DashboardService.GetAccountsAsync(_selectedCurrency, token);
+            var movementsTask = DashboardService.GetRecentMovementsAsync(_selectedCurrency, RecentMovementCount, token);
+            var periodTask = DashboardService.GetPeriodSummaryAsync(_selectedCurrency, token);
+            var rangeTask = DashboardService.GetPeriodRangeAsync(token);
+
+            await Task.WhenAll(accountsTask, movementsTask, periodTask, rangeTask);
+
+            _accounts = await accountsTask;
+            _movements = await movementsTask;
+            _periodSummary = await periodTask;
+            _periodRange = await rangeTask;
+        }
+        catch (OperationCanceledException)
+        {
+            // Carga reemplazada por otra más reciente (cambio de moneda o
+            // reintento): no es un error.
+            return;
+        }
+        catch (Exception)
+        {
+            // BigQuery falló (o no hay credenciales). La pantalla lo informa y
+            // ofrece reintento. NO se sustituye por datos demo ni por ceros:
+            // un fallo nunca se presenta como dato.
+            _loadFailed = true;
+            _accounts = [];
+            _movements = [];
+            _periodSummary = null;
+            _periodRange = null;
+        }
+        finally
+        {
+            if (ReferenceEquals(_loadCts, cts))
+            {
+                _isLoading = false;
+                _loadCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Título del resumen. El rango temporal sale de la fuente
+    /// (<c>inicio_periodo</c> / <c>fin_periodo</c>): ya no se asume un mes.
+    /// Si la fuente no lo informa, queda genérico.
+    /// </summary>
+    private string PeriodTitle => _periodRange is { } range
+        ? $"Resumen del período · {WalletFormat.Date(range.Start)} – {WalletFormat.Date(range.End)}"
+        : "Resumen del período";
+
+    /// <summary>Moneda del resumen. Sin resumen no se anuncia ninguna.</summary>
+    private string? PeriodHint => _periodSummary?.CurrencyCode;
+
+    /// <summary>
+    /// Rótulo del panel de movimientos: informa el recorte real, sin afirmar que
+    /// sea el total del historial. Sin movimientos no se anuncia ningún recorte.
+    /// </summary>
+    private string? MovementsHint => _isLoading || _movements.Count == 0
+        ? null
+        : $"Últimos {_movements.Count}";
+
+    /// <summary>
+    /// Título del estado vacío cuando no existe cuenta de la moneda
+    /// seleccionada. Distingue "cuenta inexistente" de "cuenta con saldo 0":
+    /// la fuente informa la existencia real (tiene_cuenta_ars/usd).
+    /// </summary>
+    private string NoAccountTitle => _selectedCurrency == WalletCurrency.Usd
+        ? "Todavía no tenés una cuenta en dólares"
+        : "Todavía no tenés una cuenta en pesos";
+
+    private string NoAccountDescription => _selectedCurrency == WalletCurrency.Usd
+        ? "Cuando se abra una cuenta en dólares, va a aparecer acá con su saldo actual."
+        : "Cuando se abra una cuenta en pesos, va a aparecer acá con su saldo actual.";
+
+    /// <summary>
+    /// Estado vacío de movimientos por moneda: nunca se muestran movimientos
+    /// ARS como si fueran USD (ni al revés).
+    /// </summary>
+    private string NoMovementsTitle => _selectedCurrency == WalletCurrency.Usd
+        ? "No hay movimientos en USD para este período"
+        : "No hay movimientos en ARS para este período";
+
+    private string NoMovementsDescription => _selectedCurrency == WalletCurrency.Usd
+        ? "Cuando se registre una operación en dólares, va a aparecer en esta lista."
+        : "Cuando se registre una operación en pesos, va a aparecer en esta lista.";
+
+    public void Dispose()
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+    }
+}

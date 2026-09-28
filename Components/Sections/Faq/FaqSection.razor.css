@@ -1,0 +1,16 @@
+/* ==========================================================================
+   Sección — Preguntas frecuentes
+   Lista acordeón de FaqItem; ancho de lectura cómodo y ritmo compacto.
+   ========================================================================== */
+
+.faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-5);
+    min-width: 0;
+}
+
+.faq__list {
+    max-width: 860px;
+    min-width: 0;
+}

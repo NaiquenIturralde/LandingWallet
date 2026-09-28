@@ -1,0 +1,51 @@
+@* ==========================================================================
+   FaqItem — pregunta frecuente con respuesta colapsable (acordeón real).
+
+   ACCESIBILIDAD:
+   - botón real (<button>): activable con teclado (Enter/Espacio);
+   - aria-expanded refleja el estado;
+   - aria-controls asocia la respuesta al botón (panel con id único);
+   - el foco visible lo aporta el anillo global :focus-visible del Design System;
+   - el panel cerrado usa visibility: hidden (sale del árbol de accesibilidad).
+   La animación es moderada (grid-template-rows) y base.css anula las
+   duraciones con prefers-reduced-motion.
+   ========================================================================== *@
+
+<div class="faq-item">
+    <h3 class="faq-item__heading">
+        <button type="button" class="faq-item__trigger" aria-expanded="@(_open ? "true" : "false")"
+                aria-controls="@_panelId" @onclick="Toggle">
+            <span class="faq-item__question">@Question</span>
+            @* Chevron del sistema que rota 180° al abrir (ver CSS): sin "+". *@
+            <span class="faq-item__mark" aria-hidden="true">
+                <Icon Name="IconName.ExpandMore" Size="20" Decorative="true" />
+            </span>
+        </button>
+    </h3>
+
+    <div class="faq-item__panel" id="@_panelId" data-open="@(_open ? "true" : "false")">
+        <div class="faq-item__panel-inner">
+            <p class="faq-item__answer">@Answer</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>Pregunta visible en el botón.</summary>
+    [Parameter, EditorRequired]
+    public string Question { get; set; } = string.Empty;
+
+    /// <summary>Respuesta real asociada (se muestra al expandir).</summary>
+    [Parameter, EditorRequired]
+    public string Answer { get; set; } = string.Empty;
+
+    private bool _open;
+
+    /// <summary>
+    /// Id único del panel para aria-controls. Se genera una vez por instancia:
+    /// el documento siempre es consistente (botón y panel en el mismo render).
+    /// </summary>
+    private readonly string _panelId = $"faq-{Guid.NewGuid():N}";
+
+    private void Toggle() => _open = !_open;
+}

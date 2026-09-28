@@ -1,0 +1,31 @@
+@* ==========================================================================
+   WalletLabel — etiqueta real de un campo.
+   Renderiza un <label> con su atributo for asociado al control.
+   La semántica de obligatoriedad pertenece al control: acá solo se representa
+   visualmente, y nunca solo con color (lleva un asterisco y texto accesible).
+   ========================================================================== *@
+
+<label class="wallet-label" for="@For">
+    <span class="wallet-label__text">@Text</span>
+
+    @if (Required)
+    {
+        @* El asterisco es decorativo: el texto accesible ya lo explica. *@
+        <span class="wallet-label__required" aria-hidden="true">*</span>
+        <span class="ws-sr-only">(obligatorio)</span>
+    }
+</label>
+
+@code {
+    /// <summary>Texto visible de la etiqueta.</summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>Id del control al que se asocia la etiqueta.</summary>
+    [Parameter]
+    public string? For { get; set; }
+
+    /// <summary>Marca visualmente el campo como obligatorio.</summary>
+    [Parameter]
+    public bool Required { get; set; }
+}

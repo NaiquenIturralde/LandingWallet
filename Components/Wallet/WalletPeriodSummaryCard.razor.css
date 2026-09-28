@@ -1,0 +1,163 @@
+/* ==========================================================================
+   WalletPeriodSummaryCard — resumen del período
+   Mobile-first: las dos métricas secundarias comparten fila cuando el ancho
+   REAL alcanza para ambas; el balance ocupa el ancho completo en una línea.
+   Las tres comparten una sola fila recién cuando el contenedor llega a 660px
+   (ancho medido: ver el @container del final del archivo).
+   ========================================================================== */
+
+.wallet-period-summary {
+    min-width: 0;
+    /* Contenedor de consulta: la disposición se decide por el ancho REAL de la
+       tarjeta, no por el del viewport. La misma tarjeta vive en una columna
+       angosta (fila superior del dashboard en desktop) y a ancho completo
+       (móvil), así que una media query de viewport no puede acertar en ambos. */
+    container-type: inline-size;
+}
+
+.wallet-period-summary__grid {
+    display: grid;
+    /* auto-fit con mínimo de 130px (el ancho medido que necesita una métrica
+       para que "INGRESOS" y "$ 11.950.037,71" entren en UNA línea: 95px de
+       contenido + 32px de padding + borde). Con columnas fijas, a 320px cada
+       una recibía 117px y tanto la etiqueta como el importe se partían a mitad
+       de palabra ("INGRES/OS"). Si no entran, la grilla baja de fila en lugar
+       de romper el texto. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+    gap: var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-period-summary__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+    min-width: 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+}
+
+/* --------------------------------------------------------------------------
+   Balance: métrica principal. En móvil ocupa la fila completa, debajo de las
+   dos secundarias, y lleva el acento del Design System.
+   -------------------------------------------------------------------------- */
+.wallet-period-summary__metric--balance {
+    grid-column: 1 / -1;
+    gap: var(--ws-space-2);
+    border-color: var(--ws-border-cyan);
+    background-image: var(--ws-glow-cyan);
+    background-repeat: no-repeat;
+    background-position: right -40% top -80%;
+    background-size: 120% 140%;
+}
+
+/* --------------------------------------------------------------------------
+   Etiqueta
+   -------------------------------------------------------------------------- */
+.wallet-period-summary__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+    margin: 0;
+    min-width: 0;
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.wallet-period-summary__icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Importes
+   -------------------------------------------------------------------------- */
+.wallet-period-summary__value {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-tight);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.wallet-period-summary__value--balance {
+    font-size: var(--ws-fs-xl);
+}
+
+/* --------------------------------------------------------------------------
+   Resultado del balance: icono + texto + color
+   -------------------------------------------------------------------------- */
+.wallet-period-summary__result {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-1);
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+}
+
+.wallet-period-summary__result-icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.wallet-period-summary__result--up {
+    color: var(--ws-success);
+}
+
+.wallet-period-summary__result--down {
+    color: var(--ws-danger);
+}
+
+.wallet-period-summary__result--neutral {
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Contenedor amplio: las tres métricas comparten una sola fila.
+
+   La consulta es de CONTENEDOR (no de viewport): la tarjeta decide según su
+   ancho real. MEDIDO hoy con el ancho real del texto del balance (Range, no
+   el bloque): "− $ 930.308,35" ocupa hasta 167px; cada caja suma 2×16px de
+   padding + 2px de borde y el gap es 12px, así que hacen falta
+   3×(167 + 32 + 2) + 24 = 633px de contenedor para que las tres quepan en
+   UNA fila sin partir el importe. El umbral anterior (480px) dejaba el
+   balance partido en dos líneas entre 480 y 633px de contenedor (p. ej. la
+   columna derecha del dashboard a 1440px: 579px). Con 660px (margen sobre
+   633) por debajo del umbral la grilla mantiene las dos secundarias en fila
+   y el balance ocupa la fila completa en UNA sola línea.
+   -------------------------------------------------------------------------- */
+@container (min-width: 660px) {
+    .wallet-period-summary__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .wallet-period-summary__metric--balance {
+        grid-column: auto;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Tramo 2+1 (414–659px de contenedor): las dos secundarias a DOS columnas
+   iguales, que ocupan el ancho completo. Sin esta regla, auto-fit crea4 pistas
+   (medido: 4×136px a 579px de contenedor) y la fila 1 queda con ~250px vacíos
+   a la derecha de EGRESOS. Por debajo de 414px sigue el auto-fit del bloque
+   superior (2 columnas a 348px, 1 sola a 240px/320px de viewport).
+   -------------------------------------------------------------------------- */
+@container (min-width: 414px) and (max-width: 659px) {
+    .wallet-period-summary__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

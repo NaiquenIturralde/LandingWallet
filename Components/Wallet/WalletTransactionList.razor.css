@@ -1,0 +1,15 @@
+/* ==========================================================================
+   WalletTransactionList — lista de movimientos
+   Separadores entre filas, sin bordes por fuera (el contenedor ya los aporta).
+   ========================================================================== */
+
+.wallet-transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.wallet-transaction-list > li + li {
+    border-top: var(--ws-hairline) solid var(--ws-border);
+}

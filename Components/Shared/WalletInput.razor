@@ -1,0 +1,98 @@
+@* ==========================================================================
+   WalletInput — campo de texto.
+   Deriva de InputBase<string?>: hereda Value, ValueChanged, ValueExpression,
+   EditContext y FieldIdentifier. No reconstruye el binding de Blazor.
+   Solo maneja texto: los valores numéricos/financieros tendrán su propio
+   componente cuando exista un caso real.
+   ========================================================================== *@
+
+@inherits InputBase<string?>
+
+<input @attributes="AdditionalAttributes" id="@ResolvedId" name="@ResolvedName" class="@ResolvedCssClass"
+       type="@InputType" value="@CurrentValue" placeholder="@Placeholder" disabled="@IsDisabled" required="@IsRequired"
+       aria-invalid="@AriaInvalid" aria-describedby="@DescribedBy" @oninput="OnInput" @onchange="OnChange" />
+
+@code {
+    /// <summary>Tipo de input HTML. Por defecto texto.</summary>
+    [Parameter]
+    public string InputType { get; set; } = "text";
+
+    /// <summary>Texto de ayuda dentro del control.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Id explícito. Si se omite, se toma el del WalletFormField contenedor.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>Nombre del control para el envío de formularios.</summary>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>Deshabilita el control.</summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>Clases adicionales opcionales.</summary>
+    [Parameter]
+    public string? ExtraCssClass { get; set; }
+
+    // Contexto publicado por WalletFormField. Es null si el control se usa suelto.
+    [CascadingParameter]
+    private FormFieldContext? FieldContext { get; set; }
+
+    private string? ResolvedId => Id ?? FieldContext?.ControlId;
+
+    // Nombre HTML efectivo: el explícito del consumidor, o el que aporta
+    // InputBase (NameAttributeValue), o el id resuelto como último recurso.
+    private string? ResolvedName => Name ?? NameAttributeValue ?? ResolvedId;
+
+    private bool IsDisabled => Disabled || (FieldContext?.Disabled ?? false);
+
+    private bool IsRequired => FieldContext?.Required ?? false;
+
+    private string? DescribedBy => FieldContext?.DescribedBy;
+
+    // aria-invalid se calcula desde el EditContext, no desde la clase CSS.
+    private string? AriaInvalid => HasValidationError ? "true" : null;
+
+    private bool HasValidationError =>
+        EditContext is not null && EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+    private string ResolvedCssClass
+    {
+        get
+        {
+            var classes = "ws-field-control";
+
+            if (!string.IsNullOrWhiteSpace(ExtraCssClass))
+            {
+                classes += $" {ExtraCssClass}";
+            }
+
+            return classes;
+        }
+    }
+
+    // El valor se lee del DOM en cada input para que el binding sea inmediato.
+    private Task OnInput(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value?.ToString();
+        return Task.CompletedTask;
+    }
+
+    private Task OnChange(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value?.ToString();
+        return Task.CompletedTask;
+    }
+
+    // InputBase delega acá la conversión desde el string del DOM. Para texto la
+    // conversión es la identidad: no hay parsing que inventar.
+    protected override bool TryParseValueFromString(string? value, out string? result, out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = string.Empty;
+        return true;
+    }
+}

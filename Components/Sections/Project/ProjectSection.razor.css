@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Sección — Proyecto (cierre breve)
+   Tres puntos compactos: la sección mide lo que ocupa su contenido.
+   ========================================================================== */
+
+.project {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-5);
+    min-width: 0;
+}
+
+.project__points {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+}
+
+@media (min-width: 768px) {
+    .project__points {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.project__point {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+    min-width: 0;
+    padding: var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+}
+
+.project__name {
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-accent);
+}
+
+.project__detail {
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}

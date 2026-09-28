@@ -1,0 +1,33 @@
+@* ==========================================================================
+   WalletTransactionList — lista de movimientos de una cuenta.
+   No es una tabla: es una lista vertical pensada para uso táctil en mobile.
+   No filtra ni ordena: presenta los movimientos que recibe, en su orden.
+   ========================================================================== *@
+
+@if (Movements.Count == 0)
+{
+    <WalletEmptyState IconName="IconName.Transactions" Title="@EmptyTitle" Description="@EmptyDescription" />
+}
+else
+{
+    <ul class="wallet-transaction-list">
+        @foreach (var movement in Movements)
+        {
+            <WalletTransactionItem Movement="movement" />
+        }
+    </ul>
+}
+
+@code {
+    /// <summary>Movimientos a presentar, en el orden en que llegan.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<WalletPresentationMovement> Movements { get; set; } = [];
+
+    /// <summary>Título del estado vacío.</summary>
+    [Parameter]
+    public string EmptyTitle { get; set; } = "Sin movimientos";
+
+    /// <summary>Descripción del estado vacío.</summary>
+    [Parameter]
+    public string? EmptyDescription { get; set; }
+}

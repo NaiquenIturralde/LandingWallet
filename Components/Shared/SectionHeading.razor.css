@@ -1,0 +1,25 @@
+/* ==========================================================================
+   SectionHeading — encabezado de sección
+   ========================================================================== */
+
+.section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-3);
+    /* Ancho de lectura cómodo antes de pasar a dos columnas */
+    max-width: 62ch;
+}
+
+.section-heading--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+}
+
+.section-heading__title {
+    margin: 0;
+}
+
+.section-heading__description {
+    margin: 0;
+}

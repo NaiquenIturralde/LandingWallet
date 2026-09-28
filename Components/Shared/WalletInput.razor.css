@@ -1,0 +1,15 @@
+/* ==========================================================================
+   WalletInput — campo de texto
+   La estructura del control vive en wwwroot/css/forms.css (.ws-field-control),
+   compartida con WalletSelect. Acá solo van los ajustes propios del input.
+   ========================================================================== */
+
+/* El input de texto no necesita el padding extra del select */
+.ws-field-control[type="text"],
+.ws-field-control[type="email"],
+.ws-field-control[type="password"],
+.ws-field-control[type="search"],
+.ws-field-control[type="tel"],
+.ws-field-control[type="url"] {
+    text-overflow: ellipsis;
+}

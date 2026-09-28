@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Wallet Squad 1 — Primitivas de formulario
+   Estructura compartida de los campos. Vive en un archivo global porque el CSS
+   scoped de un componente no alcanza el markup renderizado por componentes
+   hijos: WalletInput y WalletSelect comparten el mismo control base.
+   Depende de tokens.css. Prefijo ws- para no colisionar con estilos scoped.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Control base (input / select)
+   -------------------------------------------------------------------------- */
+.ws-field-control {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    /* Altura cómoda para uso táctil */
+    min-height: 48px;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    background-color: var(--ws-surface);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    color: var(--ws-text);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    line-height: var(--ws-lh-normal);
+    transition: border-color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out),
+                box-shadow var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.ws-field-control::placeholder {
+    color: var(--ws-text-muted);
+    opacity: 1;
+}
+
+.ws-field-control:hover:not(:disabled) {
+    border-color: var(--ws-border-strong);
+}
+
+.ws-field-control:focus-visible {
+    outline: var(--ws-focus-ring);
+    outline-offset: var(--ws-focus-offset);
+    border-color: var(--ws-border-cyan);
+}
+
+.ws-field-control:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background-color: var(--ws-card);
+}
+
+/* --------------------------------------------------------------------------
+   Estado inválido.
+   El borde refuerza el error, pero el mensaje y aria-invalid son los que
+   comunican el problema: el color no es el único indicador.
+   -------------------------------------------------------------------------- */
+.ws-field-control[aria-invalid="true"] {
+    border-color: var(--ws-danger-border);
+}
+
+.ws-field-control[aria-invalid="true"]:focus-visible {
+    outline-color: var(--ws-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Select: flecha nativa y padding acorde
+   -------------------------------------------------------------------------- */
+.ws-field-control--select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: var(--ws-space-10);
+    background-image: linear-gradient(45deg, transparent 50%, var(--ws-text-muted) 50%),
+                      linear-gradient(135deg, var(--ws-text-muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) center, calc(100% - 14px) center;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.ws-field-control--select:disabled {
+    cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Texto largo: nunca desborda el campo
+   -------------------------------------------------------------------------- */
+.ws-field-control {
+    overflow-wrap: anywhere;
+}

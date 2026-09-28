@@ -1,0 +1,76 @@
+@* ==========================================================================
+   Navbar — barra de navegación global de la landing.
+   Estado del menú móvil manejado con Blazor (sin JavaScript ni paquetes).
+   Los anchors apuntan a las secciones que se crean en la Etapa 4.
+   ========================================================================== *@
+
+<header class="navbar" @onkeydown="HandleKeyDown">
+    <div class="navbar__inner ws-container">
+
+        <a class="brand" href="#inicio" @onclick="CloseMenu" aria-label="Wallet Squad 1 — ir al inicio">
+            <span class="brand__mark ws-gradient-border" aria-hidden="true">W</span>
+            <span class="brand__text">
+                <span class="brand__word">WALLET</span>
+                <span class="brand__sep" aria-hidden="true">/</span>
+                <span class="brand__word brand__word--accent">SQUAD 1</span>
+            </span>
+        </a>
+
+        <nav id="primary-navigation" class="@NavCssClass" aria-label="Navegación principal">
+            <ul class="navbar__list">
+                @foreach (var item in NavLinks)
+                {
+                    <li class="navbar__item">
+                        <a class="navbar__link" href="@item.Href" @onclick="CloseMenu">@item.Label</a>
+                    </li>
+                }
+            </ul>
+
+            <a class="navbar__cta" href="#proyecto" @onclick="CloseMenu">Explorar proyecto</a>
+        </nav>
+
+        <button type="button" class="navbar__toggle" aria-expanded="@AriaExpanded" aria-controls="primary-navigation"
+                aria-label="@ToggleLabel" @onclick="ToggleMenu">
+            <span class="navbar__toggle-icon" aria-hidden="true">
+                <span class="navbar__toggle-bar"></span>
+                <span class="navbar__toggle-bar"></span>
+                <span class="navbar__toggle-bar"></span>
+            </span>
+        </button>
+
+    </div>
+</header>
+
+@code {
+    private record NavItem(string Label, string Href);
+
+    private static readonly NavItem[] NavLinks =
+    {
+        new("Inicio", "#inicio"),
+        new("Explorá", "#explora"),
+        new("Ayuda", "#ayuda"),
+        new("Dashboard usuario", "/wallet/dashboard"),
+        new("Administración", "/admin/dashboard"),
+    };
+
+    private bool _menuOpen;
+
+    /// <summary>ARIA exige "true"/"false" en minúscula: un bool se serializaría como "True"/"False".</summary>
+    private string AriaExpanded => _menuOpen ? "true" : "false";
+
+    private string ToggleLabel => _menuOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación";
+
+    private string NavCssClass => _menuOpen ? "navbar__nav navbar__nav--open" : "navbar__nav";
+
+    private void ToggleMenu() => _menuOpen = !_menuOpen;
+
+    private void CloseMenu() => _menuOpen = false;
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && _menuOpen)
+        {
+            _menuOpen = false;
+        }
+    }
+}

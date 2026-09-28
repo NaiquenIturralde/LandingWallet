@@ -1,0 +1,68 @@
+/* ==========================================================================
+   WalletQuickActions — accesos directos
+   Mobile-first: fila de acciones en un contenedor con scroll propio evitado;
+   cada acción conserva un área táctil de 44px.
+   ========================================================================== */
+
+.wallet-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+.wallet-quick-actions__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ws-space-2);
+    /* Área táctil mínima de 44px en ambas dimensiones */
+    min-height: 72px;
+    padding: var(--ws-space-3) var(--ws-space-2);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+    /* Profundidad persistente y muy sutil (token del sistema): la profundidad
+       no depende del hover. Sin transición propia: el feedback del press lo
+       aporta .ws-pressable. */
+    box-shadow: var(--ws-shadow-sm);
+    color: var(--ws-text);
+    text-decoration: none;
+    text-align: center;
+}
+
+.wallet-quick-actions__item:hover {
+    border-color: var(--ws-border-cyan);
+    background-color: var(--ws-card-hover);
+    color: var(--ws-text);
+}
+
+/* El feedback táctil (translateY + scale) lo aporta la utilidad .ws-pressable,
+   que ya respeta prefers-reduced-motion: no se duplica acá. */
+
+.wallet-quick-actions__icon {
+    display: grid;
+    place-items: center;
+    /* 36px (y no 40px como los demás chips): el tile mide ~54px a 320px de
+       viewport y con 8px de padding lateral le quedan 38px útiles. Está
+       medido, no es arbitrario. */
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+.wallet-quick-actions__label {
+    /* Tipografía fluida: a 320px reduce lo justo para que "Transferir" entre
+       completo sin partirse, y desde 430px vuelve a su tamaño de lectura. */
+    font-size: clamp(0.6875rem, 2.6vw + 0.1rem, 0.8125rem);
+    font-weight: var(--ws-weight-medium);
+    line-height: var(--ws-lh-snug);
+    overflow-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
+}

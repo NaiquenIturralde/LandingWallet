@@ -1,0 +1,106 @@
+/* ==========================================================================
+   WalletPanel — bloque de pantalla con encabezado
+   La superficie la aporta la utilidad global .ws-card; acá vive solo la
+   estructura interna del bloque.
+   ========================================================================== */
+
+.wallet-panel {
+    /* Ritmo único del shell: la card usa el MISMO paso horizontal que el
+       contenedor .wallet-app en móvil (--ws-container-pad = 1.25rem = 20px),
+       así contenedor, encabezado y cards comparten un solo eje. Al no tener
+       breakpoint propio desaparece la salto en 430px, que dejaba el inset del
+       panel desincronizado del gutter de la página. */
+    --wallet-panel-pad: var(--ws-space-5);
+    /* El inset al ras se define acá y no en .wallet-panel--flush: así toda
+       fila, esqueleto o acción dentro de un panel hereda el mismo eje aunque
+       el panel no esté en modo flush, en vez de caer al fallback suelto. */
+    --wallet-panel-inset: var(--ws-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    min-width: 0;
+    padding: var(--wallet-panel-pad);
+}
+
+/* --------------------------------------------------------------------------
+   Modo al ras: el contenido aporta su propio padding (por ejemplo, una lista
+   con una fila por movimiento). El inset compartido ya viene del panel, así que
+   acá solo se anula el padding propio para que las filas queden al borde.
+   -------------------------------------------------------------------------- */
+.wallet-panel--flush {
+    padding: 0;
+    gap: 0;
+}
+
+.wallet-panel--flush .wallet-panel__body {
+    gap: 0;
+}
+
+.wallet-panel__head {
+    display: flex;
+    align-items: center;
+    /* Envuelve en pantallas angostas: con nowrap, un rótulo largo (por ejemplo
+       "REVISIÓN DEL SISTEMA", 158px) junto al icono dejaba el título con 34px y
+       lo partía letra por letra ("Au-dit-orí-as"). Al envolver, el rótulo baja a
+       una segunda línea completa en lugar de aplastar el título. */
+    flex-wrap: wrap;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-panel--flush .wallet-panel__head {
+    /* En modo al ras la card no aporta padding: el encabezado lo repone con el
+       mismo inset que las filas, para que el título quede alineado con ellas. */
+    padding: var(--wallet-panel-pad) var(--wallet-panel-inset) 0;
+}
+
+.wallet-panel__icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+.wallet-panel__title {
+    margin: 0;
+    /* Ocupa el espacio libre y nunca baja de su ancho de palabra más larga: así
+       el título conserva su jerarquía frente a un rótulo largo en vez de
+       partirse. min-width: min-content impide que el flex lo comprima por
+       debajo de ese piso. */
+    flex: 1 1 auto;
+    min-width: min-content;
+    font-size: var(--ws-fs-lg);
+    letter-spacing: var(--ws-ls-normal);
+    overflow-wrap: break-word;
+}
+
+/* El rótulo se va al extremo opuesto del encabezado */
+.wallet-panel__hint {
+    margin: 0 0 0 auto;
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+    text-align: right;
+    /* Conserva su tamaño natural: si no entra junto al título, el wrap del
+       encabezado lo baja completo a una segunda línea en lugar de comprimir el
+       título. max-width evita desbordar si el rótulo fuese más ancho que el
+       panel. */
+    flex: 0 0 auto;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* El cuerpo no aporta padding propio: en modo normal ya lo da el panel. */
+.wallet-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}

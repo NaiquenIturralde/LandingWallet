@@ -1,0 +1,24 @@
+@page "/admin/dashboard"
+@layout WalletLayout
+
+<PageTitle>Panel de Administración — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Ruta del Panel de Administración.
+
+   El contenido, los KPIs, los gráficos y la lógica de carga viven en
+   AdminDashboardBody: la ÚNICA implementación compartida con la Landing
+   (sección "Explorá Wallet" → selector ADMINISTRADOR). Esta ruta solo aporta
+   el chrome (WalletAppShell) y la lista de navegación del rol admin.
+
+   DATOS: BigQuery vía IWalletDashboardService (sin valores hardcodeados).
+   ========================================================================== *@
+
+<WalletAppShell Title="Panel de Administración" Subtitle="Visión general del sistema" Eyebrow="ADMIN"
+                HeadingId="admin-dashboard-title" NavigationLabel="Secciones de administración">
+   <AdminDashboardBody />
+</WalletAppShell>
+
+@* La navegación es la lista única WalletUserNavigation (la misma que usa la
+   ruta del usuario y la presentación embebida de la Landing): sidebar
+   desktop con el grupo DASHBOARDS y bottom nav mobile de4 accesos. *@

@@ -1,0 +1,170 @@
+/* ==========================================================================
+   Transferir — App Wallet (rol usuario)
+   Base visual del flujo. Mobile-first: todo apilado en una columna.
+   ========================================================================== */
+
+.transfer__step-text {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Carga: bloques que reservan el espacio de las cuentas de origen.
+   -------------------------------------------------------------------------- */
+.transfer__skeleton {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Cuentas de origen.
+   Se presentan como filas informativas de origen con marca de selección
+   vacía (parte del flujo en preparación). NO son clickeables todavía: no
+   tienen acción asociada, así que no llevan hover ni cursor de clic.
+   -------------------------------------------------------------------------- */
+.transfer__accounts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+.transfer__account {
+    display: grid;
+    /* Móvil: la marca de selección y el nombre comparten la primera fila y el
+       importe baja a la segunda. Con tres columnas fijas a 320px el importe
+       (que no debe partirse) dejaba ~43px para el nombre y lo rompía letra por
+       letra. Desde 430px hay ancho para la fila única (ver @media final). */
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    /* Área táctil cómoda y aspecto de opción, no de dato suelto */
+    min-height: 64px;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+    transition: border-color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+/* Marca de selección vacía: comunica que la fila se elige, sin simular una
+   selección que todavía no existe. */
+.transfer__account-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--ws-border-strong);
+    border-radius: 50%;
+    background-color: var(--ws-card);
+    flex-shrink: 0;
+}
+
+.transfer__account-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-half);
+    min-width: 0;
+}
+
+.transfer__account-name {
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.transfer__account-alias {
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.transfer__account-value {
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-lg);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    /* El importe no debe partirse */
+    white-space: nowrap;
+    /* Móvil: segunda fila, debajo del nombre y alineado con él. Se reordena a
+       la derecha desde 430px. */
+    grid-column: 2 / -1;
+}
+
+/* --------------------------------------------------------------------------
+   Nota informativa
+   -------------------------------------------------------------------------- */
+.transfer__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ws-space-3);
+    margin: 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border-left: 2px solid var(--ws-cyan);
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text);
+}
+
+.transfer__note-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Acción deshabilitada
+   -------------------------------------------------------------------------- */
+.transfer__pending {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Validaciones previas: resumen en una línea, sin viñetas repetidas.
+   -------------------------------------------------------------------------- */
+.transfer__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+.transfer__check {
+    padding: var(--ws-space-1) var(--ws-space-3);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    color: var(--ws-text);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-medium);
+    /* Los rótulos cortos nunca se parten */
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Desde 430px hay ancho para la fila única: marca, nombre e importe en línea.
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    .transfer__account {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: var(--ws-space-3);
+    }
+
+    .transfer__account-value {
+        grid-column: auto;
+        text-align: right;
+        flex-shrink: 0;
+    }
+}

@@ -1,0 +1,46 @@
+@* ==========================================================================
+   SectionHeading — encabezado estándar de sección.
+   Genera siempre un <h2>: el <h1> es exclusivo del Hero (Etapa 5).
+   ========================================================================== *@
+
+<div class="@WrapperCssClass">
+    @if (!string.IsNullOrWhiteSpace(Eyebrow))
+    {
+        <p class="ws-eyebrow">@Eyebrow</p>
+    }
+
+    <h2 id="@HeadingId" class="section-heading__title">@Title</h2>
+
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="ws-text-lead section-heading__description">@Description</p>
+    }
+</div>
+
+@code {
+    /// <summary>Rótulo corto sobre el título.</summary>
+    [Parameter]
+    public string? Eyebrow { get; set; }
+
+    /// <summary>Título de la sección. Se renderiza como &lt;h2&gt;.</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Bajada o texto de apoyo.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>Alineación horizontal del bloque.</summary>
+    [Parameter]
+    public HeadingAlign Align { get; set; } = HeadingAlign.Left;
+
+    /// <summary>
+    /// Id del &lt;h2&gt;, para que la sección lo referencie con aria-labelledby.
+    /// </summary>
+    [Parameter]
+    public string? HeadingId { get; set; }
+
+    private string WrapperCssClass => Align == HeadingAlign.Center
+        ? "section-heading section-heading--center"
+        : "section-heading";
+}

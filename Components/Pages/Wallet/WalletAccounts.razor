@@ -1,0 +1,157 @@
+@page "/wallet/cuentas"
+@layout WalletLayout
+@inject IWalletDashboardService DashboardService
+
+<PageTitle>Cuentas — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Cuentas — App Wallet (rol usuario).
+   Muestra las cuentas del usuario con la información disponible de cada una.
+   ARS y USD se presentan por separado: nunca se suman ni se convierten entre
+   sí (no existe cotización oficial en el modelo).
+
+   Datos: IWalletDashboardService, que aísla la fuente real.
+   ========================================================================== *@
+
+<WalletAppShell Title="Tus cuentas" Subtitle="Información y saldo de cada cuenta" Eyebrow="CUENTAS"
+                HeadingId="wallet-accounts-page-title">
+
+    @if (_isLoading)
+    {
+        <WalletPanel HeadingId="accounts-loading-title" Title="Tus cuentas" IconName="IconName.Account">
+            @* aria-busy en el contenedor que carga; el skeleton es decorativo. *@
+            <div class="accounts__skeleton" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="200px" />
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="200px" />
+            </div>
+        </WalletPanel>
+    }
+    else if (_loadFailed)
+    {
+        <WalletErrorState Title="No pudimos cargar tus cuentas"
+                          Description="Hubo un problema al obtener la información de tus cuentas. Podés intentar de nuevo."
+                          RetryText="Reintentar" OnRetry="LoadAsync" />
+    }
+    else if (_accounts.Count == 0)
+    {
+        <WalletPanel HeadingId="accounts-empty-title" Title="Tus cuentas" IconName="IconName.Account">
+            <WalletEmptyState IconName="IconName.Account" Title="Todavía no tenés cuentas"
+                              Description="Cuando se abra una cuenta, va a aparecer acá con su información y su saldo actual." />
+        </WalletPanel>
+    }
+    else
+    {
+        @* ---------- Detalle por cuenta ---------- *@
+        @foreach (var account in _accounts)
+        {
+            <WalletPanel HeadingId="@($"wallet-account-{account.CurrencyCode.ToLowerInvariant()}-title")" Title="@account.Type"
+                         Hint="@account.CurrencyCode" IconName="IconName.Account">
+                <WalletDetailList Items="@AttributesFor(account)" />
+            </WalletPanel>
+        }
+
+        @* La aclaración sobre el saldo es común a todas las cuentas: se muestra una
+           sola vez, después del bloque de cuentas, en lugar de repetirse en cada una. *@
+        <p class="accounts__note">
+            <span class="accounts__note-icon" aria-hidden="true">
+                <Icon Name="IconName.Info" Size="16" Decorative="true" />
+            </span>
+            <span>
+                El saldo se obtiene a partir de los movimientos registrados de cada cuenta.
+                Las cuentas en distintas monedas se informan por separado.
+            </span>
+        </p>
+
+        @* ---------- Movimientos por cuenta ---------- *@
+        @* Los movimientos registrados pertenecen a la cuenta en pesos: la cuenta en
+           dólares no tiene movimientos informados, así que se muestra su estado
+           vacío en lugar de repetir los mismos movimientos. *@
+        <WalletPanel HeadingId="accounts-ars-movements-title" Title="Movimientos de la cuenta ARS" Hint="@MovementsHint"
+                     Flush="true">
+            <div class="accounts__list">
+                <WalletTransactionList Movements="_movements" EmptyTitle="No hay movimientos recientes"
+                                       EmptyDescription="Cuando se registre una operación en la cuenta, va a aparecer en esta lista." />
+            </div>
+
+            <div class="accounts__actions">
+                @* El listado completo estará disponible al habilitarse la sección
+                   de movimientos: hoy la acción queda deshabilitada, no falsa. *@
+                <WalletButton Text="Ver todos los movimientos" Variant="WalletButtonVariant.Secondary"
+                              IconName="IconName.Arrow" Disabled="true" FullWidth="true" />
+            </div>
+        </WalletPanel>
+
+        <WalletPanel HeadingId="accounts-usd-movements-title" Title="Movimientos de la cuenta USD" Hint="USD"
+                     IconName="IconName.Transactions">
+            <WalletEmptyState IconName="IconName.Transactions" Title="Sin movimientos en esta cuenta"
+                              Description="La cuenta en dólares no tiene movimientos registrados todavía." />
+        </WalletPanel>
+    }
+
+</WalletAppShell>
+
+@code {
+    private IReadOnlyList<WalletPresentationAccount> _accounts = [];
+    private IReadOnlyList<WalletPresentationMovement> _movements = [];
+
+    private bool _isLoading = true;
+    private bool _loadFailed;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            // Sin moneda: todas las cuentas y movimientos, cada uno con su
+            // propia moneda (comportamiento previo, sin mezclar saldos).
+            var accountsTask = DashboardService.GetAccountsAsync();
+            var movementsTask = DashboardService.GetRecentMovementsAsync(count: VisibleMovementCount);
+
+            await Task.WhenAll(accountsTask, movementsTask);
+
+            _accounts = await accountsTask;
+            _movements = await movementsTask;
+        }
+        catch (Exception)
+        {
+            _loadFailed = true;
+            _accounts = [];
+            _movements = [];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Cantidad de movimientos recientes que se muestran inicialmente. El resto
+    /// sigue disponible en los datos: solo se limita la densidad visual.
+    /// </summary>
+    private const int VisibleMovementCount = 5;
+
+    /// <summary>
+    /// Rótulo del panel de movimientos. Sin movimientos no se anuncia un recorte
+    /// de cero.
+    /// </summary>
+    private string? MovementsHint => _isLoading || _movements.Count == 0
+        ? null
+        : $"Últimos {_movements.Count}";
+
+    /// <summary>
+    /// Datos disponibles de una cuenta. Se presentan los valores que informa la
+    /// fuente de datos: la interfaz no deriva ni completa ninguno.
+    /// </summary>
+    private static IReadOnlyList<WalletDetailItem> AttributesFor(WalletPresentationAccount account)
+        =>
+        [
+            new("Alias", account.Alias),
+            new("CBU", account.Cbu),
+            new("Moneda", account.CurrencyName),
+            new("Saldo actual", WalletFormat.Money(account.Balance, account.CurrencyCode), Emphasized: true),
+        ];
+}

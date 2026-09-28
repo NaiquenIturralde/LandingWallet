@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Página 404 — Design System DARK FINTECH
+   ========================================================================== */
+
+.not-found-page__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ws-space-6);
+    max-width: var(--ws-container-narrow);
+}
+
+.not-found-page__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+}
+
+.not-found-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ws-space-3);
+}

@@ -1,0 +1,41 @@
+@* ==========================================================================
+   StatusBadge — estado visual.
+   No comunica estado solo con color: cada variante lleva su propio icono,
+   de modo que sigue siendo distinguible con daltonismo o en escala de grises.
+   ========================================================================== *@
+
+<span class="@CssClass">
+    @* El wrapper pertenece a este componente: el CSS scoped no alcanza a
+       elementos renderizados por componentes hijos. *@
+    <span class="status-badge__icon" aria-hidden="true">
+        <Icon Name="@BadgeIcon" Size="14" Decorative="true" />
+    </span>
+    <span class="status-badge__text">@Text</span>
+</span>
+
+@code {
+    /// <summary>Texto del estado.</summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>Variante semántica del estado.</summary>
+    [Parameter]
+    public StatusVariant Variant { get; set; } = StatusVariant.Neutral;
+
+    // Cada variante tiene un icono distinto para no depender únicamente del color.
+    private IconName BadgeIcon => Variant switch
+    {
+        StatusVariant.Success => IconName.Check,
+        StatusVariant.Error => IconName.Warning,
+        StatusVariant.Pending => IconName.Help,
+        _ => IconName.Account,
+    };
+
+    private string CssClass => Variant switch
+    {
+        StatusVariant.Success => "status-badge status-badge--success",
+        StatusVariant.Error => "status-badge status-badge--error",
+        StatusVariant.Pending => "status-badge status-badge--pending",
+        _ => "status-badge status-badge--neutral",
+    };
+}

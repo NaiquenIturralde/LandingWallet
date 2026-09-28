@@ -1,0 +1,300 @@
+/* ==========================================================================
+   Wallet Squad 1 — Design Tokens
+   Fuente única de verdad de la identidad visual.
+   No contiene reglas de layout ni de componentes: solo variables.
+   ========================================================================== */
+
+:root {
+    /* ---------------------------------------------------------------------
+       Color — primitivos de marca
+       --------------------------------------------------------------------- */
+    --ws-background: #050816;
+    --ws-surface: #07152E;
+    --ws-card: #0B1735;
+
+    --ws-cyan: #12D9FF;
+    --ws-blue: #176BFF;
+    --ws-purple: #763CFF;
+
+    --ws-white: #F8FAFF;
+    --ws-muted: #A9B7CE;
+
+    /* ---------------------------------------------------------------------
+       Color — derivados (superficies elevadas, bordes, overlays)
+       Se calculan a partir de los primitivos para no introducir tonos nuevos.
+       --------------------------------------------------------------------- */
+    --ws-surface-raised: #0A1B3D;
+    --ws-card-hover: #0E1D42;
+
+    --ws-border: rgba(169, 183, 208, 0.14);
+    --ws-border-strong: rgba(169, 183, 208, 0.26);
+    --ws-border-cyan: rgba(18, 217, 255, 0.32);
+
+    /* Tintes translúcidos reutilizables: evitan repetir el mismo rgba
+       en los componentes y mantienen la paleta en un solo lugar. */
+    --ws-cyan-soft: rgba(18, 217, 255, 0.08);
+    --ws-grid-line: rgba(169, 183, 208, 0.07);
+    --ws-card-translucent: rgba(11, 23, 53, 0.6);
+    --ws-surface-translucent: rgba(5, 8, 22, 0.82);
+
+    --ws-overlay: rgba(5, 8, 22, 0.72);
+    --ws-scrim: rgba(5, 8, 22, 0.88);
+
+    /* ---------------------------------------------------------------------
+       Color — semánticos de texto
+       Nota de accesibilidad: sobre --ws-background,
+         --ws-white  ≈ 19:1  (apto para todo)
+         --ws-muted  ≈ 8.7:1 (apto para todo)
+         --ws-cyan   ≈ 11.8:1 (apto para todo)
+         --ws-blue   ≈ 4.36:1 (NO usar en texto de cuerpo ni links pequeños)
+         --ws-purple ≈ 3.67:1 (NO usar en texto de cuerpo ni links pequeños)
+       --------------------------------------------------------------------- */
+    --ws-text: var(--ws-white);
+    --ws-text-muted: var(--ws-muted);
+    --ws-text-accent: var(--ws-cyan);
+    --ws-text-inverse: var(--ws-background);
+
+    /* ---------------------------------------------------------------------
+       Color — estados (solo los definidos en el modelo funcional)
+       --------------------------------------------------------------------- */
+    --ws-success: #23D18B;
+    --ws-danger: #FF5C7A;
+    --ws-warning: #FFC24B;
+    --ws-neutral: var(--ws-muted);
+
+    --ws-success-soft: rgba(35, 209, 139, 0.12);
+    --ws-danger-soft: rgba(255, 92, 122, 0.12);
+    --ws-warning-soft: rgba(255, 194, 75, 0.12);
+    --ws-neutral-soft: rgba(169, 183, 208, 0.12);
+
+    /* Bordes de los estados: mismo color con más opacidad que el fondo suave */
+    --ws-success-border: rgba(35, 209, 139, 0.4);
+    --ws-danger-border: rgba(255, 92, 122, 0.4);
+    --ws-warning-border: rgba(255, 194, 75, 0.4);
+
+    /* ---------------------------------------------------------------------
+       Color — series de datos (visualizaciones)
+       No agregan tonos nuevos: cada serie se deriva de un primitivo ya
+       existente (o de una mezcla de dos primitivos). Centralizan el color de
+       los gráficos para que las visualizaciones no hardcodeen colores.
+       --------------------------------------------------------------------- */
+    --ws-series-1: var(--ws-cyan);
+    --ws-series-2: var(--ws-blue);
+    --ws-series-3: var(--ws-purple);
+    --ws-series-4: var(--ws-success);
+    --ws-series-5: var(--ws-warning);
+    --ws-series-6: var(--ws-danger);
+    --ws-series-7: var(--ws-muted);
+    --ws-series-8: color-mix(in srgb, var(--ws-purple) 60%, var(--ws-white));
+
+    /* ---------------------------------------------------------------------
+       Gradientes
+       --------------------------------------------------------------------- */
+    --ws-gradient-main: linear-gradient(135deg, #12D9FF 0%, #176BFF 50%, #763CFF 100%);
+    --ws-gradient-main-reverse: linear-gradient(135deg, #763CFF 0%, #176BFF 50%, #12D9FF 100%);
+    --ws-gradient-text: linear-gradient(100deg, #12D9FF 0%, #176BFF 55%, #763CFF 100%);
+
+    --ws-gradient-surface: linear-gradient(180deg, rgba(7, 21, 46, 0.9) 0%, rgba(5, 8, 22, 0) 100%);
+    --ws-gradient-border: linear-gradient(135deg, rgba(18, 217, 255, 0.55) 0%, rgba(118, 60, 255, 0.55) 100%);
+
+    --ws-glow-cyan: radial-gradient(circle at center, rgba(18, 217, 255, 0.16) 0%, rgba(18, 217, 255, 0) 70%);
+    --ws-glow-blue: radial-gradient(circle at center, rgba(23, 107, 255, 0.16) 0%, rgba(23, 107, 255, 0) 70%);
+    --ws-glow-purple: radial-gradient(circle at center, rgba(118, 60, 255, 0.16) 0%, rgba(118, 60, 255, 0) 70%);
+
+    /* ---------------------------------------------------------------------
+       Tipografía
+       --------------------------------------------------------------------- */
+    --ws-font-display: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --ws-font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --ws-font-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+
+    --ws-weight-regular: 400;
+    --ws-weight-medium: 500;
+    --ws-weight-semibold: 600;
+    --ws-weight-bold: 700;
+
+    /* Escala tipográfica fluida (mobile-first, sin media queries) */
+    --ws-fs-xs: clamp(0.75rem, 0.72rem + 0.14vw, 0.8125rem);
+    --ws-fs-sm: clamp(0.875rem, 0.85rem + 0.14vw, 0.9375rem);
+    --ws-fs-base: clamp(1rem, 0.97rem + 0.16vw, 1.0625rem);
+    --ws-fs-lg: clamp(1.125rem, 1.07rem + 0.28vw, 1.25rem);
+    --ws-fs-xl: clamp(1.25rem, 1.16rem + 0.45vw, 1.5rem);
+    --ws-fs-2xl: clamp(1.5rem, 1.32rem + 0.9vw, 2rem);
+    --ws-fs-3xl: clamp(1.75rem, 1.45rem + 1.5vw, 2.5rem);
+    --ws-fs-4xl: clamp(2.125rem, 1.55rem + 2.9vw, 3.5rem);
+    --ws-fs-5xl: clamp(2.5rem, 1.6rem + 4.5vw, 4.5rem);
+
+    --ws-lh-tight: 1.1;
+    --ws-lh-snug: 1.25;
+    --ws-lh-normal: 1.5;
+    --ws-lh-relaxed: 1.7;
+
+    --ws-ls-tight: -0.02em;
+    --ws-ls-normal: 0;
+    /* Tracking de chips de moneda: el código respira un poco dentro de la
+       caja chica sin separar las letras. */
+    --ws-ls-chip: 0.04em;
+    --ws-ls-wide: 0.08em;
+
+    /* ---------------------------------------------------------------------
+       Espaciado — escala base 4px
+       --------------------------------------------------------------------- */
+    /* Mitad de la unidad base: acople visual entre un rótulo y SU valor
+       (etiqueta + importe de la misma fila). Nunca como separación entre
+       bloques: para eso rige --ws-space-1 en adelante. */
+    --ws-space-half: 2px;
+    --ws-space-1: 0.25rem;
+    --ws-space-2: 0.5rem;
+    --ws-space-3: 0.75rem;
+    --ws-space-4: 1rem;
+    --ws-space-5: 1.25rem;
+    --ws-space-6: 1.5rem;
+    --ws-space-8: 2rem;
+    --ws-space-10: 2.5rem;
+    --ws-space-12: 3rem;
+    --ws-space-16: 4rem;
+    --ws-space-20: 5rem;
+    --ws-space-24: 6rem;
+    --ws-space-32: 8rem;
+
+    /* ---------------------------------------------------------------------
+       Radios
+       --------------------------------------------------------------------- */
+    --ws-radius-xs: 6px;
+    --ws-radius-sm: 10px;
+    --ws-radius-md: 14px;
+    --ws-radius-lg: 20px;
+    --ws-radius-xl: 28px;
+    --ws-radius-pill: 999px;
+
+    /* ---------------------------------------------------------------------
+       Sombras
+       --------------------------------------------------------------------- */
+    --ws-shadow-sm: 0 1px 2px rgba(5, 8, 22, 0.4);
+    --ws-shadow-md: 0 8px 24px rgba(5, 8, 22, 0.45);
+    --ws-shadow-lg: 0 20px 48px rgba(5, 8, 22, 0.55);
+    --ws-shadow-xl: 0 32px 72px rgba(5, 8, 22, 0.65);
+    --ws-shadow-cyan: 0 0 0 1px rgba(18, 217, 255, 0.25), 0 12px 32px rgba(18, 217, 255, 0.12);
+
+    /* Sombra de las cards: profundidad PERSISTENTE (no solo en hover).
+       Dos capas con desplazamiento hacia la derecha y hacia abajo:
+         1. oscura → la profundidad real, derivada del mismo negro azulado que
+            usan el resto de las sombras (--ws-background), no de negro puro;
+         2. cyan muy sutil → conserva la estética tecnológica sin convertirse
+            en neón. Se mantiene en el 14 % de opacidad: es la capa que debe
+            apenas intuirse, nunca dominar.
+       Es la sombra única de las superficies de card del Design System (.ws-card
+       y WalletCard): se ajusta acá y cambia en todo el proyecto a la vez. */
+    --ws-shadow-card:
+        6px 8px 18px rgba(5, 8, 22, 0.28),
+        4px 6px 16px rgba(18, 217, 255, 0.14);
+
+    /* ---------------------------------------------------------------------
+       Layout
+       --------------------------------------------------------------------- */
+    --ws-container-max: 1200px;
+    --ws-container-narrow: 860px;
+    --ws-container-pad: clamp(1.25rem, 4vw, 2.5rem);
+
+    /* Ancho de la App Wallet en pantallas grandes (tablet, notebook, desktop
+       y TV 1920x1080). Es mayor que --ws-container-max para aprovechar el
+       ancho de una pantalla de presentación, pero NO alcanza los 1920px: por
+       encima de este valor las líneas de texto se vuelven difíciles de leer y
+       el contenido queda pegado a los extremos de una TV. Los márgenes
+       laterales resultantes (~260px por lado a 1920px) mantienen la lectura
+       centrada y el bloque con aire. */
+    --ws-container-wide: 1520px;
+
+    /* Ritmo vertical entre bloques grandes en desktop/presentación. */
+    --ws-section-gap-lg: clamp(1.5rem, 1.2rem + 0.9vw, 2rem);
+
+    --ws-header-h: 68px;
+    --ws-header-h-lg: 76px;
+
+    /* Ancho de la navegación lateral (sidebar) de la App Wallet en desktop
+       (≥1024px). Único definidor del ancho: WalletLayout reserva este valor
+       con padding-left y .wallet-nav lo usa como width, así reserva y barra
+       no pueden desincronizarse. */
+    --ws-sidebar-w: 208px;
+
+    /* Alto reservado para la navegación inferior de la App Wallet.
+       La propia barra usa este mismo token como alto mínimo, así que reserva y
+       barra no pueden desincronizarse.
+
+       El valor base cubre el peor caso medido en pantallas angostas
+       (320–430px), donde la etiqueta de una sección ocupa dos líneas y la barra
+       alcanza 89px reales. Desde 500px todas las etiquetas entran en una línea
+       y alcanza un valor menor. */
+    --ws-bottom-nav-h: 96px;
+
+    /* Alto reservado para la navegación inferior: desde 1024px deja de ser una
+       barra flotante de móvil y pasa a ser una fila más dentro del layout. */
+    --ws-bottom-nav-h-lg: 0px;
+
+    /* Ritmo vertical de secciones (mobile-first) */
+    --ws-section-py: clamp(3.5rem, 9vw, 7rem);
+    --ws-section-gap: clamp(2rem, 5vw, 3.5rem);
+
+    /* ---------------------------------------------------------------------
+       Bordes
+       --------------------------------------------------------------------- */
+    --ws-hairline: 1px;
+
+    /* Máscaras: negro opaco puro, necesario para recortar con mask-image.
+       No es un color de la paleta y no debe reemplazarse por un token de marca. */
+    --ws-mask-opaque: #000;
+
+    /* ---------------------------------------------------------------------
+       Movimiento
+       --------------------------------------------------------------------- */
+    --ws-dur-fast: 140ms;
+    --ws-dur-base: 240ms;
+    --ws-dur-slow: 420ms;
+    --ws-ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ws-ease-in-out: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+
+    /* ---------------------------------------------------------------------
+       Capas
+       --------------------------------------------------------------------- */
+    --ws-z-base: 1;
+    --ws-z-sticky: 50;
+    --ws-z-header: 100;
+    --ws-z-overlay: 200;
+    --ws-z-modal: 1000;
+
+    /* ---------------------------------------------------------------------
+       Foco accesible
+       --------------------------------------------------------------------- */
+    --ws-focus-ring: 2px solid var(--ws-cyan);
+    --ws-focus-offset: 3px;
+
+    /* ---------------------------------------------------------------------
+       Preferencias del navegador
+       --------------------------------------------------------------------- */
+    color-scheme: dark;
+    accent-color: var(--ws-cyan);
+}
+
+/* Escala de espaciado algo mayor en pantallas grandes */
+@media (min-width: 1024px) {
+    :root {
+        --ws-header-h: var(--ws-header-h-lg);
+    }
+}
+
+/* Con ancho suficiente, las etiquetas de la barra inferior entran en una sola
+   línea y el espacio reservado se ajusta a ese alto real. */
+@media (min-width: 500px) {
+    :root {
+        --ws-bottom-nav-h: 84px;
+    }
+}
+
+/* Tablet y desktop: la navegación deja de ser una barra inferior de móvil y se
+   integra al layout como una fila, así que ya no hay que reservarle espacio
+   fijo al pie. El layout la mide y la reserva donde realmente aparece. */
+@media (min-width: 1024px) {
+    :root {
+        --ws-bottom-nav-h: var(--ws-bottom-nav-h-lg);
+    }
+}

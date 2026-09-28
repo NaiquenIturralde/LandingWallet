@@ -1,0 +1,23 @@
+/* ==========================================================================
+   WalletCard — contenedor visual y compositivo
+   No interactivo: sin hover, sin cursor pointer, sin transiciones de acción.
+   ========================================================================== */
+
+.wallet-card {
+    display: block;
+    background-color: var(--ws-surface);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-lg);
+    /* Misma elevación persistente que la utilidad .ws-card: la sombra es la
+       única del sistema de cards y vive en --ws-shadow-card. */
+    box-shadow: var(--ws-shadow-card);
+}
+
+/* Superficie elevada: mismo tono que las cards de la landing */
+.wallet-card--elevated {
+    background-color: var(--ws-card);
+}
+
+.wallet-card--padded {
+    padding: var(--ws-space-6);
+}

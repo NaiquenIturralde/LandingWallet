@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Wallet Squad 1 — Estilos de infraestructura
+   Contiene únicamente lo que necesita el runtime de Blazor:
+     - el foco del <h1> requerido por FocusOnNavigate
+     - los estilos de validación de formularios de Blazor
+     - el estilo de la error boundary
+   La identidad visual vive en css/tokens.css, css/base.css y css/utilities.css.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Requerido por <FocusOnNavigate RouteData="routeData" Selector="h1" />
+   en Components/Routes.razor. No eliminar.
+   -------------------------------------------------------------------------- */
+h1:focus {
+    outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Validación de formularios de Blazor (EditForm / ValidationMessage)
+   -------------------------------------------------------------------------- */
+.valid.modified:not([type=checkbox]) {
+    outline: var(--ws-hairline) solid var(--ws-success);
+}
+
+.invalid {
+    outline: var(--ws-hairline) solid var(--ws-danger);
+}
+
+.validation-message {
+    color: var(--ws-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Error boundary de Blazor
+   -------------------------------------------------------------------------- */
+.blazor-error-boundary {
+    background-color: var(--ws-danger-soft);
+    border: var(--ws-hairline) solid var(--ws-danger);
+    border-radius: var(--ws-radius-md);
+    padding: var(--ws-space-4) var(--ws-space-5);
+    color: var(--ws-text);
+}
+
+/* --------------------------------------------------------------------------
+   Error boundary de Blazor (barra inferior).
+   El runtime de Blazor muestra este contenedor por id cuando falla el circuito,
+   así que su estilo debe ser GLOBAL: MainLayout (landing) y WalletLayout (App
+   Wallet) renderizan cada uno su propio #blazor-error-ui, y el CSS scoped de
+   cualquiera de los dos no alcanzaría al del otro. Cuando vivía en el scoped de
+   MainLayout, la barra aparecía SIN estilos en las pantallas de Wallet: el
+   `display: none` no aplicaba, el div quedaba visible al pie y desplazaba el
+   layout. Adaptada al Design System DARK FINTECH: usa tokens y no depende del
+   color para comunicar el error (lleva texto explícito).
+   -------------------------------------------------------------------------- */
+#blazor-error-ui {
+    color-scheme: dark;
+    background-color: var(--ws-card);
+    color: var(--ws-text);
+    border-top: var(--ws-hairline) solid var(--ws-danger-border);
+    box-shadow: var(--ws-shadow-lg);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    bottom: 0;
+    padding: var(--ws-space-3) var(--ws-space-5);
+    position: fixed;
+    width: 100%;
+    z-index: var(--ws-z-modal);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+}
+
+#blazor-error-ui .reload {
+    color: var(--ws-text-accent);
+    font-weight: var(--ws-weight-semibold);
+    text-decoration: underline;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: var(--ws-space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ws-text-muted);
+}
+
+.blazor-error-boundary::after {
+    content: "Ha ocurrido un error.";
+}

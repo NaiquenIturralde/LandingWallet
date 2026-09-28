@@ -1,0 +1,76 @@
+@* ==========================================================================
+   WalletCurrencySelector — selector segmentado de moneda [ ARS | USD ].
+
+   Es un conmutador de vista (aria-pressed), no una navegación: por eso son
+   botones con estado y no enlaces. Filtra los datos del dashboard por moneda;
+   NO convierte valores.
+
+   ACCESIBILIDAD:
+   - role="group" con aria-label descriptivo;
+   - aria-pressed en cada opción (el estado nunca depende solo del color);
+   - navegación por teclado: flechas ←/→ cambian la moneda;
+   - focus-visible con anillo de foco del Design System;
+   - área táctil ≥44px.
+   ========================================================================== *@
+
+<div class="wallet-currency" role="group" aria-label="Moneda del dashboard" @onkeydown="OnKeyDown">
+    @* Botones explícitos (sin @foreach): el diffing de Blazor actualiza los
+       atributos de cada botón en cada render. El estado activo sale de
+       métodos helper (no de expresiones con comillas dobles anidadas, que el
+       parser de Razor interpreta mal). *@
+    <button type="button" class="@OptionClass(WalletCurrency.Ars)" aria-pressed="@Pressed(WalletCurrency.Ars)"
+            @onclick="() => SelectAsync(WalletCurrency.Ars)">
+        @WalletCurrency.Ars
+    </button>
+    <button type="button" class="@OptionClass(WalletCurrency.Usd)" aria-pressed="@Pressed(WalletCurrency.Usd)"
+            @onclick="() => SelectAsync(WalletCurrency.Usd)">
+        @WalletCurrency.Usd
+    </button>
+</div>
+
+@code {
+    /// <summary>Moneda seleccionada. Solo ARS o USD (allowlist).</summary>
+    [Parameter, EditorRequired]
+    public string Value { get; set; } = WalletCurrency.Ars;
+
+    /// <summary>Notifica el cambio de moneda al consumidor.</summary>
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private string OptionClass(string currency)
+        => currency == Value
+            ? "wallet-currency__option wallet-currency__option--current"
+            : "wallet-currency__option";
+
+    /// <summary>
+    /// Valor de aria-pressed para una moneda. Método helper: evita las comillas
+    /// dobles anidadas en el markup, que el parser de Razor interpreta mal. /// </summary>
+    private string Pressed(string currency) => currency == Value ? "true" : "false";
+
+    private async Task SelectAsync(string currency)
+    {
+        if (currency == Value)
+        {
+            return;
+        }
+
+        await ValueChanged.InvokeAsync(currency);
+    }
+
+    /// <summary>
+    /// Flechas ←/→: cambian la moneda como un segmented control accesible.
+    /// El foco queda en el botón activo (el navegador lo conserva al cambiar
+    /// el estado); Tab recorre ambas opciones de forma natural.
+    /// </summary>
+    private Task OnKeyDown(KeyboardEventArgs e)
+    {
+        var next = e.Key switch
+        {
+            "ArrowRight" when Value == WalletCurrency.Ars => WalletCurrency.Usd,
+            "ArrowLeft" when Value == WalletCurrency.Usd => WalletCurrency.Ars,
+            _ => null,
+        };
+
+        return next is null ? Task.CompletedTask : SelectAsync(next);
+    }
+}

@@ -1,0 +1,118 @@
+/* ==========================================================================
+   WalletMenuList — lista de accesos
+   Mobile-first: una fila por ítem, con el estado pendiente a la derecha.
+   ========================================================================== */
+
+.wallet-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.wallet-menu__item + .wallet-menu__item {
+    border-top: var(--ws-hairline) solid var(--ws-border);
+}
+
+.wallet-menu__entry {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--ws-space-3);
+    /* Área táctil cómoda por ítem */
+    min-height: 60px;
+    padding: var(--ws-space-3) 0;
+    color: var(--ws-text);
+}
+
+/* El color lo define la lista, no el acento global de los <a> */
+a.wallet-menu__entry {
+    color: var(--ws-text);
+    text-decoration: none;
+    transition: color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+a.wallet-menu__entry:hover {
+    color: var(--ws-text-accent);
+}
+
+.wallet-menu__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+/* Los ítems sin habilitar no compiten con los disponibles */
+.wallet-menu__entry--pending .wallet-menu__icon {
+    background-color: var(--ws-neutral-soft);
+    border-color: var(--ws-border);
+    color: var(--ws-text-muted);
+}
+
+.wallet-menu__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-half);
+    min-width: 0;
+}
+
+.wallet-menu__label {
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.wallet-menu__description {
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-snug);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.wallet-menu__chevron {
+    display: inline-grid;
+    place-items: center;
+    color: var(--ws-text-muted);
+    flex-shrink: 0;
+}
+
+a.wallet-menu__entry:hover .wallet-menu__chevron {
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Ítems sin destino.
+   Apagado visual inequívoco sin depender del color: se reducen contraste y
+   superficie, y el ítem se declara aria-disabled. El badge de estado es
+   opcional: cuando el panel ya lo declara una vez para el grupo, se omite acá y
+   queda anunciado solo a lectores de pantalla.
+   ::deep en el badge porque lo renderiza StatusBadge: su elemento raíz no lleva
+   el scope de esta lista y un selector scoped no lo alcanzaría.
+   -------------------------------------------------------------------------- */
+.wallet-menu__entry--pending {
+    cursor: default;
+}
+
+/* El ítem no disponible baja de jerarquía sin depender solo del color: el peso
+   tipográfico y el contraste del rótulo acompañan al estado. */
+.wallet-menu__entry--pending .wallet-menu__label {
+    font-weight: var(--ws-weight-medium);
+    color: var(--ws-text-muted);
+}
+
+.wallet-menu__entry--pending .wallet-menu__description {
+    opacity: 0.85;
+}
+
+@media (min-width: 500px) {
+    ::deep .wallet-menu__entry--pending .status-badge {
+        justify-self: end;
+    }
+}

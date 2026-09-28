@@ -1,0 +1,50 @@
+/* ==========================================================================
+   WalletCurrencySelector — selector segmentado [ ARS | USD ].
+   Mismo lenguaje visual que el conmutador de la Landing (showcase): píldora
+   con borde, opción activa con gradiente de marca y texto blanco (contraste
+   AA sobre los tres tramos). El estado activo se comunica con aria-pressed,
+   texto y gradiente: nunca solo con el color.
+   ========================================================================== */
+
+.wallet-currency {
+    display: inline-flex;
+    gap: var(--ws-space-1);
+    padding: var(--ws-space-1);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-surface);
+}
+
+.wallet-currency__option {
+    min-height: 44px;
+    padding: var(--ws-space-2) var(--ws-space-5);
+    border: 0;
+    border-radius: var(--ws-radius-pill);
+    background-color: transparent;
+    color: var(--ws-text-muted);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--ws-dur-fast) var(--ws-ease-out),
+                color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.wallet-currency__option:hover {
+    color: var(--ws-text);
+    background-color: var(--ws-grid-line);
+}
+
+.wallet-currency__option--current,
+.wallet-currency__option--current:hover {
+    background-color: transparent;
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+}
+
+.wallet-currency__option:focus-visible {
+    outline: 2px solid var(--ws-cyan);
+    outline-offset: 2px;
+}

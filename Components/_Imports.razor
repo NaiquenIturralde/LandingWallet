@@ -1,0 +1,21 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.Extensions.Options
+@using Microsoft.JSInterop
+@using LandingWallet
+@using LandingWallet.Components
+@using LandingWallet.Components.Layout
+@using LandingWallet.Components.Shared
+@* Las 10 secciones declaran @namespace LandingWallet.Components.Sections, así que
+   basta un único using para que Home pueda componerlas. *@
+@using LandingWallet.Components.Sections
+@* App Wallet (usuario y admin): componentes, datos de presentación, formato y
+   acceso a datos. *@
+@using LandingWallet.Components.Wallet
+@using LandingWallet.Components.Wallet.Data
+@using LandingWallet.Components.Wallet.Services

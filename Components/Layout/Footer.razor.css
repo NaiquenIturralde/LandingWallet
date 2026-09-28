@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Footer — cierre minimalista
+   Mobile-first. Desktop a partir de 768px.
+   ========================================================================== */
+
+.footer {
+    background-color: var(--ws-surface);
+    border-top: var(--ws-hairline) solid var(--ws-border);
+    padding-block: var(--ws-space-12);
+}
+
+.footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-8);
+}
+
+/* --------------------------------------------------------------------------
+   Marca
+   -------------------------------------------------------------------------- */
+.footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+}
+
+.footer__name {
+    margin: 0;
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-bold);
+    letter-spacing: var(--ws-ls-wide);
+    color: var(--ws-text);
+}
+
+.footer__tagline {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Navegación
+   -------------------------------------------------------------------------- */
+.footer__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ws-space-2) var(--ws-space-6);
+}
+
+.footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-medium);
+    color: var(--ws-text-muted);
+    transition: color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.footer__link:hover {
+    color: var(--ws-text-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Metadatos
+   -------------------------------------------------------------------------- */
+.footer__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+}
+
+.footer__meta-line {
+    margin: 0;
+}
+
+.footer__meta-line--origin {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Desktop: marca y navegación en fila, metadatos alineados a la derecha
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .footer__inner {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: var(--ws-space-8);
+    }
+
+    .footer__list {
+        justify-content: center;
+    }
+
+    .footer__meta {
+        text-align: right;
+        align-items: flex-end;
+    }
+}

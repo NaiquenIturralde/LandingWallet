@@ -1,0 +1,71 @@
+/* ==========================================================================
+   WalletDetailList — datos etiqueta/valor
+   ========================================================================== */
+
+.wallet-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-surface);
+    overflow: hidden;
+}
+
+.wallet-detail-list__item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    /* En pantallas muy angostas la fila envuelve en lugar de comprimir el
+       importe: el valor baja completo a una segunda línea, alineado a la
+       derecha. En 430px y más, etiqueta y valor comparten la fila. */
+    flex-wrap: wrap;
+    gap: var(--ws-space-2) var(--ws-space-4);
+    padding: var(--ws-space-3) var(--ws-space-4);
+    min-width: 0;
+}
+
+.wallet-detail-list__item + .wallet-detail-list__item {
+    border-top: var(--ws-hairline) solid var(--ws-border);
+}
+
+.wallet-detail-list__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+    min-width: 0;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}
+
+.wallet-detail-list__icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+.wallet-detail-list__value {
+    margin: 0 0 0 auto;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+    text-align: right;
+    /* Los importes largos y los CBU no deben desbordar la fila */
+    overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   Fila destacada: el dato principal del bloque, en cifra de display.
+   -------------------------------------------------------------------------- */
+.wallet-detail-list__item--emphasized {
+    align-items: center;
+    background-color: var(--ws-card);
+}
+
+.wallet-detail-list__item--emphasized .wallet-detail-list__value {
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-lg);
+    letter-spacing: var(--ws-ls-tight);
+}

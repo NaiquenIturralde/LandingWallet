@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Dashboard de Usuario — App Wallet
+   Mobile-first (430px de referencia). Una columna; desde 768px las cuentas, los
+   KPIs y la fila del saldo pasan a disposición multicolumna cuando hay ancho
+   real para sostenerla.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Selector de moneda [ ARS | USD ].
+   En móvil va debajo del título y antes de las métricas; en desktop se alinea
+   a la derecha de la fila superior. El estado activo se comunica con
+   aria-pressed, texto y gradiente: nunca solo con el color.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__currency {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: var(--ws-space-6);
+    min-width: 0;
+}
+
+@media (min-width: 1024px) {
+    .wallet-dashboard__currency {
+        justify-content: flex-end;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Fila superior: saldo disponible (protagonista) + resumen del período.
+   En móvil se apila y el saldo va primero, más grande. Desde 1024px comparten
+   la fila: el saldo conserva el ancho mayor para no perder jerarquía.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-6);
+    min-width: 0;
+}
+
+@media (min-width: 1024px) {
+    .wallet-dashboard__top {
+        /* El saldo (1.15fr) pesa más que el resumen (1fr) sin dejar de compartir
+           la fila: mantiene el protagonismo visual que pide la pantalla.
+           align-items en su valor por defecto (stretch): ambas cards toman la
+           MISMA altura de fila (la card menor crece hasta la mayor), sin
+           heights fijos. En móvil —una columna— cada fila mantiene su alto
+           natural porque la fila se define por su propio contenido. */
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop grande (1280px en adelante): el resumen del período pasa a mandar
+   en la fila superior para que sus TRES KPIs (Ingresos, Egresos, Balance)
+   quepan en UNA fila compacta — el balance necesita ~660px de contenedor
+   (medido en la etapa de pulido). El saldo conserva el ancho suficiente para
+   su cifra de display en la columna izquierda.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1280px) {
+    .wallet-dashboard__top {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Cuentas: una por fila en móvil; en paralelo cuando hay ancho REAL para dos.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__accounts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Aclaración sobre el saldo y las monedas
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ws-space-3);
+    margin: 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border-left: 2px solid var(--ws-cyan);
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text);
+}
+
+.wallet-dashboard__note-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Lista de movimientos: cada fila aporta su propio padding.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__list {
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Carga: bloques que reservan el espacio real del contenido que va a llegar.
+   El contenedor que carga es quien expone aria-busy; el skeleton es decorativo.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__skeleton {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+/* En el panel al ras el esqueleto repone el inset compartido, con el mismo
+   valor vertical y horizontal para no quedar descuadrado. */
+.wallet-dashboard__skeleton--rows {
+    padding: var(--wallet-panel-pad, var(--ws-space-5)) var(--wallet-panel-inset, var(--ws-space-5));
+}
+
+/* --------------------------------------------------------------------------
+   Acciones del panel de movimientos
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    /* 8px: la aclaración pertenece al botón, no es un bloque aparte. */
+    gap: var(--ws-space-2);
+    /* Mismo inset que el encabezado y las filas del panel al ras, en los cuatro
+       lados: antes el alto y el bajo no coincidían con los laterales. */
+    padding: var(--wallet-panel-pad, var(--ws-space-5)) var(--wallet-panel-inset, var(--ws-space-5));
+}
+
+.wallet-dashboard__pending {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: dos columnas para las cuentas y las acciones en línea.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    /* auto-fit con mínimo 320px: las dos cuentas comparten fila cuando el ancho
+       real alcanza para ambas y, si no, se apilan en una tarjeta ancha. Así el
+       CBU no se parte ni el saldo se comprime en columnas de ~250px cuando la
+       pantalla se compone en dos columnas. */
+    .wallet-dashboard__accounts {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    }
+
+    .wallet-dashboard__actions {
+        align-items: center;
+    }
+
+    .wallet-dashboard__pending {
+        text-align: left;
+    }
+}

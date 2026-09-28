@@ -1,0 +1,85 @@
+@* ==========================================================================
+   WalletMenuList — lista de accesos de la App Wallet.
+   Cada ítem es un enlace solo si tiene destino real. Los ítems sin destino se
+   muestran como pendientes: no se simula una acción que todavía no existe.
+   El estado pendiente puede marcarse por ítem (badge) o una sola vez para todo
+   el grupo (desde el panel que lo contiene), para no repetir el mismo rótulo.
+   ========================================================================== *@
+
+<ul class="wallet-menu">
+    @foreach (var item in Items)
+    {
+        <li class="wallet-menu__item">
+            @if (item.IsLink)
+            {
+                <a class="wallet-menu__entry" href="@item.Href">
+                    <span class="wallet-menu__icon" aria-hidden="true">
+                        <Icon Name="@item.Icon" Size="20" Decorative="true" />
+                    </span>
+
+                    <span class="wallet-menu__main">
+                        <span class="wallet-menu__label">@item.Label</span>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <span class="wallet-menu__description">@item.Description</span>
+                        }
+                    </span>
+
+                    <span class="wallet-menu__chevron" aria-hidden="true">
+                        <Icon Name="IconName.Arrow" Size="18" Decorative="true" />
+                    </span>
+                </a>
+            }
+            else
+            {
+                @* Un ítem sin destino está siempre no disponible: se declara con
+                   aria-disabled, independientemente de si muestra el badge. *@
+                <div class="wallet-menu__entry wallet-menu__entry--pending" aria-disabled="true">
+                    <span class="wallet-menu__icon" aria-hidden="true">
+                        <Icon Name="@item.Icon" Size="20" Decorative="true" />
+                    </span>
+
+                    <span class="wallet-menu__main">
+                        <span class="wallet-menu__label">@item.Label</span>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <span class="wallet-menu__description">@item.Description</span>
+                        }
+                    </span>
+
+                    @if (ShowStatus)
+                    {
+                        <StatusBadge Text="@ResolvedPendingLabel(item)" Variant="StatusVariant.Pending" />
+                    }
+                    else
+                    {
+                        @* Sin badge: el estado se anuncia igual a lectores de
+                           pantalla, para que no dependa de lo visual. *@
+                        <span class="ws-sr-only">@ResolvedPendingLabel(item)</span>
+                    }
+                </div>
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    /// <summary>Accesos a presentar, en su orden de aparición.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<WalletMenuItem> Items { get; set; } = [];
+
+    /// <summary>
+    /// Muestra el estado pendiente como badge en cada ítem. Se desactiva cuando
+    /// el propio panel ya declara el estado una vez para todo el grupo, para no
+    /// repetir el mismo rótulo en cada fila.
+    /// </summary>
+    [Parameter]
+    public bool ShowStatus { get; set; } = true;
+
+    private const string DefaultPendingLabel = "Próximamente";
+
+    private static string ResolvedPendingLabel(WalletMenuItem item)
+        => string.IsNullOrWhiteSpace(item.PendingLabel) ? DefaultPendingLabel : item.PendingLabel;
+}

@@ -1,0 +1,61 @@
+/* ==========================================================================
+   WalletSkeleton — contenido pendiente
+   Siempre decorativo (aria-hidden). Respeta prefers-reduced-motion.
+   ========================================================================== */
+
+.wallet-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    width: 100%;
+}
+
+.wallet-skeleton__item {
+    display: block;
+    width: var(--skeleton-width, 100%);
+    background-color: var(--ws-card-hover);
+    border-radius: var(--ws-radius-sm);
+    animation: wallet-skeleton-pulse 1.6s var(--ws-ease-in-out) infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Formas
+   -------------------------------------------------------------------------- */
+.wallet-skeleton__item--line {
+    height: var(--skeleton-height, 12px);
+}
+
+.wallet-skeleton__item--block {
+    height: var(--skeleton-height, 96px);
+    border-radius: var(--ws-radius-md);
+}
+
+.wallet-skeleton__item--circle {
+    width: var(--skeleton-width, 44px);
+    height: var(--skeleton-height, 44px);
+    border-radius: var(--ws-radius-pill);
+}
+
+/* --------------------------------------------------------------------------
+   Pulso suave: opacidad, sin desplazamientos ni brillos agresivos.
+   -------------------------------------------------------------------------- */
+@keyframes wallet-skeleton-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.45;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Movimiento reducido: se elimina la animación por completo.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .wallet-skeleton__item {
+        animation: none;
+        opacity: 0.6;
+    }
+}

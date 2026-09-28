@@ -1,0 +1,45 @@
+/* ==========================================================================
+   WalletErrorState — estado de error
+   Comparte patrón visual con WalletEmptyState (icon box, título, descripción)
+   sin compartir semántica: este componente SÍ es una alerta.
+   ========================================================================== */
+
+.wallet-error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ws-space-3);
+    width: 100%;
+    padding: var(--ws-space-10) var(--ws-space-6);
+    text-align: center;
+}
+
+.wallet-error-state__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-danger-soft);
+    border: var(--ws-hairline) solid var(--ws-danger-border);
+    color: var(--ws-danger);
+}
+
+.wallet-error-state__title {
+    margin: 0;
+    font-size: var(--ws-fs-lg);
+    color: var(--ws-text);
+}
+
+.wallet-error-state__description {
+    margin: 0;
+    max-width: 46ch;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.wallet-error-state__action {
+    margin-top: var(--ws-space-2);
+}

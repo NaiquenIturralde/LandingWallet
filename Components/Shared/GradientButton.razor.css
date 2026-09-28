@@ -1,0 +1,99 @@
+/* ==========================================================================
+   GradientButton — enlace con aspecto de botón
+   Mobile-first: ancho completo en pantallas chicas, inline desde 430px.
+   ========================================================================== */
+
+.gradient-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ws-space-2);
+    /* Área táctil cómoda */
+    min-height: 48px;
+    width: 100%;
+    padding: var(--ws-space-3) var(--ws-space-6);
+    border-radius: var(--ws-radius-pill);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-snug);
+    text-align: center;
+    text-decoration: none;
+    transition: box-shadow var(--ws-dur-base) var(--ws-ease-out),
+                background-color var(--ws-dur-base) var(--ws-ease-out),
+                border-color var(--ws-dur-base) var(--ws-ease-out),
+                color var(--ws-dur-base) var(--ws-ease-out),
+                transform var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   Primary: gradiente cyan → blue → purple
+   Texto blanco sobre el gradiente: el extremo violeta no alcanza AA con
+   texto oscuro, y el blanco sí sobre los tres tramos.
+   -------------------------------------------------------------------------- */
+.gradient-button--primary {
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+    border: var(--ws-hairline) solid transparent;
+}
+
+.gradient-button--primary:hover {
+    color: var(--ws-white);
+    box-shadow: var(--ws-shadow-cyan);
+}
+
+.gradient-button--primary:active {
+    transform: translateY(1px);
+}
+
+/* --------------------------------------------------------------------------
+   Secondary: navy translúcido con borde cyan/blue sutil
+   -------------------------------------------------------------------------- */
+.gradient-button--secondary {
+    background-color: var(--ws-card-translucent);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-text);
+}
+
+.gradient-button--secondary:hover {
+    background-color: var(--ws-card-hover);
+    border-color: var(--ws-cyan);
+    color: var(--ws-text);
+}
+
+.gradient-button--secondary:active {
+    transform: translateY(1px);
+}
+
+/* Con movimiento reducido no hay desplazamiento (press) ni flecha corriendo:
+   el feedback del hover es de color y el foco lo aporta el anillo global. */
+@media (prefers-reduced-motion: reduce) {
+    .gradient-button--primary:active,
+    .gradient-button--secondary:active,
+    .gradient-button:hover .gradient-button__arrow {
+        transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Flecha decorativa: se desplaza levemente al pasar el cursor
+   -------------------------------------------------------------------------- */
+.gradient-button__arrow {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: transform var(--ws-dur-base) var(--ws-ease-out);
+}
+
+.gradient-button:hover .gradient-button__arrow {
+    transform: translateX(3px);
+}
+
+/* --------------------------------------------------------------------------
+   Desktop: ancho según contenido y padding algo mayor
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    .gradient-button {
+        width: auto;
+    }
+}

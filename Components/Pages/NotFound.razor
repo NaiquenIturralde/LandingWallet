@@ -1,0 +1,26 @@
+﻿@page "/not-found"
+@layout MainLayout
+
+<PageTitle>Página no encontrada — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Página 404.
+   Adaptada al Design System DARK FINTECH y al idioma del proyecto.
+   ========================================================================== *@
+
+<SectionShell Id="not-found" HeadingId="not-found-title" CssClass="not-found-page">
+    <div class="not-found-page__content">
+
+        <span class="not-found-page__icon" aria-hidden="true">
+            <Icon Name="IconName.Search" Size="28" Decorative="true" />
+        </span>
+
+        <SectionHeading HeadingId="not-found-title" Eyebrow="404" Title="No encontramos esta página"
+                        Description="La dirección que ingresaste no existe o fue movida. Podés volver al inicio para continuar." />
+
+        <div class="not-found-page__actions">
+            <GradientButton Text="Volver al inicio" Href="/" Variant="ButtonVariant.Primary" ShowArrow="true" />
+        </div>
+
+    </div>
+</SectionShell>

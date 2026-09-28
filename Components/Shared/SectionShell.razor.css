@@ -1,0 +1,40 @@
+/* ==========================================================================
+   SectionShell — ritmo vertical y comportamiento de anclaje.
+   El ancho máximo y el padding lateral los aporta .ws-container.
+   ========================================================================== */
+
+section {
+    position: relative;
+    padding-block: var(--ws-section-py);
+    /* Los anchors deben aterrizar por debajo del header sticky */
+    scroll-margin-top: calc(var(--ws-header-h) + var(--ws-space-4));
+}
+
+/* Sección final (Proyecto): solo lleva encabezado, así que el ritmo pleno de
+   sección dejaba ~300px de vacío antes del footer (medido: padding 112px por
+   lado en desktop sobre un contenido de ~60px). Se reduce a --ws-section-gap
+   (32–56px), el ritmo inter-bloques del sistema: la sección mide lo que
+   ocupa su contenido real y el footer queda inmediatamente después. Esta regla
+   vive acá porque SectionShell es el dueño del elemento <section> (el scope
+   CSS de ProjectSection no lo alcanzaría). */
+section.project-section {
+    padding-block: var(--ws-section-gap);
+}
+
+/* Hero en desktop grande: contenedor ancho del sistema (--ws-container-wide,
+   1520px, token existente). Compartido con la navbar: Navbar.razor.css aplica
+   el mismo máximo a .navbar__inner desde el mismo breakpoint, así ambas piezas
+   se alinean (medido: antes ambas estaban en1200px y el Hero se veía
+   concentrado en un viewport de1920). SOLO la sección hero: el resto de la
+   Landing conserva .ws-container de1200px. */
+@media (min-width: 1440px) {
+    section.hero-section > .ws-container {
+        max-width: var(--ws-container-wide);
+    }
+
+    /* El showcase de la app real comparte el mismo contenedor ancho que el
+       hero: la aplicación necesita todo el ancho del sistema en desktop. */
+    section.showcase-section > .ws-container {
+        max-width: var(--ws-container-wide);
+    }
+}

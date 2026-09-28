@@ -1,0 +1,150 @@
+/* ==========================================================================
+   WalletMetricCard — métrica genérica
+   Reutiliza la caja de MetricPlaceholder: label en Inter, valor en Montserrat.
+   ========================================================================== */
+
+.wallet-metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    height: 100%;
+    min-width: 0;
+    /* La utilidad .ws-card aporta superficie y borde. El padding sigue el
+       ritmo único de las cards de Wallet: 20px (--ws-space-5) en móvil y
+       24px desde 430px (ver el bloque @media al final). */
+    padding: var(--ws-space-5);
+}
+
+/* --------------------------------------------------------------------------
+   Profundidad (nivel admin): conserva el glass oscuro actual pero separa la
+   card del fondo sin aplanarla. Tres capas conceptuales:
+     1. base oscura + cyan tenue → la elevación única del sistema
+        (--ws-shadow-card, el mismo que usa toda card del Design System);
+     2. halo cyan PERMANENTE muy tenue, centrado alrededor de la card;
+     3. gloss interior extremadamente suave en el borde superior.
+   Sin transform: la card no se mueve ni cambia de tamaño.
+   -------------------------------------------------------------------------- */
+.wallet-metric-card {
+    box-shadow:
+        var(--ws-shadow-card),
+        0 0 0 1px color-mix(in srgb, var(--ws-cyan) 10%, transparent),
+        0 0 22px -8px color-mix(in srgb, var(--ws-cyan) 18%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--ws-white) 7%, transparent);
+    transition: box-shadow var(--ws-dur-base) var(--ws-ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   Hover premium solo con puntero REAL de escritorio: el glow cyan se
+   intensifica y se centra alrededor de la card (difuso, tech/glass). Misma
+   respuesta que WalletLookerCard: encender la luz, nunca mover la card
+   (sin translate, sin scale, sin animaciones llamativas, sin neón).
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+    .wallet-metric-card:hover {
+        box-shadow:
+            var(--ws-shadow-card),
+            0 0 0 1px color-mix(in srgb, var(--ws-cyan) 22%, transparent),
+            0 0 34px -6px color-mix(in srgb, var(--ws-cyan) 30%, transparent),
+            inset 0 1px 0 color-mix(in srgb, var(--ws-white) 10%, transparent);
+    }
+}
+
+/* Ritmo único de cards: desde 430px el padding sube a 24px, igual que el
+   resto de las cards principales. */
+@media (min-width: 430px) {
+    .wallet-metric-card {
+        padding: var(--ws-space-6);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado: label + icono opcional
+   -------------------------------------------------------------------------- */
+.wallet-metric-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-metric-card__label {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+    /* En grillas de dos columnas (430px) las etiquetas largas deben poder
+       partirse en lugar de empujar el layout. */
+    overflow-wrap: anywhere;
+}
+
+.wallet-metric-card__icon {
+    display: grid;
+    place-items: center;
+    /* 40px: chip de icono unificado con WalletAccountCard y las filas de
+       movimiento (el de WalletQuickActions queda en 36px porque su tile solo
+       tiene 38px de ancho útil a 320px: está medido, no es arbitrario). */
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Valor: cifra destacada en Montserrat SemiBold
+   -------------------------------------------------------------------------- */
+.wallet-metric-card__value {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-2xl);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-tight);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    /* Las cifras agrupadas nunca deben partirse ni desbordar */
+    overflow-wrap: anywhere;
+}
+
+.wallet-metric-card__description {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Tendencia: icono + texto, nunca solo color
+   -------------------------------------------------------------------------- */
+.wallet-metric-card__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-1);
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+}
+
+.wallet-metric-card__delta-icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.wallet-metric-card__delta--up {
+    color: var(--ws-success);
+}
+
+.wallet-metric-card__delta--down {
+    color: var(--ws-danger);
+}
+
+.wallet-metric-card__delta--neutral {
+    color: var(--ws-text-muted);
+}

@@ -1,0 +1,51 @@
+/* ==========================================================================
+   WalletLayout — contenedor de las pantallas de la App Wallet
+   ========================================================================== */
+
+.wallet-layout__main {
+    display: block;
+    min-width: 0;
+    /* Reserva el espacio de la navegación inferior fija, sin depender de JS.
+       Desde 1024px la navegación deja de ser flotante (ver WalletAppShell), así
+       que la reserva desaparece: --ws-bottom-nav-h vale 0 en ese rango y el
+       layout no queda con un hueco al pie. */
+    padding-bottom: calc(var(--ws-bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+    /* ------------------------------------------------------------------
+       Aurora ambiental del fondo (fintech/glass): dos radial-gradients
+       grandes y suaves —cyan arriba a la derecha, violeta abajo a la
+       izquierda— sobre el navy, MUY por debajo del contenido (opacidades
+       10 % y 8 %). Sin imágenes, sin filtros, sin pseudo-elementos: es un
+       background compuesto del propio contenedor, así nunca genera overflow
+       ni intercepta clics (pointer-events no aplica: es fondo).
+       background-attachment: fixed mantiene la aurora anclada al viewport
+       mientras el documento hace scroll. Los textos viven sobre cards con
+       superficie propia: el contraste no cambia.
+       La sidebar (≥1024px) y la navbar móvil llevan fondo translúcido + blur
+       encima, así que la aurora casi no se percibe bajo la navegación.
+       ------------------------------------------------------------------ */
+    background-image:
+        radial-gradient(ellipse 65% 50% at 78% 4%,
+                        rgba(18, 217, 255, 0.10) 0%,
+                        rgba(18, 217, 255, 0) 70%),
+        radial-gradient(ellipse 60% 55% at 20% 96%,
+                        rgba(118, 60, 255, 0.08) 0%,
+                        rgba(118, 60, 255, 0) 70%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* El skip link mueve el foco acá: sin anillo, el destino ya es visible */
+.wallet-layout__main:focus {
+    outline: none;
+}
+
+/* Desktop (1024px en adelante): la navegación de la App Wallet es una
+   SIDEBAR fija a la izquierda (ver WalletAppShell). El layout reserva su
+   ancho con padding-left para que el contenido no quede debajo y siga
+   centrado en el espacio restante. --ws-bottom-nav-h vale 0 en este rango,
+   así que la reserva de la barra inferior desaparece sola. */
+@media (min-width: 1024px) {
+    .wallet-layout__main {
+        padding-left: var(--ws-sidebar-w);
+    }
+}

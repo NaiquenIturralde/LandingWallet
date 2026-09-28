@@ -1,0 +1,130 @@
+@* ==========================================================================
+   WalletButton — botón funcional de la aplicación.
+   Es un <button> real (no un enlace): dispara acciones, no navega.
+   Para navegación usar GradientButton, que es un <a>.
+   ========================================================================== *@
+
+<button type="@Type.ToHtmlValue()" class="@CssClass" disabled="@IsDisabled" aria-busy="@AriaBusy"
+        @onclick="HandleClick">
+    @if (Loading)
+    {
+        @* Durante la carga el spinner reemplaza al icono: nunca se muestran ambos.
+           Es decorativo porque el aria-busy del botón ya comunica el estado. *@
+        <span class="wallet-button__icon" aria-hidden="true">
+            <WalletSpinner Decorative="true" Size="18" />
+        </span>
+    }
+    else if (IconName is not null)
+    {
+        @* El wrapper pertenece a este componente: el CSS scoped no alcanza a
+           elementos renderizados por componentes hijos. *@
+        <span class="wallet-button__icon" aria-hidden="true">
+            <Icon Name="@IconName.Value" Size="18" Decorative="true" />
+        </span>
+    }
+
+    <span class="wallet-button__text">@DisplayText</span>
+</button>
+
+@code {
+    /// <summary>Texto visible del botón.</summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>Variante visual.</summary>
+    [Parameter]
+    public WalletButtonVariant Variant { get; set; } = WalletButtonVariant.Primary;
+
+    /// <summary>Tipo nativo del botón.</summary>
+    [Parameter]
+    public WalletButtonType Type { get; set; } = WalletButtonType.Button;
+
+    /// <summary>Icono opcional, siempre a través del componente <see cref="Icon"/>.</summary>
+    [Parameter]
+    public IconName? IconName { get; set; }
+
+    /// <summary>Deshabilita el botón.</summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Estado de carga. Bloquea la interacción, expone aria-busy y muestra un
+    /// spinner visual en lugar del icono.
+    /// </summary>
+    [Parameter]
+    public bool Loading { get; set; }
+
+    /// <summary>Texto alternativo mientras <see cref="Loading"/> está activo.</summary>
+    [Parameter]
+    public string? LoadingText { get; set; }
+
+    /// <summary>Ocupa todo el ancho disponible. Por defecto en móvil.</summary>
+    [Parameter]
+    public bool FullWidth { get; set; }
+
+    /// <summary>Handler del click. No se dispara si el botón está deshabilitado o cargando.</summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    // Un botón cargando no debe aceptar nuevas interacciones: se trata como
+    // deshabilitado a nivel funcional, no solo visual.
+    private bool IsDisabled => Disabled || Loading;
+
+    // ARIA exige "true"/"false" en minúscula: un bool se serializaría como "True"/"False".
+    private string? AriaBusy => Loading ? "true" : null;
+
+    private string DisplayText => Loading && !string.IsNullOrWhiteSpace(LoadingText)
+        ? LoadingText!
+        : Text;
+
+    private string CssClass
+    {
+        get
+        {
+            var variant = Variant switch
+            {
+                WalletButtonVariant.Secondary => "wallet-button--secondary",
+                WalletButtonVariant.Ghost => "wallet-button--ghost",
+                WalletButtonVariant.Danger => "wallet-button--danger",
+                _ => "wallet-button--primary",
+            };
+
+            var classes = $"wallet-button {variant}";
+
+            if (FullWidth)
+            {
+                classes += " wallet-button--full";
+            }
+
+            if (Loading)
+            {
+                classes += " wallet-button--loading";
+            }
+
+            return classes;
+        }
+    }
+
+    // Un botón funcional sin texto visible sería inaccesible: se detecta en
+    // desarrollo. Un botón solo-icono debe usar WalletIconButton.
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(Text))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(WalletButton)} requiere un {nameof(Text)} no vacío: " +
+                $"un botón funcional con texto visible no puede quedar sin nombre. " +
+                $"Para un botón de solo icono usar {nameof(WalletIconButton)}.");
+        }
+    }
+
+    private async Task HandleClick()
+    {
+        if (IsDisabled)
+        {
+            return;
+        }
+
+        await OnClick.InvokeAsync();
+    }
+}

@@ -1,0 +1,38 @@
+@* ==========================================================================
+   WalletQuickActions — accesos directos a las secciones con ruta real.
+
+   SOLO se listan las secciones que EXISTEN como ruta en la aplicación:
+   Transferir, Cuentas, Inversiones y Más. No se agrega ninguna acción que la
+   Wallet no tenga (por ejemplo "Recibir" no existe: no se simula).
+
+   Cada acción es un <a> real con icono + etiqueta y área táctil de 44px.
+   ========================================================================== *@
+
+<nav class="wallet-quick-actions" aria-label="Acciones rápidas">
+    @foreach (var action in Items)
+    {
+        <a class="wallet-quick-actions__item ws-pressable" href="@action.Href">
+            <span class="wallet-quick-actions__icon" aria-hidden="true">
+                <Icon Name="@action.Icon" Size="22" Decorative="true" />
+            </span>
+            <span class="wallet-quick-actions__label">@action.Label</span>
+        </a>
+    }
+</nav>
+
+@code {
+    /// <summary>
+    /// Acciones disponibles. Son las secciones con ruta habilitada: cargar una
+    /// acción sin destino crearía un enlace falso.
+    /// </summary>
+    private static readonly IReadOnlyList<QuickAction> Items =
+    [
+        new("Transferir", "/wallet/transferir", IconName.Transfer),
+        new("Cuentas", "/wallet/cuentas", IconName.Accounts),
+        new("Invertir", "/wallet/inversiones", IconName.Analytics),
+        new("Más", "/wallet/mas", IconName.More),
+    ];
+
+    /// <summary>Acción rápida: etiqueta, ruta real e icono.</summary>
+    private sealed record QuickAction(string Label, string Href, IconName Icon);
+}

@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+
+@* Orden: skip link → Navbar → main (@Body) → Footer *@
+@* El @onclick no cancela el href: el navegador hace el scroll al anchor y el
+   handler además mueve el foco al contenido, que es lo que exige el skip link. *@
+<a class="ws-skip-link" href="#contenido-principal" @onclick="FocusMainContent">Saltar al contenido</a>
+
+<Navbar />
+
+<main id="contenido-principal" class="layout-main" tabindex="-1" @ref="_mainContent">
+    @Body
+</main>
+
+<Footer />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private ElementReference _mainContent;
+
+    private async Task FocusMainContent()
+    {
+        try
+        {
+            await _mainContent.FocusAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // La conexión con el circuito se perdió: el anchor nativo ya hizo el scroll.
+        }
+    }
+}

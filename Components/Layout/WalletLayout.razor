@@ -1,0 +1,36 @@
+@inherits LayoutComponentBase
+
+@* ==========================================================================
+   WalletLayout — contenedor de las pantallas de la App Wallet (usuario y admin).
+   Deliberadamente NO reutiliza MainLayout: esas pantallas son una aplicación,
+   no una sección de la landing, y no deben arrastrar la barra de navegación de
+   marketing ni el pie de página. Aporta solo el skip link y el <main>.
+   ========================================================================== *@
+
+<a class="ws-skip-link" href="#contenido-app" @onclick="FocusAppContent">Saltar al contenido</a>
+
+<main id="contenido-app" class="wallet-layout__main" tabindex="-1" @ref="_mainContent">
+    @Body
+</main>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private ElementReference _mainContent;
+
+    private async Task FocusAppContent()
+    {
+        try
+        {
+            await _mainContent.FocusAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // La conexión con el circuito se perdió: el anchor nativo ya hizo el scroll.
+        }
+    }
+}

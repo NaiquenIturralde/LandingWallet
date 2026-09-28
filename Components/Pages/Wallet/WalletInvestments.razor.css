@@ -1,0 +1,44 @@
+/* ==========================================================================
+   Inversiones — App Wallet (rol usuario)
+   Mobile-first: una columna, todo apilado.
+   ========================================================================== */
+
+.investments__text {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Carga: bloque que reserva el espacio del detalle.
+   -------------------------------------------------------------------------- */
+.investments__skeleton {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Datos que informa una inversión: rótulos cortos en una fila que envuelve.
+   Reemplazan al listado desarrollado para no alargar la pantalla.
+   -------------------------------------------------------------------------- */
+.investments__terms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+.investments__term {
+    padding: var(--ws-space-1) var(--ws-space-3);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    color: var(--ws-text);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-medium);
+    /* Rótulos de una palabra: nunca se parten */
+    white-space: nowrap;
+}

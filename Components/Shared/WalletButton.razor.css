@@ -1,0 +1,157 @@
+/* ==========================================================================
+   WalletButton — botón funcional
+   Mobile-first: ancho completo en pantallas chicas, inline desde 430px.
+   Reutiliza los patrones visuales de GradientButton (misma familia de CTA).
+   ========================================================================== */
+
+.wallet-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ws-space-2);
+    /* Área táctil cómoda */
+    min-height: 48px;
+    width: 100%;
+    padding: var(--ws-space-3) var(--ws-space-6);
+    border: var(--ws-hairline) solid transparent;
+    border-radius: var(--ws-radius-pill);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-snug);
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow var(--ws-dur-base) var(--ws-ease-out),
+                background-color var(--ws-dur-base) var(--ws-ease-out),
+                border-color var(--ws-dur-base) var(--ws-ease-out),
+                color var(--ws-dur-base) var(--ws-ease-out),
+                transform var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   Primary: gradiente cyan → blue → purple
+   Texto blanco sobre el gradiente: el extremo violeta no alcanza AA con
+   texto oscuro, y el blanco sí sobre los tres tramos.
+   -------------------------------------------------------------------------- */
+.wallet-button--primary {
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+}
+
+.wallet-button--primary:hover:not(:disabled) {
+    box-shadow: var(--ws-shadow-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Secondary: superficie navy con borde sutil
+   -------------------------------------------------------------------------- */
+.wallet-button--secondary {
+    background-color: var(--ws-card-translucent);
+    border-color: var(--ws-border-cyan);
+    color: var(--ws-text);
+}
+
+.wallet-button--secondary:hover:not(:disabled) {
+    background-color: var(--ws-card-hover);
+    border-color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Ghost: sin fondo ni borde hasta el hover
+   -------------------------------------------------------------------------- */
+.wallet-button--ghost {
+    background-color: transparent;
+    color: var(--ws-text-muted);
+}
+
+.wallet-button--ghost:hover:not(:disabled) {
+    background-color: var(--ws-grid-line);
+    color: var(--ws-text);
+}
+
+/* --------------------------------------------------------------------------
+   Danger: acción destructiva.
+   No depende solo del color: el borde y el contraste refuerzan la advertencia.
+   -------------------------------------------------------------------------- */
+.wallet-button--danger {
+    background-color: var(--ws-danger-soft);
+    border-color: var(--ws-danger-border);
+    color: var(--ws-danger);
+}
+
+.wallet-button--danger:hover:not(:disabled) {
+    background-color: var(--ws-danger);
+    border-color: var(--ws-danger);
+    color: var(--ws-text-inverse);
+}
+
+/* --------------------------------------------------------------------------
+   Estados comunes
+   -------------------------------------------------------------------------- */
+.wallet-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+/* Con movimiento reducido no hay desplazamiento: el feedback del press es
+   de color (hover/active ya definidos) y el foco sigue visible por el anillo
+   global :focus-visible. */
+@media (prefers-reduced-motion: reduce) {
+    .wallet-button:active:not(:disabled) {
+        transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Deshabilitado.
+   Pierde por completo la apariencia de CTA activo: sin gradiente, sin sombra de
+   acento y con contraste reducido sobre una superficie neutra. No se usa
+   opacidad global (haría impredecible el contraste): los colores se eligen
+   explícitamente con tokens.
+   El estado se comunica además por el atributo disabled, no solo por color.
+   -------------------------------------------------------------------------- */
+.wallet-button:disabled {
+    cursor: not-allowed;
+    background-image: none;
+    background-color: var(--ws-surface);
+    border-color: var(--ws-border);
+    color: var(--ws-text-muted);
+    box-shadow: none;
+    transform: none;
+}
+
+/* Cargando: bloqueado funcionalmente, con feedback visual sin depender del color */
+.wallet-button--loading {
+    cursor: progress;
+}
+/* --------------------------------------------------------------------------
+   Icono y texto
+   -------------------------------------------------------------------------- */
+.wallet-button__icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.wallet-button__text {
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Ancho completo explícito (en móvil ya es el comportamiento por defecto)
+   -------------------------------------------------------------------------- */
+.wallet-button--full {
+    width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Desktop: ancho según contenido
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    .wallet-button {
+        width: auto;
+    }
+
+    .wallet-button--full {
+        width: 100%;
+    }
+}

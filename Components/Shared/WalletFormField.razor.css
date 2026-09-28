@@ -1,0 +1,34 @@
+/* ==========================================================================
+   WalletFormField — agrupación de campo
+   ========================================================================== */
+
+.wallet-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    width: 100%;
+    min-width: 0;
+}
+
+.wallet-form-field__hint {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-normal);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+/* El error no depende solo del color: lleva icono y texto explícito */
+.wallet-form-field__error {
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-normal);
+    color: var(--ws-danger);
+    overflow-wrap: anywhere;
+}
+
+/* ValidationMessage de Blazor: se integra con el contenedor del campo */
+.wallet-form-field__error .validation-message {
+    display: block;
+    margin: 0;
+    color: inherit;
+}

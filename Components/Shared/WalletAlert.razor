@@ -1,0 +1,66 @@
+@* ==========================================================================
+   WalletAlert — mensaje contextual inline.
+   La semántica ARIA depende de la variante: Info/Success son informativos
+   (role="status"), Warning/Error son urgentes (role="alert").
+   Cada variante lleva icono + texto: el color nunca es el único indicador.
+   ========================================================================== *@
+
+<div class="@CssClass" role="@Role">
+    <span class="wallet-alert__icon" aria-hidden="true">
+        <Icon Name="@AlertIcon" Size="20" Decorative="true" />
+    </span>
+
+    <div class="wallet-alert__body">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <p class="wallet-alert__title">@Title</p>
+        }
+
+        <p class="wallet-alert__text">@Text</p>
+
+        @if (ChildContent is not null)
+        {
+            <div class="wallet-alert__extra">@ChildContent</div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Variante semántica del mensaje.</summary>
+    [Parameter]
+    public AlertVariant Variant { get; set; } = AlertVariant.Info;
+
+    /// <summary>Título opcional del mensaje.</summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>Texto del mensaje.</summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>Contenido adicional opcional (acciones, detalles).</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // Cada variante tiene su propio icono para no depender solo del color.
+    private IconName AlertIcon => Variant switch
+    {
+        AlertVariant.Success => IconName.CheckCircle,
+        AlertVariant.Warning => IconName.Warning,
+        AlertVariant.Error => IconName.Error,
+        _ => IconName.Info,
+    };
+
+    // Info y Success son informativos (role="status" ya implica live-region
+    // polite); Warning y Error son urgentes (role="alert" implica assertive).
+    // No se agrega aria-live: sería redundante en ambos casos.
+    private string Role => Variant is AlertVariant.Warning or AlertVariant.Error ? "alert" : "status";
+
+    private string CssClass => Variant switch
+    {
+        AlertVariant.Success => "wallet-alert wallet-alert--success",
+        AlertVariant.Warning => "wallet-alert wallet-alert--warning",
+        AlertVariant.Error => "wallet-alert wallet-alert--error",
+        _ => "wallet-alert wallet-alert--info",
+    };
+}

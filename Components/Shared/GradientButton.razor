@@ -1,0 +1,55 @@
+@* ==========================================================================
+   GradientButton — enlace con aspecto de botón.
+   Siempre es un <a> con href: no existen botones sin destino.
+   ========================================================================== *@
+
+<a class="@CssClass" href="@Href" aria-label="@AriaLabel" target="@Target" rel="@Rel">
+    <span class="gradient-button__text">@Text</span>
+    @if (ShowArrow)
+    {
+        @* El wrapper pertenece a este componente: el CSS scoped no alcanza a
+           elementos renderizados por componentes hijos. *@
+        <span class="gradient-button__arrow" aria-hidden="true">
+            <Icon Name="IconName.Arrow" Size="18" Decorative="true" />
+        </span>
+    }
+</a>
+
+@code {
+    /// <summary>Texto visible del enlace.</summary>
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>Destino. Puede ser un anchor interno (#seccion) o una URL.</summary>
+    [Parameter, EditorRequired]
+    public string Href { get; set; } = string.Empty;
+
+    /// <summary>Variante visual.</summary>
+    [Parameter]
+    public ButtonVariant Variant { get; set; } = ButtonVariant.Primary;
+
+    /// <summary>
+    /// Etiqueta accesible. Se usa cuando el texto visible no alcanza para
+    /// describir el destino, por ejemplo en enlaces externos.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    /// <summary>Destino de apertura. Si es "_blank" se agrega rel="noopener noreferrer".</summary>
+    [Parameter]
+    public string? Target { get; set; }
+
+    /// <summary>Muestra la flecha decorativa al final del texto.</summary>
+    [Parameter]
+    public bool ShowArrow { get; set; }
+
+    /// <summary>
+    /// rel se deriva de Target: abrir en otra pestaña sin noopener expone
+    /// window.opener a la página de destino.
+    /// </summary>
+    private string? Rel => Target == "_blank" ? "noopener noreferrer" : null;
+
+    private string CssClass => Variant == ButtonVariant.Secondary
+        ? "gradient-button gradient-button--secondary"
+        : "gradient-button gradient-button--primary";
+}

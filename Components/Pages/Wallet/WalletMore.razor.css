@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Más — App Wallet (rol usuario)
+   Accesos secundarios. Mobile-first: una columna, listas de filas apiladas.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Cada grupo vive dentro de un panel al ras: el inset lo aporta un único
+   contenedor para que las filas queden alineadas con el título del bloque.
+   -------------------------------------------------------------------------- */
+.more__group {
+    padding-inline: var(--wallet-panel-inset, var(--ws-space-5));
+    padding-bottom: var(--ws-space-4);
+}
+
+.more__text {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* La vuelta al inicio cierra la pantalla, fuera del bloque de accesos */
+.more__back {
+    display: flex;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .more__text {
+        max-width: 60ch;
+    }
+}

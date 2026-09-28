@@ -1,0 +1,99 @@
+/* ==========================================================================
+   WalletEmptyState — estado vacío
+   Comparte patrón visual con WalletErrorState (icon box, título, descripción)
+   sin compartir semántica: este componente NO es una alerta.
+   ========================================================================== */
+
+.wallet-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ws-space-3);
+    width: 100%;
+    padding: var(--ws-space-10) var(--ws-space-6);
+    text-align: center;
+}
+
+.wallet-empty-state__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+}
+
+.wallet-empty-state__title {
+    margin: 0;
+    font-size: var(--ws-fs-lg);
+    color: var(--ws-text);
+}
+
+.wallet-empty-state__description {
+    margin: 0;
+    max-width: 46ch;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.wallet-empty-state__action {
+    margin-top: var(--ws-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Densidad compacta: estado vacío secundario.
+   Reduce padding, icono y tipografía para que no domine una sección que no es
+   la protagonista de la pantalla. La acción conserva su área táctil completa.
+   -------------------------------------------------------------------------- */
+.wallet-empty-state--compact {
+    gap: var(--ws-space-2);
+    padding: var(--ws-space-5) var(--ws-space-4);
+}
+
+/* El título baja a escala de subtítulo, no de bloque principal. */
+.wallet-empty-state--compact .wallet-empty-state__title {
+    font-size: var(--ws-fs-base);
+}
+
+/* En una tarjeta angosta la descripción no necesita limitar su ancho. */
+.wallet-empty-state--compact .wallet-empty-state__description {
+    max-width: 100%;
+    font-size: var(--ws-fs-xs);
+}
+
+.wallet-empty-state--compact .wallet-empty-state__action {
+    margin-top: var(--ws-space-1);
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: el estado vacío secundario se muestra en una fila, con el icono a la
+   izquierda del texto, para que ocupe todavía menos alto.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .wallet-empty-state--compact {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        justify-items: start;
+        align-items: center;
+        column-gap: var(--ws-space-4);
+        row-gap: var(--ws-space-1);
+        text-align: left;
+        padding: var(--ws-space-5) var(--ws-space-6);
+    }
+
+    .wallet-empty-state--compact .wallet-empty-state__title,
+    .wallet-empty-state--compact .wallet-empty-state__description,
+    .wallet-empty-state--compact .wallet-empty-state__action {
+        grid-column: 2;
+    }
+
+    .wallet-empty-state--compact .wallet-empty-state__icon {
+        grid-row: 1 / span 3;
+        width: 44px;
+        height: 44px;
+    }
+}

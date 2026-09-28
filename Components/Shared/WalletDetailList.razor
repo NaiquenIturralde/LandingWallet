@@ -1,0 +1,34 @@
+@* ==========================================================================
+   WalletDetailList — lista de datos etiqueta/valor.
+   Presenta pares ya formateados: no calcula, no deriva ni completa valores.
+   Se usa <dl> porque el contenido es literalmente una lista de definiciones.
+   ========================================================================== *@
+
+<dl class="wallet-detail-list">
+    @foreach (var item in Items)
+    {
+        <div class="@ItemCssClass(item)">
+            <dt class="wallet-detail-list__label">
+                @if (item.Icon is not null)
+                {
+                    <span class="wallet-detail-list__icon" aria-hidden="true">
+                        <Icon Name="@item.Icon.Value" Size="16" Decorative="true" />
+                    </span>
+                }
+                <span>@item.Label</span>
+            </dt>
+            <dd class="wallet-detail-list__value">@item.Value</dd>
+        </div>
+    }
+</dl>
+
+@code {
+    /// <summary>Datos a presentar. Cada valor debe llegar ya formateado.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<WalletDetailItem> Items { get; set; } = [];
+
+    private static string ItemCssClass(WalletDetailItem item)
+        => item.Emphasized
+            ? "wallet-detail-list__item wallet-detail-list__item--emphasized"
+            : "wallet-detail-list__item";
+}

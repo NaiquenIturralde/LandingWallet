@@ -1,0 +1,101 @@
+@* ==========================================================================
+   WalletSelect — selector genérico.
+   Deriva de InputBase<TValue>: hereda Value, ValueChanged, ValueExpression,
+   EditContext y FieldIdentifier. Las opciones las aporta el consumidor por
+   ChildContent. No implementa selección múltiple.
+   ========================================================================== *@
+
+@typeparam TValue
+@inherits InputBase<TValue>
+@using System.Globalization
+
+<select @attributes="AdditionalAttributes" id="@ResolvedId" name="@ResolvedName" class="@ResolvedCssClass"
+        value="@CurrentValueAsString" disabled="@IsDisabled" required="@IsRequired" aria-invalid="@AriaInvalid"
+        aria-describedby="@DescribedBy" @onchange="OnChange">
+    @ChildContent
+</select>
+
+@code {
+    /// <summary>Opciones del selector. Se esperan elementos &lt;option&gt;.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Id explícito. Si se omite, se toma el del WalletFormField contenedor.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>Nombre del control para el envío de formularios.</summary>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>Clases adicionales opcionales.</summary>
+    [Parameter]
+    public string? ExtraCssClass { get; set; }
+
+    /// <summary>Deshabilita el control.</summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    // Contexto publicado por WalletFormField. Es null si el control se usa suelto.
+    [CascadingParameter]
+    private FormFieldContext? FieldContext { get; set; }
+
+    private string? ResolvedId => Id ?? FieldContext?.ControlId;
+
+    // Nombre HTML efectivo: el explícito del consumidor, o el que aporta
+    // InputBase (NameAttributeValue), o el id resuelto como último recurso.
+    private string? ResolvedName => Name ?? NameAttributeValue ?? ResolvedId;
+
+    private bool IsDisabled => Disabled || (FieldContext?.Disabled ?? false);
+
+    private bool IsRequired => FieldContext?.Required ?? false;
+
+    private string? DescribedBy => FieldContext?.DescribedBy;
+
+    // aria-invalid se calcula desde el EditContext, no desde la clase CSS.
+    private string? AriaInvalid => HasValidationError ? "true" : null;
+
+    private bool HasValidationError =>
+        EditContext is not null && EditContext.GetValidationMessages(FieldIdentifier).Any();
+
+    private string ResolvedCssClass
+    {
+        get
+        {
+            var classes = "ws-field-control ws-field-control--select";
+
+            if (!string.IsNullOrWhiteSpace(ExtraCssClass))
+            {
+                classes += $" {ExtraCssClass}";
+            }
+
+            return classes;
+        }
+    }
+
+    // La conversión la resuelve BindConverter (el mismo mecanismo que usa
+    // InputSelect de Blazor): no hay switch manual por tipo.
+    private Task OnChange(ChangeEventArgs e)
+    {
+        CurrentValueAsString = e.Value?.ToString();
+        return Task.CompletedTask;
+    }
+
+    // InputBase delega acá la conversión desde el string del DOM. BindConverter
+    // cubre string, enums, numéricos y nullable sin switches manuales.
+    protected override bool TryParseValueFromString(string? value, out TValue result, out string validationErrorMessage)
+    {
+        // BindConverter puede devolver null para tipos de referencia: se valida
+        // antes de asignar para no romper la nulabilidad de TValue.
+        if (BindConverter.TryConvertTo(value, CultureInfo.InvariantCulture, out TValue? converted) && converted is not null)
+        {
+            result = converted;
+            validationErrorMessage = string.Empty;
+            return true;
+        }
+
+        result = default!;
+        validationErrorMessage = $"No se pudo convertir el valor seleccionado a {typeof(TValue).Name}.";
+        return false;
+    }
+}

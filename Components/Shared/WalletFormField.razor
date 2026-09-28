@@ -1,0 +1,118 @@
+@using System.Linq.Expressions
+
+@* ==========================================================================
+   WalletFormField — agrupa semánticamente label + control + hint + error.
+   Es genérico en TValue para que For tenga exactamente el tipo del campo y
+   ValidationMessage<TValue> lo use directamente, sin boxing a object.
+   Genera un id único y lo publica por cascada para que el control hijo
+   resuelva su id, aria-describedby, required y disabled sin que el consumidor
+   repita parámetros.
+   ========================================================================== *@
+
+@typeparam TValue
+
+<div class="wallet-form-field">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <WalletLabel Text="@Label" For="@ControlId" Required="Required" />
+    }
+
+    <CascadingValue Value="_context" IsFixed="true">
+        @Control
+    </CascadingValue>
+
+    @if (!string.IsNullOrWhiteSpace(Hint))
+    {
+        <p id="@HintId" class="wallet-form-field__hint">@Hint</p>
+    }
+
+    @if (ShowValidationMessage)
+    {
+        @* El contenedor del error existe SIEMPRE que la validación está activa,
+           aunque esté vacío. Así ErrorId es estable y aria-describedby no queda
+           obsoleto cuando aparece o desaparece el mensaje.
+           ValidationMessage<TValue> real de Blazor: el mensaje proviene del
+           EditContext, no se inventa ni se duplica. *@
+        <div id="@ErrorId" class="wallet-form-field__error">
+            <ValidationMessage TValue="TValue" For="For" />
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Texto de la etiqueta. Si se omite, no se renderiza label.</summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>Control del campo (WalletInput, WalletSelect, etc.).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment Control { get; set; } = default!;
+
+    /// <summary>Texto de ayuda opcional, asociado al control por aria-describedby.</summary>
+    [Parameter]
+    public string? Hint { get; set; }
+
+    /// <summary>Marca el campo como obligatorio.</summary>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>Deshabilita el control.</summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Expresión del campo. Tiene exactamente el tipo del valor, de modo que
+    /// una expresión incompatible falla en compilación en lugar de convertirse
+    /// silenciosamente a object.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Expression<Func<TValue>> For { get; set; } = default!;
+
+    /// <summary>Muestra el mensaje de validación. Se puede desactivar si el campo no valida.</summary>
+    [Parameter]
+    public bool ShowValidationMessage { get; set; } = true;
+
+    // Identificador único por instancia: sin esto, varios campos en la misma
+    // página repetirían id y aria-describedby apuntaría al elemento equivocado.
+    private readonly string _uid = Guid.NewGuid().ToString("N")[..8];
+
+    private string ControlId => $"ws-field-{_uid}";
+
+    private string HintId => $"ws-hint-{_uid}";
+
+    private string ErrorId => $"ws-error-{_uid}";
+
+    private FormFieldContext _context = default!;
+
+    protected override void OnInitialized()
+    {
+        _context = new FormFieldContext
+        {
+            ControlId = ControlId,
+            HintId = string.IsNullOrWhiteSpace(Hint) ? null : HintId,
+            ErrorId = ShowValidationMessage ? ErrorId : null,
+            DescribedBy = BuildDescribedBy(),
+            Required = Required,
+            Disabled = Disabled,
+        };
+    }
+
+    // aria-describedby incluye ErrorId de forma estable cuando la validación
+    // está activa (el contenedor siempre existe), y HintId solo si hay hint.
+    private string? BuildDescribedBy()
+    {
+        var ids = new List<string>(2);
+
+        if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            ids.Add(HintId);
+        }
+
+        if (ShowValidationMessage)
+        {
+            ids.Add(ErrorId);
+        }
+
+        return ids.Count > 0 ? string.Join(' ', ids) : null;
+    }
+}

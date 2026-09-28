@@ -1,0 +1,51 @@
+@* ==========================================================================
+   WalletCard — contenedor visual y compositivo.
+   NO es interactivo: no navega, no dispara acciones y no convierte su
+   superficie en un elemento clickeable. Si una card necesita ser accionable,
+   debe resolverse como enlace o botón según el caso de uso.
+   ========================================================================== *@
+
+<div class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Contenido de la card.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Superficie de la card. <c>true</c> usa el tono elevado (--ws-card),
+    /// <c>false</c> usa el tono base (--ws-surface).
+    /// </summary>
+    [Parameter]
+    public bool Elevated { get; set; } = true;
+
+    /// <summary>Padding interno. <c>false</c> lo deja a cargo del contenido.</summary>
+    [Parameter]
+    public bool Padded { get; set; } = true;
+
+    /// <summary>Clases adicionales opcionales.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    private string ResolvedCssClass
+    {
+        get
+        {
+            var classes = Elevated ? "wallet-card wallet-card--elevated" : "wallet-card";
+
+            if (Padded)
+            {
+                classes += " wallet-card--padded";
+            }
+
+            if (!string.IsNullOrWhiteSpace(CssClass))
+            {
+                classes += $" {CssClass}";
+            }
+
+            return classes;
+        }
+    }
+}

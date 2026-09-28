@@ -1,0 +1,100 @@
+/* ==========================================================================
+   Sección — Explorá Wallet (selector + dashboards reales)
+   Mobile-first. El contenido real del dashboard NO se reestiliza: la Landing
+   solo aporta el marco (título, conmutador y ritmo del contenedor).
+   ========================================================================== */
+
+.showcase {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-6);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Cabecera de la sección: título + selector en la misma zona visual.
+   Mobile: el selector queda justo debajo del título/subtítulo (gap del
+   sistema), antes del dashboard. Desktop: fila con el selector alineado a la
+   derecha del encabezado, visible apenas entra la sección.
+   -------------------------------------------------------------------------- */
+.showcase__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    align-items: flex-start;
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Selector segmentado [USUARIO | ADMINISTRADOR].
+   Es un conmutador de vista (aria-pressed), no una navegación: por eso son
+   botones con estado y no enlaces. Área táctil ≥44px, foco global del DS.
+   -------------------------------------------------------------------------- */
+.showcase__switch {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: var(--ws-space-1);
+    padding: var(--ws-space-1);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-surface);
+}
+
+.showcase__option {
+    min-height: 44px;
+    padding: var(--ws-space-2) var(--ws-space-5);
+    border: 0;
+    border-radius: var(--ws-radius-pill);
+    background-color: transparent;
+    color: var(--ws-text-muted);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--ws-dur-fast) var(--ws-ease-out),
+                color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.showcase__option:hover {
+    color: var(--ws-text);
+    background-color: var(--ws-grid-line);
+}
+
+/* Rol activo: gradiente de marca (token), texto blanco (contraste AA sobre
+   los tres tramos, igual que los botones primarios del DS). */
+.showcase__option--current,
+.showcase__option--current:hover {
+    background-color: transparent;
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+}
+
+/* --------------------------------------------------------------------------
+   Marco del dashboard real: conserva el mismo ritmo vertical que el cuerpo
+   de la App Wallet (--ws-space-6 entre paneles) para que la demo se sienta
+   idéntica a la ruta.
+   -------------------------------------------------------------------------- */
+.showcase__frame {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-6);
+    min-width: 0;
+}
+
+/* Desktop: el selector se alinea a la derecha del encabezado, en la misma
+   línea visual que el título, visible apenas entra la sección. */
+@media (min-width: 768px) {
+    .showcase__header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: var(--ws-space-8);
+    }
+
+    .showcase__switch {
+        align-self: auto;
+        flex-shrink: 0;
+    }
+}

@@ -1,0 +1,160 @@
+@* ==========================================================================
+   AdminDashboardBody — contenido REAL del Panel de Administración.
+
+   ÚNICA implementación del panel admin: la consume la ruta /admin/dashboard
+   (dentro de WalletAppShell, con su lista de navegación) Y la Landing
+   (sección "Explorá Wallet" → selector ADMINISTRADOR, ShowcaseSection).
+   Cambiar este componente cambia ambas superficies: no hay dos copias.
+
+   No incluye el chrome de la app ni NavigationItems: eso pertenece a la ruta.
+
+   KPIs y gráficos: datos REALES de BigQuery vía IWalletDashboardService
+   (wallet_core.dim_usuarios, vw_cuentas_activas, fct_transacciones,
+   fct_inversiones, fct_auditorias, fct_alertas y wallet_mart
+   .vw_transacciones_reporting). Los volúmenes van separados por moneda.
+   ========================================================================== *@
+
+@inject IWalletDashboardService DashboardService
+
+@if (_loadFailed)
+{
+    @* Un solo error por pantalla: no se repite el mismo mensaje en cada
+       bloque. El reporte de Looker Studio se sigue mostrando más abajo
+       porque no depende de esta carga. *@
+    <WalletAlert Variant="AlertVariant.Error" Title="No pudimos cargar los indicadores"
+                 Text="Hubo un problema al consultar los datos del sistema. Podés intentar de nuevo.">
+        <WalletButton Text="Reintentar" Variant="WalletButtonVariant.Secondary" IconName="IconName.Refresh"
+                      OnClick="LoadAsync" />
+    </WalletAlert>
+}
+else if (_isLoading)
+{
+    <section class="admin__block" aria-busy="true">
+        <h2 class="admin__block-title">Indicadores generales</h2>
+        <div class="admin__kpis">
+            <WalletSkeleton Shape="SkeletonShape.Block" Height="160px" />
+            <WalletSkeleton Shape="SkeletonShape.Block" Height="160px" />
+            <WalletSkeleton Shape="SkeletonShape.Block" Height="160px" />
+        </div>
+    </section>
+}
+else
+{
+    @* ---------- 1. KPIs principales ---------- *@
+    @* Cada métrica viene de BigQuery. Los volúmenes van por moneda. *@
+    <section class="admin__block" aria-labelledby="admin-kpis-title">
+        <h2 id="admin-kpis-title" class="admin__block-title">Indicadores generales</h2>
+
+        <div class="admin__kpis">
+            <WalletMetricCard Label="Usuarios" Value="@WalletFormat.Count(Kpis.TotalUsers)"
+                              Description="@($"{WalletFormat.Count(Kpis.ActiveUsers)} activos")" IconName="IconName.Users" />
+
+            <WalletMetricCard Label="Cuentas" Value="@WalletFormat.Count(Kpis.TotalAccounts)"
+                              Description="@($"{WalletFormat.Count(Kpis.ActiveAccounts)} activas")" IconName="IconName.Accounts" />
+
+            <WalletMetricCard Label="Transacciones" Value="@WalletFormat.Count(Kpis.TotalTransactions)"
+                              Description="@($"{WalletFormat.Count(Kpis.ApprovedTransactions)} aprobadas · {WalletFormat.Count(Kpis.PendingTransactions)} pendientes · {WalletFormat.Count(Kpis.RejectedTransactions)} rechazadas")"
+                              IconName="IconName.Transfer" />
+
+            @* El volumen se informa por moneda: nunca se suma ARS + USD. *@
+            <WalletMetricCard Label="Volumen aprobado (ARS)" Value="@WalletFormat.Money(Kpis.ApprovedVolumeArs, "ARS")"
+                              Description="Transacciones aprobadas" IconName="IconName.Currency" />
+
+            <WalletMetricCard Label="Volumen aprobado (USD)" Value="@WalletFormat.Money(Kpis.ApprovedVolumeUsd, "USD")"
+                              Description="Transacciones aprobadas" IconName="IconName.Currency" />
+
+            <WalletMetricCard Label="Inversiones" Value="@WalletFormat.Count(Kpis.TotalInvestments)"
+                              Description="@($"{WalletFormat.Count(Kpis.ActiveInvestments)} activas")" IconName="IconName.Analytics" />
+
+            <WalletMetricCard Label="Auditorías" Value="@WalletFormat.Count(Kpis.TotalAudits)"
+                              Description="@($"{WalletFormat.Count(Kpis.AuditsWithError)} con error")" IconName="IconName.Audit" />
+
+            <WalletMetricCard Label="Alertas" Value="@WalletFormat.Count(Kpis.TotalAlerts)"
+                              Description="@($"{WalletFormat.Count(Kpis.UnreadAlerts)} sin leer")" IconName="IconName.Notifications" />
+        </div>
+    </section>
+
+}
+
+@* ---------- 3. Analítica Looker MODULAR: un card por reporte real ---------- *@
+@* Cada reporte individual de Looker vive en SU card (WalletLookerCard), en
+   tres filas: sistema / operación / auditoría — los SEIS gráficos Admin son
+   reportes Looker oficiales (9/9 habilitados). No queda ningún donut nativo
+   ni métrica duplicada: todos los lienzos miden360×340, así que las filas
+   usan columnas iguales y las dos cards terminan con la misma altura. *@
+<AnalyticsHeader HeadingId="admin-analytics-title" Title="Analítica del sistema" />
+
+<div class="looker-row looker-row--feature">
+    <WalletLookerCard Report="WalletLookerReports.Admin[0]" />
+    <WalletLookerCard Report="WalletLookerReports.Admin[1]" />
+</div>
+
+<div class="looker-row looker-row--pair">
+    <WalletLookerCard Report="WalletLookerReports.Admin[2]" />
+    <WalletLookerCard Report="WalletLookerReports.Admin[3]" />
+</div>
+
+<div class="looker-row looker-row--audit">
+    <WalletLookerCard Report="WalletLookerReports.Admin[4]" />
+    <WalletLookerCard Report="WalletLookerReports.Admin[5]" />
+</div>
+
+@code {
+    // Arranca en ceros SOLO como valor inicial de campos no nulos: mientras
+    // carga no se renderizan (ver el estado de carga) y si falla se muestra el
+    // error, así que estos ceros nunca llegan a la pantalla como dato.
+    private WalletAdminKpis Kpis = new(0, 0, 0, 0, 0, 0, 0, 0, 0m, 0m, 0, 0, 0, 0, 0, 0);
+
+    private bool _isLoading = true;
+    private bool _loadFailed;
+    private CancellationTokenSource? _loadCts;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    /// <summary>
+    /// Carga los indicadores desde BigQuery. Se usa también como reintento: un
+    /// reintento cancela la carga anterior para no solapar peticiones.
+    /// </summary>
+    private async Task LoadAsync()
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+
+        var cts = new CancellationTokenSource();
+        _loadCts = cts;
+        var token = cts.Token;
+
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            Kpis = await DashboardService.GetAdminKpisAsync(token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        catch (Exception)
+        {
+            // BigQuery falló. NO se muestran ceros: la pantalla informa el error.
+            _loadFailed = true;
+        }
+        finally
+        {
+            if (ReferenceEquals(_loadCts, cts))
+            {
+                _isLoading = false;
+                _loadCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+    }
+}

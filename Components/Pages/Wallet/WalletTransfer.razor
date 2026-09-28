@@ -1,0 +1,148 @@
+@page "/wallet/transferir"
+@layout WalletLayout
+@inject IWalletDashboardService DashboardService
+
+<PageTitle>Transferir — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Transferir — App Wallet (rol usuario).
+   Base visual del flujo de transferencia. NO ejecuta operaciones: todavía no
+   hay backend ni cuentas de destino registradas, así que el formulario no se
+   habilita y no se completan destinatarios ni importes con datos ficticios.
+   Los saldos de origen son los que informa la fuente de datos.
+   ========================================================================== *@
+
+<WalletAppShell Title="Transferir" Subtitle="Prepará una transferencia paso a paso" Eyebrow="TRANSFERENCIAS"
+                HeadingId="wallet-transfer-page-title">
+
+    @* ---------- Estado del flujo ---------- *@
+    <WalletAlert Variant="AlertVariant.Info" Title="Flujo en preparación"
+                 Text="La transferencia todavía no puede ejecutarse: el procesamiento de operaciones no está habilitado en esta etapa." />
+
+    @* ---------- Paso 1: cuenta de origen ---------- *@
+    <WalletPanel HeadingId="transfer-origin-title" Title="Cuenta de origen" IconName="IconName.Wallet">
+        <p class="transfer__step-text">Seleccioná desde qué cuenta se realizaría la operación.</p>
+
+        @if (_isLoading)
+        {
+            <div class="transfer__skeleton" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Line" Lines="2" Height="56px" />
+            </div>
+        }
+        else if (_loadFailed)
+        {
+            <WalletErrorState Title="No pudimos cargar tus cuentas"
+                              Description="Sin las cuentas de origen no se puede preparar la transferencia." RetryText="Reintentar"
+                              OnRetry="LoadAsync" />
+        }
+        else if (_accounts.Count == 0)
+        {
+            <WalletEmptyState IconName="IconName.Account" Title="No hay cuentas de origen"
+                              Description="Necesitás al menos una cuenta para preparar una transferencia." />
+        }
+        else
+        {
+            @* Cada cuenta se presenta como una opción elegible. Todavía no hay
+               selección persistida ni lógica financiera: es la base visual del paso. *@
+            <ul class="transfer__accounts">
+                @foreach (var account in _accounts)
+                {
+                    <li class="transfer__account">
+                        <span class="transfer__account-radio" aria-hidden="true"></span>
+
+                        <span class="transfer__account-main">
+                            <span class="transfer__account-name">
+                                @account.Type · @account.CurrencyCode
+                            </span>
+                            <span class="transfer__account-alias">@account.Alias</span>
+                        </span>
+
+                        <span class="transfer__account-value">
+                            @WalletFormat.Money(account.Balance, account.CurrencyCode)
+                        </span>
+                    </li>
+                }
+            </ul>
+
+            @* Dato informativo: el importe real de cada cuenta, sin conversión *@
+            <p class="transfer__note">
+                <span class="transfer__note-icon" aria-hidden="true">
+                    <Icon Name="IconName.Info" Size="16" Decorative="true" />
+                </span>
+                <span>
+                    Los saldos se muestran por separado, según la moneda de cada cuenta.
+                </span>
+            </p>
+        }
+    </WalletPanel>
+
+    @* ---------- Paso 2: destino ---------- *@
+    <WalletPanel HeadingId="transfer-destination-title" Title="Cuenta de destino" IconName="IconName.Account">
+        <WalletEmptyState IconName="IconName.Account" Title="Todavía no hay destinos registrados"
+                          Description="Cuando existan destinatarios guardados o cuentas de destino, se van a poder seleccionar en este paso." />
+    </WalletPanel>
+
+    @* ---------- Paso 3: importe ---------- *@
+    <WalletPanel HeadingId="transfer-amount-title" Title="Importe" IconName="IconName.Currency">
+        <p class="transfer__step-text">
+            El importe de la transferencia se completa cuando el origen y el destino estén
+            definidos.
+        </p>
+
+        @* Deshabilitado: el paso depende del origen y del destino, que todavía
+           no pueden definirse. Sin apariencia de CTA activo. *@
+        <WalletButton Text="Continuar" Variant="WalletButtonVariant.Primary" IconName="IconName.Arrow" Disabled="true"
+                      FullWidth="true" />
+
+        <p class="transfer__pending">
+            Este paso se habilita cuando las operaciones de transferencia estén disponibles.
+        </p>
+    </WalletPanel>
+
+    @* ---------- Validaciones previas ---------- *@
+    <WalletPanel HeadingId="transfer-checks-title" Title="Validaciones previas" IconName="IconName.Security">
+        <p class="transfer__step-text">
+            Antes de registrar la operación, Wallet comprueba el origen, el destino y el
+            importe, y muestra el resultado para su revisión.
+        </p>
+
+        @* Se resumen los pasos en una sola línea de texto, sin repetir cuatro
+           viñetas con el mismo icono. *@
+        <ul class="transfer__checks" aria-label="Comprobaciones de la operación">
+            <li class="transfer__check">Origen</li>
+            <li class="transfer__check">Destino</li>
+            <li class="transfer__check">Importe</li>
+            <li class="transfer__check">Revisión</li>
+        </ul>
+    </WalletPanel>
+
+</WalletAppShell>
+
+@code {
+    private IReadOnlyList<WalletPresentationAccount> _accounts = [];
+
+    private bool _isLoading = true;
+    private bool _loadFailed;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            _accounts = await DashboardService.GetAccountsAsync();
+        }
+        catch (Exception)
+        {
+            _loadFailed = true;
+            _accounts = [];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

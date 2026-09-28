@@ -1,0 +1,30 @@
+@* ==========================================================================
+   SectionShell — contenedor estándar de las secciones de la landing.
+   No aporta contenido propio: solo estructura, ancho máximo y ritmo vertical.
+   ========================================================================== *@
+
+<section id="@Id" class="@CssClass" aria-labelledby="@(HeadingId ?? null)">
+    <div class="ws-container">
+        @ChildContent
+    </div>
+</section>
+
+@code {
+    /// <summary>Id de la sección. Es el destino de los anchors de la navegación.</summary>
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>Clases adicionales opcionales para el elemento &lt;section&gt;.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    /// <summary>
+    /// Id del encabezado que titula la sección. Si se informa, el &lt;section&gt;
+    /// queda asociado a su título mediante aria-labelledby.
+    /// </summary>
+    [Parameter]
+    public string? HeadingId { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

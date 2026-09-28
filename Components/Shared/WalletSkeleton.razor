@@ -1,0 +1,60 @@
+@* ==========================================================================
+   WalletSkeleton — contenido todavía no disponible.
+   Es siempre decorativo: no se anuncia cada bloque a lectores de pantalla.
+   El contenedor que carga es quien expone aria-busy="true".
+   ========================================================================== *@
+
+<div class="wallet-skeleton" aria-hidden="true">
+    @for (var i = 0; i < LineCount; i++)
+    {
+        <span class="@LineCssClass" style="@LineStyle"></span>
+    }
+</div>
+
+@code {
+    /// <summary>Forma de los bloques.</summary>
+    [Parameter]
+    public SkeletonShape Shape { get; set; } = SkeletonShape.Line;
+
+    /// <summary>Ancho del bloque. Por defecto ocupa el 100% del contenedor.</summary>
+    [Parameter]
+    public string? Width { get; set; }
+
+    /// <summary>Alto del bloque. Si se omite, se usa el de la forma elegida.</summary>
+    [Parameter]
+    public string? Height { get; set; }
+
+    /// <summary>Cantidad de bloques. Solo aplica a la forma Line.</summary>
+    [Parameter]
+    public int Lines { get; set; } = 1;
+
+    // Un círculo o un bloque repetidos no tienen sentido: solo Line se repite.
+    private int LineCount => Shape == SkeletonShape.Line ? Math.Max(1, Lines) : 1;
+
+    private string LineCssClass => Shape switch
+    {
+        SkeletonShape.Block => "wallet-skeleton__item wallet-skeleton__item--block",
+        SkeletonShape.Circle => "wallet-skeleton__item wallet-skeleton__item--circle",
+        _ => "wallet-skeleton__item wallet-skeleton__item--line",
+    };
+
+    private string LineStyle
+    {
+        get
+        {
+            var style = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(Width))
+            {
+                style += $"--skeleton-width:{Width};";
+            }
+
+            if (!string.IsNullOrWhiteSpace(Height))
+            {
+                style += $"--skeleton-height:{Height};";
+            }
+
+            return style;
+        }
+    }
+}

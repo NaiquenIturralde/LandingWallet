@@ -1,0 +1,118 @@
+@page "/wallet/inversiones"
+@layout WalletLayout
+@inject IWalletDashboardService DashboardService
+
+<PageTitle>Inversiones — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Inversiones — App Wallet (rol usuario).
+   Lista las inversiones del usuario desde la fuente de datos. Si no tiene,
+   muestra el estado vacío: no se inventa ninguna colocación ni se muestran
+   montos, tasas o plazos de relleno.
+   Datos: IWalletDashboardService, que aísla la fuente real.
+   ========================================================================== *@
+
+<WalletAppShell Title="Mis inversiones" Subtitle="Seguimiento de tus colocaciones" Eyebrow="INVERSIONES"
+                HeadingId="wallet-investments-page-title">
+
+    @if (_isLoading)
+    {
+        <WalletPanel HeadingId="investments-loading-title" Title="Inversiones registradas" IconName="IconName.Analytics">
+            @* aria-busy en el contenedor que carga; el skeleton es decorativo. *@
+            <div class="investments__skeleton" aria-busy="true">
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+            </div>
+        </WalletPanel>
+    }
+    else if (_loadFailed)
+    {
+        <WalletErrorState Title="No pudimos cargar tus inversiones"
+                          Description="Hubo un problema al obtener tus inversiones. Podés intentar de nuevo." RetryText="Reintentar"
+                          OnRetry="LoadAsync" />
+    }
+    else if (_investments.Count == 0)
+    {
+        <WalletPanel HeadingId="investments-empty-title" Title="Inversiones registradas" IconName="IconName.Analytics">
+            <WalletEmptyState IconName="IconName.Analytics" Title="No tenés inversiones activas"
+                              Description="Podés empezar cuando quieras desde la sección Inversiones." />
+        </WalletPanel>
+    }
+    else
+    {
+        @* Cada colocación se presenta por separado: los importes no se suman
+           entre sí porque corresponden a inversiones distintas. *@
+        @foreach (var investment in _investments)
+        {
+            <WalletPanel HeadingId="@($"investment-{investment.Type.ToLowerInvariant().Replace(' ', '-')}-title")"
+                         Title="@investment.Type" IconName="IconName.Analytics">
+                <WalletDetailList Items="@DetailsFor(investment)" />
+            </WalletPanel>
+        }
+    }
+
+    @* ---------- Qué informa una inversión ---------- *@
+    @* Resumen compacto: se nombran los datos que acompañan a una inversión sin
+       desarrollar cada uno, para no alargar la pantalla. No son valores. *@
+    <WalletPanel HeadingId="investments-structure-title" Title="Qué informa una inversión" IconName="IconName.Help">
+        <p class="investments__text">
+            Cada inversión informa estos datos.
+        </p>
+
+        <ul class="investments__terms">
+            @foreach (var term in InvestmentTerms)
+            {
+                <li class="investments__term">@term</li>
+            }
+        </ul>
+    </WalletPanel>
+
+</WalletAppShell>
+
+@code {
+    private IReadOnlyList<WalletPresentationInvestment> _investments = [];
+
+    private bool _isLoading = true;
+    private bool _loadFailed;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            _investments = await DashboardService.GetInvestmentsAsync();
+        }
+        catch (Exception)
+        {
+            _loadFailed = true;
+            _investments = [];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Datos de una inversión del usuario, ya resueltos por la fuente de datos.
+    /// </summary>
+    private static IReadOnlyList<WalletDetailItem> DetailsFor(WalletPresentationInvestment investment)
+        =>
+        [
+            new("Estado", $"{WalletFormat.Count(investment.Active)} activas de {WalletFormat.Count(investment.Quantity)}"),
+            new("Monto invertido", WalletFormat.Money(investment.TotalInvested, "ARS")),
+            new("Interés ganado", WalletFormat.Money(investment.InterestEarned, "ARS"), Icon: IconName.TrendingUp),
+            new("Monto resultante", WalletFormat.Money(investment.ResultingTotal, "ARS"), Emphasized: true),
+            new("Tasa promedio", WalletFormat.Rate(investment.AverageRate)),
+        ];
+
+    /// <summary>
+    /// Datos que puede informar una inversión, según el modelo funcional.
+    /// Son nombres de campo, no importes.
+    /// </summary>
+    private static readonly IReadOnlyList<string> InvestmentTerms =
+        ["Tipo", "Monto", "Tasa", "Plazo", "Resultado"];
+}

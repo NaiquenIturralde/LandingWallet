@@ -1,0 +1,62 @@
+@* ==========================================================================
+   WalletBalanceHero — saldo principal de la App Wallet (rol usuario).
+
+   Es el elemento FINANCIERO DE MAYOR JERARQUÍA de la pantalla: el saldo se
+   muestra con tamaño de display (Montserrat) y con la superficie más
+   prominente, por encima de las métricas secundarias.
+
+   NO CALCULA NADA:
+   - El saldo de cada cuenta llega resuelto por la fuente de datos
+     (<c>saldo_actual</c> vía IWalletDashboardService).
+   - NO suma ARS + USD ni convierte monedas: cada cuenta se informa por
+     separado. La cuenta principal es simplemente la primera que informa la
+     fuente (no se infiere ni se inventa una marca de "principal").
+   - NO deriva comparaciones ni variaciones: la fuente no expone un período
+     anterior, así que no se muestran.
+   ========================================================================== *@
+
+<section class="wallet-balance-hero ws-card" aria-labelledby="wallet-balance-hero-title">
+    <div class="wallet-balance-hero__principal">
+        <p class="wallet-balance-hero__label" id="wallet-balance-hero-title">Saldo disponible</p>
+
+        <p class="wallet-balance-hero__value">@WalletFormat.Money(Principal.Balance, Principal.CurrencyCode)</p>
+
+        <div class="wallet-balance-hero__meta">
+            @* El chip de moneda en texto: la distinción nunca depende del color. *@
+            <span class="wallet-balance-hero__currency">@Principal.CurrencyCode</span>
+            <span class="wallet-balance-hero__account">@Principal.Type</span>
+        </div>
+    </div>
+
+    @if (Others.Count > 0)
+    {
+        @* Las demás cuentas se informan por separado: no se consolidan. *@
+        <ul class="wallet-balance-hero__others">
+            @foreach (var account in Others)
+            {
+                <li class="wallet-balance-hero__other">
+                    <span class="wallet-balance-hero__other-head">
+                        <span class="wallet-balance-hero__other-currency">@account.CurrencyCode</span>
+                        <span class="wallet-balance-hero__other-type">@account.Type</span>
+                    </span>
+                    <span class="wallet-balance-hero__other-value">
+                        @WalletFormat.Money(account.Balance, account.CurrencyCode)
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+@code {
+    /// <summary>
+    /// Cuentas del usuario, ya resueltas por la fuente. La primera se presenta
+    /// como saldo principal; el resto, informadas por separado (nunca sumadas).
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<WalletPresentationAccount> Accounts { get; set; } = [];
+
+    private WalletPresentationAccount Principal => Accounts[0];
+
+    private IReadOnlyList<WalletPresentationAccount> Others => [.. Accounts.Skip(1)];
+}

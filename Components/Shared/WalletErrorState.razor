@@ -1,0 +1,53 @@
+@* ==========================================================================
+   WalletErrorState — error que impide mostrar o completar contenido.
+   Usa role="alert" porque normalmente aparece como respuesta a un fallo.
+   No mueve el foco automáticamente ni asume que todo error requiere reintento.
+   ========================================================================== *@
+
+<div class="wallet-error-state" role="alert">
+    <span class="wallet-error-state__icon" aria-hidden="true">
+        <Icon Name="@ResolvedIcon" Size="28" Decorative="true" />
+    </span>
+
+    <h3 class="wallet-error-state__title">@Title</h3>
+
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="wallet-error-state__description">@Description</p>
+    }
+
+    @if (HasRetry)
+    {
+        <div class="wallet-error-state__action">
+            <WalletButton Text="@RetryText" Variant="WalletButtonVariant.Secondary" IconName="Shared.IconName.Refresh"
+                          OnClick="OnRetry" />
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Título del error.</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Descripción opcional.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>Icono opcional. Por defecto se usa Error.</summary>
+    [Parameter]
+    public IconName? IconName { get; set; }
+
+    /// <summary>Texto del botón de reintento. Si se omite, no se renderiza botón.</summary>
+    [Parameter]
+    public string? RetryText { get; set; }
+
+    /// <summary>Acción de reintento.</summary>
+    [Parameter]
+    public EventCallback OnRetry { get; set; }
+
+    private IconName ResolvedIcon => IconName ?? Shared.IconName.Error;
+
+    // Sin texto de reintento no se renderiza un botón vacío.
+    private bool HasRetry => !string.IsNullOrWhiteSpace(RetryText);
+}

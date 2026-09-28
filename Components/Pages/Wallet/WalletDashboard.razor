@@ -1,0 +1,24 @@
+@page "/wallet/dashboard"
+@layout WalletLayout
+@inject IWalletDashboardService DashboardService
+
+<PageTitle>Dashboard de usuario — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Ruta del Dashboard de Usuario.
+
+   El contenido y la lógica de carga viven en WalletDashboardBody: la ÚNICA
+   implementación compartida con la Landing (sección "Explorá Wallet"). Esta
+   ruta solo aporta el chrome de la app — WalletAppShell (topbar, navegación
+   y encabezado) — y el título de la pestaña. Modificar WalletDashboardBody
+   cambia esta ruta y la Landing a la vez: no hay dos copias del dashboard.
+
+   DATOS: BigQuery vía IWalletDashboardService (sin valores hardcodeados).
+   ========================================================================== *@
+
+<WalletAppShell Title="@($"¡Hola, {DashboardService.DisplayUserName}!")" Subtitle="Este es tu resumen financiero"
+                Eyebrow="DASHBOARD" HeadingId="wallet-dashboard-title">
+   @* El selector ARS/USD es responsabilidad de la RUTA: la Landing
+       (ShowcaseSection) usa el mismo WalletDashboardBody sin el selector. *@
+   <WalletDashboardBody ShowCurrencySelector="true" />
+</WalletAppShell>

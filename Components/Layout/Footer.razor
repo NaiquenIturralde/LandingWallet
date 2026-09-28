@@ -1,0 +1,49 @@
+@* ==========================================================================
+   Footer — cierre minimalista de la landing.
+   Sin URLs externas todavía (GitHub, Looker y documentación se incorporan
+   en la Etapa 10 junto con SiteLinks.cs).
+   ========================================================================== *@
+
+<footer class="footer">
+    <div class="footer__inner ws-container">
+
+        <div class="footer__brand">
+            <p class="footer__name">WALLET SQUAD 1</p>
+            <p class="footer__tagline">Datos · Personas · Tecnología · Oportunidades</p>
+        </div>
+
+        <nav class="footer__nav" aria-label="Navegación de pie de página">
+            <ul class="footer__list">
+                @foreach (var item in FooterLinks)
+                {
+                    <li>
+                        <a class="footer__link" href="@item.Href">@item.Label</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+        <div class="footer__meta">
+            <p class="footer__meta-line">Desarrollado por Naiquen Iturralde · 2026</p>
+            <p class="footer__meta-line footer__meta-line--origin">
+                <span>Argentina</span>
+                @* La bandera es decorativa: "Argentina" ya se anuncia como texto. *@
+                <span aria-hidden="true">🇦🇷</span>
+            </p>
+        </div>
+
+    </div>
+</footer>
+
+@code {
+    private record FooterItem(string Label, string Href);
+
+    private static readonly FooterItem[] FooterLinks =
+    {
+        new("Inicio", "#inicio"),
+        new("Wallet", "#explora"),
+        new("Ayuda", "#ayuda"),
+        new("Dashboard", "/wallet/dashboard"),
+        new("Administración", "/admin/dashboard"),
+    };
+}

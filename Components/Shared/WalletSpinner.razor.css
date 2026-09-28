@@ -1,0 +1,41 @@
+/* ==========================================================================
+   WalletSpinner — indicador de carga
+   El tamaño se controla con la variable --spinner-size (inline, desde Size).
+   ========================================================================== */
+
+.wallet-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spinner-size, 24px);
+    height: var(--spinner-size, 24px);
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.wallet-spinner__ring {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--ws-border-strong);
+    border-top-color: var(--ws-cyan);
+    border-radius: var(--ws-radius-pill);
+    animation: wallet-spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes wallet-spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Movimiento reducido: se conserva el indicador pero sin rotación continua.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .wallet-spinner__ring {
+        animation: none;
+        border-top-color: var(--ws-cyan);
+        opacity: 0.7;
+    }
+}

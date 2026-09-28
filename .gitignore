@@ -1,0 +1,104 @@
+# ============================================
+# Wallet Squad 1 — .gitignore (.NET 10 / Blazor)
+# ============================================
+
+# ---------- Compilación ----------
+bin/
+obj/
+out/
+publish/
+artifacts/
+[Ll]og/
+[Ll]ogs/
+*.publish.xml
+
+# ---------- Resultados de build ----------
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]uild/
+[Bb]uilds/
+
+# ---------- Visual Studio / VS Code ----------
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ---------- Rider / JetBrains ----------
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# ---------- NuGet ----------
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ---------- Determinismo / restores ----------
+*.nuget.props
+*.nuget.targets
+
+# ---------- Secrets / configuración local ----------
+appsettings.*.local.json
+appsettings.Local.json
+secrets.json
+*.pfx
+*.key
+.env
+.env.*
+
+# Carpetas de credenciales de servicio de Google/BigQuery
+*service-account*.json
+*serviceaccount*.json
+credentials.json
+firebase-adminsdk*.json
+
+# ---------- Logs y temporales ----------
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.cache
+*.dll.config
+*.pidb
+*.svclog
+*.scc
+
+# ---------- Sistema operativo ----------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+.Spotlight-V100/
+.Trashes/
+
+# ---------- Navegadores / capturas ----------
+node_modules/
+*.local
+npm-debug.log*
+yarn-error.log*
+
+# ---------- Archivos de auditoría / temporales ----------
+.audit/
+*.benchmarks.json

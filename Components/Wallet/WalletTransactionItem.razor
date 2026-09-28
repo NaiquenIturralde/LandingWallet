@@ -1,0 +1,66 @@
+@* ==========================================================================
+   WalletTransactionItem — movimiento de una cuenta.
+   Lista vertical (no tabla) pensada para mobile.
+   Ingreso y egreso se distinguen por icono, signo, texto y tratamiento
+   visual: el color nunca es el único indicador.
+   ========================================================================== *@
+
+<li class="@CssClass">
+    <span class="wallet-transaction__icon" aria-hidden="true">
+        <Icon Name="@TypeIcon" Size="20" Decorative="true" />
+    </span>
+
+    <div class="wallet-transaction__main">
+        <p class="wallet-transaction__type">@Movement.Type</p>
+
+        @if (!string.IsNullOrWhiteSpace(Movement.Description))
+        {
+            <p class="wallet-transaction__description">@Movement.Description</p>
+        }
+
+        <p class="wallet-transaction__meta">
+            <span>@WalletFormat.Date(Movement.Date)</span>
+            <span class="wallet-transaction__dot" aria-hidden="true">·</span>
+            <span>@DirectionText</span>
+            <span class="wallet-transaction__dot" aria-hidden="true">·</span>
+            <span>@Movement.CurrencyCode</span>
+        </p>
+    </div>
+
+    <div class="wallet-transaction__amount">
+        <p class="wallet-transaction__value">@SignedAmount</p>
+        <p class="wallet-transaction__direction">@DirectionText</p>
+    </div>
+</li>
+
+@code {
+    /// <summary>Movimiento a presentar, ya resuelto.</summary>
+    [Parameter, EditorRequired]
+    public WalletPresentationMovement Movement { get; set; } = null!;
+
+    private bool IsIncoming => Movement.Direction == WalletMovementDirection.Incoming;
+
+    // Texto explícito además del signo y del color
+    private string DirectionText => IsIncoming ? "Ingreso" : "Egreso";
+
+    // El signo forma parte de la lectura del importe: nunca se oculta.
+    private string SignedAmount =>
+        $"{(IsIncoming ? "+" : "−")} {WalletFormat.Money(Movement.Amount, Movement.CurrencyCode)}";
+
+    private IconName TypeIcon => Movement.Type switch
+    {
+        "Transferencia" => IconName.Transfer,
+        "Depósito" => IconName.Deposit,
+        "Retiro" => IconName.Withdrawal,
+        "Pago de suscripción" => IconName.Subscription,
+        "Compra" => IconName.Purchase,
+        "Pago de servicios" => IconName.ServicePayment,
+        "Acreditación de haberes" => IconName.Salary,
+        "Reintegro" => IconName.Refund,
+        _ => IconName.Currency,
+    };
+
+    private string CssClass => IsIncoming
+        ? "wallet-transaction wallet-transaction--in"
+        : "wallet-transaction wallet-transaction--out";
+}

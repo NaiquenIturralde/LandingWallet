@@ -1,0 +1,85 @@
+@* ==========================================================================
+   WalletMetricCard — métrica genérica.
+   Obligatorios: Label y Value. Opcionales: Description, Delta y Icon.
+   No contiene lógica financiera, cálculo de saldos ni datos: solo presenta
+   lo que recibe. Reutiliza la caja de MetricPlaceholder para que el reemplazo
+   por datos reales no cambie el layout.
+   La superficie la aporta la utilidad global .ws-card: el elemento raíz lo
+   renderiza este componente, así que su propio CSS scoped sí puede estilizarlo
+   (con WalletCard, el elemento raíz llevaría el scope del componente hijo y
+   las reglas de layout de esta card no aplicarían).
+   ========================================================================== *@
+
+<div class="wallet-metric-card ws-card">
+    <div class="wallet-metric-card__head">
+        <p class="wallet-metric-card__label">@Label</p>
+
+        @if (IconName is not null)
+        {
+            <span class="wallet-metric-card__icon" aria-hidden="true">
+                <Icon Name="@IconName.Value" Size="20" Decorative="true" />
+            </span>
+        }
+    </div>
+
+    <p class="wallet-metric-card__value">@Value</p>
+
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="wallet-metric-card__description">@Description</p>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Delta))
+    {
+        @* La tendencia no depende solo del color: lleva icono y texto. *@
+        <p class="wallet-metric-card__delta @DeltaCssClass">
+            <span class="wallet-metric-card__delta-icon" aria-hidden="true">
+                <Icon Name="@DeltaIcon" Size="16" Decorative="true" />
+            </span>
+            <span>@Delta</span>
+        </p>
+    }
+</div>
+
+@code {
+    /// <summary>Nombre de la métrica.</summary>
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>Valor de la métrica, ya formateado por quien la consume.</summary>
+    [Parameter, EditorRequired]
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>Descripción o contexto opcional.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Tendencia opcional, ya formateada (por ejemplo "+2,4 %").
+    /// No todas las métricas tienen tendencia: si no se informa, no se muestra.
+    /// </summary>
+    [Parameter]
+    public string? Delta { get; set; }
+
+    /// <summary>Dirección de la tendencia. Solo se aplica si <see cref="Delta"/> tiene valor.</summary>
+    [Parameter]
+    public MetricTrend Trend { get; set; } = MetricTrend.Neutral;
+
+    /// <summary>Icono opcional, siempre a través del componente <see cref="Icon"/>.</summary>
+    [Parameter]
+    public IconName? IconName { get; set; }
+
+    private IconName DeltaIcon => Trend switch
+    {
+        MetricTrend.Up => Shared.IconName.TrendingUp,
+        MetricTrend.Down => Shared.IconName.TrendingDown,
+        _ => Shared.IconName.TrendingFlat,
+    };
+
+    private string DeltaCssClass => Trend switch
+    {
+        MetricTrend.Up => "wallet-metric-card__delta--up",
+        MetricTrend.Down => "wallet-metric-card__delta--down",
+        _ => "wallet-metric-card__delta--neutral",
+    };
+}

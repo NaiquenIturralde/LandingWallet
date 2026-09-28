@@ -1,0 +1,63 @@
+@* ==========================================================================
+   WalletPanel — bloque de pantalla con encabezado propio.
+   Usa la superficie global .ws-card (no WalletCard): como el elemento raíz lo
+   aporta el componente, el CSS scoped de WalletPanel no alcanzaría un
+   elemento renderizado por WalletCard. Con .ws-card el estilo propio sí aplica
+   y el panel queda igual al resto de las tarjetas del Design System.
+   ========================================================================== *@
+
+<div class="@CssClass">
+    <header class="wallet-panel__head">
+        @if (IconName is not null)
+        {
+            <span class="wallet-panel__icon" aria-hidden="true">
+                <Icon Name="@IconName.Value" Size="18" Decorative="true" />
+            </span>
+        }
+
+        <h2 id="@HeadingId" class="wallet-panel__title">@Title</h2>
+
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <p class="wallet-panel__hint">@Hint</p>
+        }
+    </header>
+
+    @* El ancho disponible lo define la columna que contiene al panel *@
+    <div class="wallet-panel__body">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>Id del &lt;h2&gt;, para asociarlo con aria-labelledby.</summary>
+    [Parameter, EditorRequired]
+    public string HeadingId { get; set; } = string.Empty;
+
+    /// <summary>Título del bloque.</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Rótulo corto opcional, alineado a la derecha del título.</summary>
+    [Parameter]
+    public string? Hint { get; set; }
+
+    /// <summary>Icono opcional del bloque.</summary>
+    [Parameter]
+    public IconName? IconName { get; set; }
+
+    /// <summary>
+    /// Contenido al ras de la card. Se usa cuando el interior aporta su propio
+    /// padding por fila (por ejemplo, una lista de movimientos).
+    /// </summary>
+    [Parameter]
+    public bool Flush { get; set; }
+
+    /// <summary>Contenido del bloque.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => Flush
+        ? "wallet-panel wallet-panel--flush ws-card"
+        : "wallet-panel ws-card";
+}

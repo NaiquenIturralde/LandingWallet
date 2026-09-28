@@ -1,0 +1,59 @@
+@* ==========================================================================
+   WalletAccountCard — tarjeta de cuenta de la App Wallet.
+   Muestra una cuenta con el saldo actual como dato principal. El saldo llega
+   ya calculado por la fuente de datos: este componente no lo deriva ni lo
+   suma con otras monedas.
+   La superficie la aporta la utilidad global .ws-card porque el elemento raíz
+   lo renderiza este componente y así su CSS scoped sí aplica.
+   ========================================================================== *@
+
+<div class="@CssClass">
+    <header class="wallet-account__head">
+        <span class="wallet-account__icon" aria-hidden="true">
+            <Icon Name="IconName.Account" Size="20" Decorative="true" />
+        </span>
+
+        <div class="wallet-account__ident">
+            <p class="wallet-account__type">@Account.Type</p>
+            <p class="wallet-account__alias">@Account.Alias</p>
+        </div>
+
+        <span class="wallet-account__currency">@Account.CurrencyCode</span>
+    </header>
+
+    <div class="wallet-account__balance">
+        <p class="wallet-account__balance-label">Saldo actual</p>
+        <p class="wallet-account__balance-value">@WalletFormat.Money(Account.Balance, Account.CurrencyCode)</p>
+    </div>
+
+    <dl class="wallet-account__attrs">
+        <div class="wallet-account__attr">
+            <dt>CBU</dt>
+            <dd class="wallet-account__cbu">@Account.Cbu</dd>
+        </div>
+        <div class="wallet-account__attr">
+            <dt>Moneda</dt>
+            <dd>@Account.CurrencyName</dd>
+        </div>
+        <div class="wallet-account__attr">
+            <dt>Estado</dt>
+            <dd>
+                <StatusBadge Text="@Account.Status" Variant="StatusVariant.Success" />
+            </dd>
+        </div>
+    </dl>
+</div>
+
+@code {
+    /// <summary>Cuenta a presentar, ya resuelta.</summary>
+    [Parameter, EditorRequired]
+    public WalletPresentationAccount Account { get; set; } = null!;
+
+    /// <summary>Acento de la tarjeta. La cuenta USD usa el acento alternativo.</summary>
+    [Parameter]
+    public bool AlternateAccent { get; set; }
+
+    private string CssClass => AlternateAccent
+        ? "wallet-account wallet-account--alt ws-card"
+        : "wallet-account ws-card";
+}

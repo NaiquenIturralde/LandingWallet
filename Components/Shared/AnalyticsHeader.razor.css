@@ -1,0 +1,59 @@
+/* ==========================================================================
+   AnalyticsHeader — encabezado compacto de la sección analítica
+   Icono + título + badge "LOOKER STUDIO" en una fila (el badge al final);
+   subtítulo debajo. Poca altura: el protagonista es el dashboard que sigue.
+   ========================================================================== */
+
+.analytics-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    min-width: 0;
+}
+
+.analytics-head__icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+}
+
+.analytics-head__title {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-lg);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-tight);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.analytics-head__badge {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ws-space-1) var(--ws-space-3);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.analytics-head__sub {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}

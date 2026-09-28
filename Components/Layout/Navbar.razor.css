@@ -1,0 +1,309 @@
+/* ==========================================================================
+   Navbar — barra de navegación global
+   Mobile-first. Desktop a partir de 1024px.
+   ========================================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--ws-z-header);
+    width: 100%;
+    /* Navy semi-transparente + blur moderado (sin exceso de glassmorphism) */
+    background-color: var(--ws-surface-translucent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    /* Borde inferior muy sutil */
+    border-bottom: var(--ws-hairline) solid var(--ws-border);
+}
+
+.navbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ws-space-4);
+    min-height: var(--ws-header-h);
+}
+
+/* Desktop grande: la navbar adopta el contenedor ancho del sistema
+   (--ws-container-wide,1520px), el MISMO que la sección hero (ver
+   SectionShell.razor.css): navbar y portada quedan alineadas. Debajo de
+   este breakpoint conserva .ws-container (1200px). */
+@media (min-width: 1440px) {
+    .navbar__inner {
+        max-width: var(--ws-container-wide);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Marca: WALLET / SQUAD 1
+   -------------------------------------------------------------------------- */
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-3);
+    min-height: 44px;
+    padding-block: var(--ws-space-2);
+    color: var(--ws-text);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.brand:hover {
+    color: var(--ws-text);
+}
+
+.brand__mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ws-radius-sm);
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-bold);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.brand__text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ws-space-2);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    white-space: nowrap;
+}
+
+.brand__sep {
+    color: var(--ws-text-muted);
+}
+
+.brand__word--accent {
+    color: var(--ws-text-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Navegación — móvil: panel desplegable
+   -------------------------------------------------------------------------- */
+.navbar__nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: none;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    padding: var(--ws-space-4) var(--ws-container-pad) var(--ws-space-6);
+    background-color: var(--ws-surface);
+    border-bottom: var(--ws-hairline) solid var(--ws-border);
+    box-shadow: var(--ws-shadow-lg);
+    max-height: calc(100dvh - var(--ws-header-h));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.navbar__nav--open {
+    display: flex;
+}
+
+.navbar__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+}
+
+.navbar__link {
+    display: flex;
+    align-items: center;
+    /* Área táctil adecuada */
+    min-height: 48px;
+    padding: var(--ws-space-3) var(--ws-space-3);
+    border-radius: var(--ws-radius-sm);
+    color: var(--ws-text-muted);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-medium);
+    transition: color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.navbar__link:hover {
+    color: var(--ws-text);
+    background-color: var(--ws-grid-line);
+}
+
+/* CTA — versión móvil: ancho completo */
+.navbar__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    margin-top: var(--ws-space-3);
+    padding: var(--ws-space-3) var(--ws-space-6);
+    border-radius: var(--ws-radius-pill);
+    background-image: var(--ws-gradient-main);
+    color: var(--ws-white);
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    white-space: nowrap;
+    transition: box-shadow var(--ws-dur-base) var(--ws-ease-out),
+                transform var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.navbar__cta:hover {
+    color: var(--ws-white);
+    box-shadow: var(--ws-shadow-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Botón hamburguesa
+   -------------------------------------------------------------------------- */
+.navbar__toggle {
+    display: inline-grid;
+    place-items: center;
+    /* Área táctil de 44x44 mínimo */
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ws-radius-sm);
+    border: var(--ws-hairline) solid var(--ws-border);
+    background-color: transparent;
+    color: var(--ws-text);
+    flex-shrink: 0;
+    transition: border-color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.navbar__toggle:hover {
+    border-color: var(--ws-border-strong);
+    background-color: var(--ws-grid-line);
+}
+
+.navbar__toggle-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 20px;
+    height: 14px;
+}
+
+.navbar__toggle-bar {
+    display: block;
+    height: 2px;
+    width: 100%;
+    border-radius: var(--ws-radius-pill);
+    background-color: currentColor;
+    transition: transform var(--ws-dur-base) var(--ws-ease-out),
+                opacity var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+/* Estado abierto: la hamburguesa se convierte en X */
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-bar:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   Desktop: navegación horizontal siempre visible, sin hamburguesa
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .navbar__inner {
+        min-height: var(--ws-header-h);
+    }
+
+    .navbar__nav {
+        position: static;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        /* Espaciado compacto en el tramo 1024–1199px (medido): con la marca
+           (208px), la lista de 7 secciones y el CTA, el espaciado holgado
+           desbordaba el header a 1024px. Desde 1200px se restaura. */
+        gap: var(--ws-space-3);
+        padding: 0;
+        background-color: transparent;
+        border-bottom: 0;
+        box-shadow: none;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .navbar__list {
+        flex-direction: row;
+        align-items: center;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    /* Cada ítem conserva su ancho natural: sin esto, la lista se encogía por
+       debajo de su contenido y el texto de un enlace se solapaba con el
+       siguiente ("Ayuda" quedaba tapado por el CTA). */
+    .navbar__item {
+        flex-shrink: 0;
+    }
+
+    .navbar__link {
+        min-height: 40px;
+        /* Cada sección se mantiene en UNA línea. Sin nowrap, "Cómo funciona"
+           envolvía en dos líneas en el tramo 1024–1099px (donde el nav cabe
+           justo) y el header crecía en alto. */
+        white-space: nowrap;
+        /* Padding compacto del tramo angosto: con 7 secciones + marca + CTA, el
+           padding holgado no entra a 1024px (medido con detector de
+           solapamiento). */
+        padding: var(--ws-space-2) var(--ws-space-2);
+        font-size: var(--ws-fs-xs);
+    }
+
+    .navbar__cta {
+        min-height: 40px;
+        margin-top: 0;
+        padding: var(--ws-space-2) var(--ws-space-4);
+        font-size: var(--ws-fs-xs);
+    }
+
+    .navbar__cta:hover {
+        transform: translateY(-1px);
+    }
+
+    .navbar__toggle {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop amplio (1200px en adelante): vuelve el espaciado holgado y la
+   tipografía de lectura plena. Está medido: desde 1200px la lista y el CTA
+   entran holgados en una sola línea.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1200px) {
+    .navbar__nav {
+        gap: var(--ws-space-6);
+    }
+
+    .navbar__list {
+        gap: var(--ws-space-1);
+    }
+
+    .navbar__link {
+        padding: var(--ws-space-2) var(--ws-space-3);
+        font-size: var(--ws-fs-sm);
+    }
+
+    .navbar__cta {
+        padding: var(--ws-space-2) var(--ws-space-5);
+        font-size: var(--ws-fs-sm);
+    }
+}

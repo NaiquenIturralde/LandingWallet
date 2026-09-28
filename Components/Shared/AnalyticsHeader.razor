@@ -1,0 +1,26 @@
+@* ==========================================================================
+   AnalyticsHeader — encabezado compacto de la sección analítica (Looker).
+
+   Se usa directamente encima del embed de Looker (Usuario y Admin), SIN
+   capa intermedia: ocupa poca altura para que el DASHBOARD REAL sea el
+   protagonista inmediato de la sección.
+   ========================================================================== *@
+
+<div class="analytics-head">
+    <span class="analytics-head__icon" aria-hidden="true">
+        <Icon Name="IconName.Analytics" Size="18" Decorative="true" />
+    </span>
+    <h2 class="analytics-head__title" id="@HeadingId">@Title</h2>
+    <span class="analytics-head__badge">Looker Studio</span>
+    <p class="analytics-head__sub">Analítica financiera en tiempo real</p>
+</div>
+
+@code {
+    /// <summary>Título de la sección (h2 bajo el h1 del shell).</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Id del h2, para asociaciones de encabezado existentes.</summary>
+    [Parameter, EditorRequired]
+    public string HeadingId { get; set; } = string.Empty;
+}

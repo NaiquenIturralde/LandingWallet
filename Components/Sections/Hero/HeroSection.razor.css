@@ -1,0 +1,228 @@
+/* ==========================================================================
+   Sección 01 — Hero
+   Mobile-first. Una columna hasta 1024px, dos columnas desde ahí.
+   Orden en móvil: texto → CTAs → mockup (el DOM ya respeta ese orden).
+
+   NOTA sobre aislamiento de CSS: la <section> la renderiza SectionShell, así
+   que lleva SU scope y no el de este componente. Por eso todo el estilo de
+   nivel sección se aplica sobre .hero (div propio de este archivo).
+   ========================================================================== */
+
+/* Portada real dentro del marco del teléfono: captura del Dashboard Usuario
+   en móvil (390x844). Bloque y borde: sin deformación, ancho completo. */
+.phone__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--ws-radius-sm);
+}
+
+.hero {
+    /* Variantes alfa de los colores de marca, derivadas de los tokens con
+       color-mix() en lugar de repetir el rgba a mano. */
+    --hero-glow-cyan: color-mix(in srgb, var(--ws-cyan) 15%, transparent);
+    --hero-glow-purple: color-mix(in srgb, var(--ws-purple) 15%, transparent);
+    --hero-glow-blue: color-mix(in srgb, var(--ws-blue) 11%, transparent);
+
+    position: relative;
+    z-index: var(--ws-z-base);
+    /* Recorta el fondo decorativo y evita cualquier scroll horizontal */
+    overflow: hidden;
+    /* Sangra hasta los bordes del contenedor y devuelve el padding al contenido,
+       así el fondo decorativo puede ocupar todo el ancho sin desbordar. */
+    margin-inline: calc(var(--ws-container-pad) * -1);
+    padding-inline: var(--ws-container-pad);
+    padding-block-start: var(--ws-space-4);
+}
+
+/* --------------------------------------------------------------------------
+   Fondo tecnológico — grid muy tenue, desvanecido en todos los bordes.
+   El mask hace que el recorte de .hero sea invisible: no quedan bordes duros.
+   -------------------------------------------------------------------------- */
+.hero__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(to right, var(--ws-grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--ws-grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 35%, var(--ws-mask-opaque) 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 35%, var(--ws-mask-opaque) 0%, transparent 72%);
+}
+
+/* Halos cyan / azul / violeta. Se resuelven como capas de gradiente que se
+   desvanecen solas, así no dependen de coordenadas que se recorten. */
+.hero__backdrop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 14% 10%, var(--hero-glow-cyan) 0%, transparent 52%),
+        radial-gradient(circle at 88% 20%, var(--hero-glow-purple) 0%, transparent 55%),
+        radial-gradient(circle at 55% 96%, var(--hero-glow-blue) 0%, transparent 58%);
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+.hero__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 4rem);
+}
+
+/* --------------------------------------------------------------------------
+   Columna de contenido
+   -------------------------------------------------------------------------- */
+.hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ws-space-4);
+    min-width: 0;
+    /* Bloque de texto acotado (medido: con ~680px el título compone en3
+       líneas a68px y el párrafo no se estira en columnas anchas). Por debajo
+       de680px manda el ancho de la columna, así que móvil no cambia. */
+    max-width: 680px;
+    /* Sin columna visual, el bloque se centra en el contenedor; el texto
+       sigue alineado a la izquierda dentro del bloque. */
+    margin-inline: auto;
+}
+
+.hero__eyebrow {
+    margin: 0;
+}
+
+.hero__title {
+    margin: 0;
+    /* Un punto más contenido que el h1 global: el Hero compite con el mockup.
+       Escala desktop: la medida natural de "Una billetera digital" es619px a
+       64px y657px a68px, así que el tope en68px (4.25rem) con el bloque de
+       680px compone el título en3 líneas en vez de4 (medido, no arbitrario);
+       por debajo de1419px manda la fórmula intermedia, igual que antes. */
+    font-size: clamp(2.125rem, 1.5rem + 3.1vw, 4.25rem);
+    line-height: 1.06;
+    max-width: 20ch;
+}
+
+/* Cada span es una línea en desktop; en móvil envuelven naturalmente */
+.hero__title-line {
+    display: block;
+}
+
+.hero__lead {
+    margin: 0;
+    max-width: 54ch;
+    font-size: var(--ws-fs-lg);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+.hero__meta {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-medium);
+    letter-spacing: var(--ws-ls-wide);
+    color: var(--ws-text-accent);
+}
+
+/* --------------------------------------------------------------------------
+   CTAs: apilados a ancho completo en móvil, en fila desde 430px
+   -------------------------------------------------------------------------- */
+.hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-3);
+    width: 100%;
+    margin-top: var(--ws-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Referencia a Argentina: línea celeste/blanca + texto + bandera
+   -------------------------------------------------------------------------- */
+.hero__origin {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-3);
+    margin: var(--ws-space-2) 0 0;
+    font-size: var(--ws-fs-sm);
+    color: var(--ws-text-muted);
+}
+
+/* Franja cyan/blanca, acento de marca */
+.hero__origin-line {
+    display: inline-block;
+    width: 34px;
+    height: 4px;
+    border-radius: var(--ws-radius-pill);
+    background-image: linear-gradient(
+        to bottom,
+        var(--ws-cyan) 0 50%,
+        var(--ws-white) 50% 100%
+    );
+    flex-shrink: 0;
+}
+
+.hero__origin-flag {
+    font-size: var(--ws-fs-base);
+    line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: CTAs en fila
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    .hero__actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        width: auto;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: CTAs en fila
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Animación de entrada: discreta, solo CSS
+   -------------------------------------------------------------------------- */
+@keyframes hero-rise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero__content > * {
+    animation: hero-rise var(--ws-dur-slow) var(--ws-ease-out) both;
+}
+
+/* Escalonado mínimo entre elementos */
+.hero__content > *:nth-child(2) { animation-delay: 40ms; }
+.hero__content > *:nth-child(3) { animation-delay: 80ms; }
+.hero__content > *:nth-child(4) { animation-delay: 120ms; }
+.hero__content > *:nth-child(5) { animation-delay: 160ms; }
+.hero__content > *:nth-child(6) { animation-delay: 200ms; }
+
+/* --------------------------------------------------------------------------
+   Movimiento reducido: base.css acorta las duraciones, pero hay que anular
+   también los delays o el contenido queda invisible hasta que expiran.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .hero__content > * {
+        animation: none !important;
+    }
+
+    .phone {
+        transform: none;
+    }
+}

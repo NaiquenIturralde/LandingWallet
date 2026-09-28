@@ -1,0 +1,47 @@
+﻿@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error — Wallet Squad 1</PageTitle>
+
+@* ==========================================================================
+   Página de error del servidor.
+   Adaptada al Design System DARK FINTECH y al idioma del proyecto.
+   No depende solo del color: el estado se comunica con icono + texto.
+   ========================================================================== *@
+
+<SectionShell Id="error" HeadingId="error-title" CssClass="error-page">
+    <div class="error-page__content">
+
+        <span class="error-page__icon" aria-hidden="true">
+            <Icon Name="IconName.Warning" Size="28" Decorative="true" />
+        </span>
+
+        <SectionHeading HeadingId="error-title" Eyebrow="ERROR" Title="Algo salió mal"
+                        Description="No pudimos procesar tu solicitud. Podés volver al inicio e intentarlo nuevamente." />
+
+        @if (ShowRequestId)
+        {
+            <p class="error-page__meta">
+                <span class="error-page__meta-label">Identificador de la solicitud</span>
+                <code class="error-page__code">@RequestId</code>
+            </p>
+        }
+
+        <div class="error-page__actions">
+            <GradientButton Text="Volver al inicio" Href="/" Variant="ButtonVariant.Primary" ShowArrow="true" />
+        </div>
+
+    </div>
+</SectionShell>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

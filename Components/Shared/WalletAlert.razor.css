@@ -1,0 +1,77 @@
+/* ==========================================================================
+   WalletAlert — mensaje contextual
+   El texto usa --ws-text (blanco) sobre fondo translúcido del color de estado:
+   el color aporta énfasis pero no carga con el contraste.
+   ========================================================================== */
+
+.wallet-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ws-space-3);
+    width: 100%;
+    padding: var(--ws-space-4);
+    border: var(--ws-hairline) solid;
+    border-radius: var(--ws-radius-md);
+}
+
+.wallet-alert__icon {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.wallet-alert__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-1);
+    min-width: 0;
+}
+
+.wallet-alert__title {
+    margin: 0;
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-snug);
+    color: var(--ws-text);
+}
+
+.wallet-alert__text {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.wallet-alert__extra {
+    margin-top: var(--ws-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Variantes
+   -------------------------------------------------------------------------- */
+.wallet-alert--info {
+    background-color: var(--ws-cyan-soft);
+    border-color: var(--ws-border-cyan);
+    color: var(--ws-cyan);
+}
+
+.wallet-alert--success {
+    background-color: var(--ws-success-soft);
+    border-color: var(--ws-success-border);
+    color: var(--ws-success);
+}
+
+.wallet-alert--warning {
+    background-color: var(--ws-warning-soft);
+    border-color: var(--ws-warning-border);
+    color: var(--ws-warning);
+}
+
+.wallet-alert--error {
+    background-color: var(--ws-danger-soft);
+    border-color: var(--ws-danger-border);
+    color: var(--ws-danger);
+}

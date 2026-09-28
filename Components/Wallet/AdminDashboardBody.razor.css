@@ -1,0 +1,114 @@
+/* --------------------------------------------------------------------------
+   Vista de administración (rol admin)
+   Mobile-first (430px de referencia): KPIs en dos columnas, el resto apilado.
+   En desktop los KPIs pasan a cuatro columnas (2 filas de 4) y el detalle
+   operativo comparte fila, para aprovechar el ancho sin alargar la página.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Filas modulares de reportes Looker (WalletLookerCard). Todos los reportes
+   comparten la relación nativa360/340, así que con columnas de igual ancho
+   las cards de una fila terminan con la MISMA altura. Mobile: 1 columna
+   (cards apiladas).
+   -------------------------------------------------------------------------- */
+.looker-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-6);
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bloque con título propio y grilla de KPIs
+   -------------------------------------------------------------------------- */
+.admin__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+.admin__block-title {
+    margin: 0;
+    font-size: var(--ws-fs-lg);
+    letter-spacing: var(--ws-ls-normal);
+}
+
+/* Dos columnas desde 430px: con etiquetas cortas los KPIs siguen legibles */
+.admin__kpis {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+@media (min-width: 430px) {
+    .admin__kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Nota informativa de bloque
+   -------------------------------------------------------------------------- */
+.admin__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ws-space-3);
+    margin: 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border-left: 2px solid var(--ws-cyan);
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text);
+}
+
+.admin__note-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--ws-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Tablet: KPIs en dos columnas y el detalle operativo en dos.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    .admin__kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Todos los reportes:360×340 → columnas iguales = alturas idénticas
+       en cada fila. */
+    .looker-row--feature {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .looker-row--pair {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Fila3: misma relación nativa360/340 en ambas cards → columnas
+       iguales y alturas idénticas (mismo sistema que --feature). */
+    .looker-row--audit {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop y presentación (1024px en adelante).
+   Los KPIs usan 4 columnas fijas: las 8 métricas reales forman 2 filas
+   alineadas, con la misma altura por fila y sin márgenes manuales. A 1024px
+   (con sidebar) cada card queda ~168px: la misma densidad que la grilla de
+   2 columnas del móvil a 430px, ya validada como legible.
+   Los reportes Looker viven en sus propias cards modulares (.looker-row),
+   con columnas proporcionales a su lienzo nativo.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .admin__kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--ws-space-6);
+    }
+}

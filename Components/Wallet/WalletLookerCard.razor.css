@@ -1,0 +1,139 @@
+/* ==========================================================================
+   WalletLookerCard — card tech premium para un reporte individual de Looker
+   Mismo lenguaje glass que el resto del sistema: fondo translúcido + blur,
+   borde cyan tenue, profundidad constante (--ws-shadow-card: sombra oscura +
+   halo cyan hacia abajo/derecha) y hover que solo enciende la LUZ (sin
+   movimiento, sin neón).
+   ========================================================================== */
+
+.looker-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    /* Recorta el iframe a las esquinas del radio: el reporte se integra a
+       Wallet sin doble borde. */
+    overflow: hidden;
+    background-color: var(--ws-card-translucent);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-lg);
+    box-shadow: var(--ws-shadow-card),
+                inset 0 1px 0 color-mix(in srgb, var(--ws-white) 6%, transparent);
+    transition: box-shadow var(--ws-dur-base) var(--ws-ease-out),
+                border-color var(--ws-dur-base) var(--ws-ease-out);
+}
+
+/* Hover solo con puntero fino (desktop): halo cyan un nivel más + borde más
+   brillante. Sin transform: la card no se mueve. reduced-motion lo anula. */
+@media (hover: hover) and (pointer: fine) {
+    .looker-card:hover {
+        border-color: var(--ws-cyan);
+        box-shadow: var(--ws-shadow-cyan),
+                    var(--ws-shadow-card),
+                    inset 0 1px 0 color-mix(in srgb, var(--ws-white) 8%, transparent);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado compacto: icono + título real + badge + enlace al reporte.
+   Título → gráfico inmediato: sin párrafos.
+   -------------------------------------------------------------------------- */
+.looker-card__head {
+    display: flex;
+    align-items: center;
+    gap: var(--ws-space-3);
+    padding: var(--ws-space-3) var(--ws-space-4);
+    min-width: 0;
+    /* La línea divisoria vive en el header (FUERA del aspect ratio): así el
+       viewport conserva la proporción exacta360/340 sin restar bordes. */
+    border-bottom: var(--ws-hairline) solid var(--ws-border);
+}
+
+.looker-card__icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+}
+
+.looker-card__title {
+    margin: 0;
+    min-width: 0;
+    flex: 1 1 auto;
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.looker-card__badge {
+    flex-shrink: 0;
+    padding: var(--ws-space-1) var(--ws-space-2);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    color: var(--ws-cyan);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* En pantallas angostas (<400px) el badge consume el ancho que el título
+   necesita y la card queda con el título colapsado. El badge es redundante:
+   la sección ya lo informa (AnalyticsHeader) y el enlace "Abrir reporte"
+   conserva su nombre accesible. Se oculta SOLO acá, para que el título
+   sea legible en320/375/390. */
+@media (max-width: 399px) {
+    .looker-card__badge {
+        display: none;
+    }
+}
+
+.looker-card__open {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: var(--ws-radius-sm);
+    color: var(--ws-text-muted);
+    text-decoration: none;
+    transition: color var(--ws-dur-fast) var(--ws-ease-out),
+                background-color var(--ws-dur-fast) var(--ws-ease-out);
+}
+
+.looker-card__open:hover {
+    color: var(--ws-cyan);
+    background-color: var(--ws-cyan-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Viewport del reporte: SOLO el iframe, con la relación nativa del lienzo
+   rediseñado (360×340). El header queda fuera de la proporción. El canvas
+   ya fue diseñado para mobile, así que NO hay scroll horizontal: el
+   contenido debe caber en el ancho disponible (overflow: hidden recorta
+   solo las esquinas del radio, nunca un error de tamaño).
+   -------------------------------------------------------------------------- */
+.looker-card__frame {
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 360 / 340;
+    overflow: hidden;
+    background-color: var(--ws-surface);
+}
+
+.looker-card__frame iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background-color: var(--ws-card);
+}

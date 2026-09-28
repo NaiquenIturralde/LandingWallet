@@ -1,0 +1,25 @@
+/* ==========================================================================
+   MainLayout — estructura global
+   Skip link → Navbar → main → Footer
+   ========================================================================== */
+
+.layout-main {
+    display: block;
+    /* El main nunca debe generar scroll horizontal */
+    min-width: 0;
+}
+
+/* El skip link mueve el foco acá: sin anillo, el destino ya es visible */
+.layout-main:focus {
+    outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Error boundary de Blazor (barra inferior).
+   El estilo vive en wwwroot/app.css, NO acá: MainLayout y WalletLayout
+   renderizan su propio #blazor-error-ui y este archivo es CSS scoped, así que
+   un selector scoped no alcanzaría al div del otro layout. Al ser
+   infraestructura compartida (el runtime de Blazor la busca por id), su lugar
+   es la hoja global.
+   -------------------------------------------------------------------------- */
+

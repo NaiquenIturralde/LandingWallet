@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <base href="/" />
+      <title>Wallet Squad 1 — Billetera digital</title>
+      <meta name="description"
+            content="Wallet Squad 1 es una billetera digital para administrar cuentas en distintas monedas, consultar movimientos, transferir dinero y hacer seguimiento de tus operaciones." />
+      <meta name="theme-color" content="#050816" />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="Wallet Squad 1" />
+      <meta property="og:title" content="Wallet Squad 1 — Billetera digital" />
+      <meta property="og:description"
+            content="Administrá cuentas en distintas monedas, consultá movimientos, transferí dinero y seguí tus operaciones desde un solo lugar." />
+      <meta property="og:locale" content="es_AR" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <ResourcePreloader />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" />
+      @* Material Symbols Outlined — sistema oficial de iconografía de Wallet Squad 1.
+       display=block evita el flash de texto crudo mientras carga la fuente.
+       Se carga una sola vez para toda la aplicación (landing, App Wallet y Admin). *@
+      <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
+      <link rel="stylesheet" href="@Assets["css/tokens.css"]" />
+      <link rel="stylesheet" href="@Assets["css/base.css"]" />
+      <link rel="stylesheet" href="@Assets["css/utilities.css"]" />
+      <link rel="stylesheet" href="@Assets["css/forms.css"]" />
+      <link rel="stylesheet" href="@Assets["app.css"]" />
+      <link rel="stylesheet" href="@Assets["LandingWallet.styles.css"]" />
+      <ImportMap />
+      <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+      <Routes @rendermode="InteractiveServer" />
+      <ReconnectModal />
+      @* Controles Atrás/Adelante de la App Wallet: deben existir antes de que
+       Blazor monte el shell, por eso se cargan antes de blazor.web.js. *@
+      <script src="@Assets["js/wallet-nav.js"]"></script>
+      <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+
+</html>

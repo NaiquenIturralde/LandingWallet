@@ -1,0 +1,11 @@
+/* ==========================================================================
+   WalletSelect — selector genérico
+   La estructura del control vive en wwwroot/css/forms.css (.ws-field-control),
+   compartida con WalletInput. Acá solo van los ajustes propios del select.
+   ========================================================================== */
+
+/* Las opciones heredan el esquema oscuro del sistema */
+.ws-field-control--select option {
+    background-color: var(--ws-card);
+    color: var(--ws-text);
+}

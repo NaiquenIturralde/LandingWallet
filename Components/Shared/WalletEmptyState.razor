@@ -1,0 +1,72 @@
+@* ==========================================================================
+   WalletEmptyState — situación normal sin elementos.
+   NO es un error: no usa role="alert". El icono es decorativo porque el
+   significado ya está expresado en el título y la descripción.
+
+   DOS DENSIDADES: por defecto ocupa el bloque completo (pantalla sin datos o
+   estado vacío principal). Con Compact="true" reduce icono, padding y
+   tipografía, para usarlo dentro de una sección que NO es la protagonista de
+   la pantalla —por ejemplo, un resumen sin registros al final del dashboard—
+   sin que su altura empuje el resto del contenido.
+   ========================================================================== *@
+
+<div class="@CssClass">
+    @if (IconName is not null)
+    {
+        <span class="wallet-empty-state__icon" aria-hidden="true">
+            <Icon Name="@IconName.Value" Size="@IconSize" Decorative="true" />
+        </span>
+    }
+
+    <h3 class="wallet-empty-state__title">@Title</h3>
+
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="wallet-empty-state__description">@Description</p>
+    }
+
+    @if (HasAction)
+    {
+        <div class="wallet-empty-state__action">
+            <WalletButton Text="@ActionText" Variant="WalletButtonVariant.Secondary" OnClick="OnAction" />
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Título del estado vacío.</summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Descripción opcional.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>Icono opcional, siempre a través del componente <see cref="Icon"/>.</summary>
+    [Parameter]
+    public IconName? IconName { get; set; }
+
+    /// <summary>
+    /// Densidad reducida para estados vacíos secundarios. El contenido y la
+    /// semántica son los mismos: solo cambia cuánto espacio ocupa.
+    /// </summary>
+    [Parameter]
+    public bool Compact { get; set; }
+
+    /// <summary>Texto de la acción sugerida. Si se omite, no se renderiza botón.</summary>
+    [Parameter]
+    public string? ActionText { get; set; }
+
+    /// <summary>Acción sugerida.</summary>
+    [Parameter]
+    public EventCallback OnAction { get; set; }
+
+    // Sin texto de acción no se renderiza un botón vacío.
+    private bool HasAction => !string.IsNullOrWhiteSpace(ActionText);
+
+    private int IconSize => Compact ? 22 : 28;
+
+    private string CssClass => Compact
+        ? "wallet-empty-state wallet-empty-state--compact"
+        : "wallet-empty-state";
+}

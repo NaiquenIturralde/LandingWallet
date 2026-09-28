@@ -1,0 +1,85 @@
+@namespace LandingWallet.Components.Sections
+
+@* ==========================================================================
+   Sección — Explorá Wallet (dashboards REALES dentro de la Landing)
+
+   Inmediatamente después del Hero, la Landing renderiza la APLICACIÓN REAL:
+   WalletDashboardBody y AdminDashboardBody son los MISMOS componentes que
+   usan /wallet/dashboard y /admin/dashboard — mismos servicios, mismo
+   BigQuery, mismos estados de carga/error/vacío, mismos gráficos y embeds de
+   Looker. No hay capturas, mockups ni métricas duplicadas.
+
+   El dashboard se presenta con su WalletAppShell REAL en modo Embedded:
+   conserva su navegación (WalletUserNavigation / WalletAdminNavigation,
+   mismos ítems e iconos) pero CONTENIDA en el marco de la sección, para no
+   competir con la navegación fixed de las rutas.
+
+   El selector es un conmutador de vista (aria-pressed), no una navegación:
+   por defecto muestra USUARIO.
+   ========================================================================== *@
+
+@inject IWalletDashboardService DashboardService
+
+<SectionShell Id="explora" HeadingId="explora-title" CssClass="showcase-section">
+    <div class="showcase">
+
+        @* Cabecera de la sección: título + selector en la misma zona visual.
+           Mobile: el selector queda justo debajo del título/subtítulo, antes
+           del dashboard. Desktop: se alinea a la derecha del encabezado. *@
+        <div class="showcase__header">
+
+            <SectionHeading HeadingId="explora-title" Eyebrow="LA WALLET EN VIVO" Title="Explorá Wallet"
+                            Description="Conocé la experiencia desde cada rol." />
+
+            <div class="showcase__switch" role="group" aria-label="Elegí qué dashboard visualizar">
+                <button type="button" class="@OptionClass(isAdmin: false)"
+                        aria-pressed="@(!_isAdmin ? "true" : "false")" @onclick="ShowUser">
+                    Usuario
+                </button>
+                <button type="button" class="@OptionClass(isAdmin: true)" aria-pressed="@(_isAdmin ? "true" : "false")"
+                        @onclick="ShowAdmin">
+                    Administrador
+                </button>
+            </div>
+
+        </div>
+
+        <div class="showcase__frame">
+            @if (_isAdmin)
+            {
+                @* Shell REAL en modo Embedded: AMBOS roles usan la lista única
+                   WalletUserNavigation (mismos ítems, iconos y estados en la
+                   ruta y en la Landing); queda contenida dentro del marco. *@
+                <WalletAppShell Embedded Title="Panel de Administración" Subtitle="Visión general del sistema"
+                                Eyebrow="ADMIN" HeadingId="admin-dashboard-title" NavigationLabel="Secciones de administración">
+                    <AdminDashboardBody />
+                </WalletAppShell>
+            }
+            else
+            {
+                <WalletAppShell Embedded Title="@($"¡Hola, {DashboardService.DisplayUserName}!")"
+                                Subtitle="Este es tu resumen financiero" Eyebrow="DASHBOARD" HeadingId="wallet-dashboard-title">
+                    <WalletDashboardBody />
+                </WalletAppShell>
+            }
+        </div>
+
+    </div>
+</SectionShell>
+
+@code {
+    /// <summary>
+    /// Rol visualizado en la demo interactiva. Por defecto USUARIO.
+    /// Cambiar de opción monta el cuerpo real correspondiente (carga sus datos
+    /// desde BigQuery con sus estados reales); no se precargan copias.
+    /// </summary>
+    private bool _isAdmin;
+
+    private void ShowUser() => _isAdmin = false;
+
+    private void ShowAdmin() => _isAdmin = true;
+
+    /// <summary>Clase del botón: marca cuál corresponde al rol activo.</summary>
+    private string OptionClass(bool isAdmin)
+        => isAdmin == _isAdmin ? "showcase__option showcase__option--current" : "showcase__option";
+}

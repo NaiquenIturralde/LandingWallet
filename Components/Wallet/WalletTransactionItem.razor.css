@@ -1,0 +1,153 @@
+/* ==========================================================================
+   WalletTransactionItem — movimiento
+   Fila de lista, no tabla. El texto envuelve y el importe nunca parte
+   el nombre del movimiento.
+   ========================================================================== */
+
+.wallet-transaction {
+    display: grid;
+    /* Móvil angosto: icono y datos comparten la primera fila y el importe baja
+       a la segunda, alineado bajo el texto. Con la tercera columna fija, el
+       importe (que no se parte) dejaba ~84px para el nombre del movimiento y
+       lo cortaba a mitad de palabra ("Transferenc/ia"). Desde 430px hay ancho
+       para la fila única (ver @media). */
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    /* Alineado con el encabezado del panel que contiene la lista. Si la lista
+       se usa fuera de un panel, cae al inset por defecto. */
+    padding: var(--ws-space-3) var(--wallet-panel-inset, var(--ws-space-5));
+    min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Icono: contenedor por dirección
+   -------------------------------------------------------------------------- */
+.wallet-transaction__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ws-radius-sm);
+    border: var(--ws-hairline) solid var(--ws-border);
+    background-color: var(--ws-surface);
+    color: var(--ws-text-muted);
+    flex-shrink: 0;
+}
+
+.wallet-transaction--in .wallet-transaction__icon {
+    background-color: var(--ws-success-soft);
+    border-color: var(--ws-success-border);
+    color: var(--ws-success);
+}
+
+.wallet-transaction--out .wallet-transaction__icon {
+    background-color: var(--ws-neutral-soft);
+    border-color: var(--ws-border-strong);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Datos del movimiento
+   -------------------------------------------------------------------------- */
+.wallet-transaction__main {
+    min-width: 0;
+}
+
+.wallet-transaction__type {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+}
+
+.wallet-transaction__description {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.wallet-transaction__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ws-space-1);
+    margin: var(--ws-space-1) 0 0;
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+}
+
+.wallet-transaction__dot {
+    color: var(--ws-border-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Importe y dirección
+   -------------------------------------------------------------------------- */
+.wallet-transaction__amount {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-half);
+    flex-shrink: 0;
+    /* Móvil: segunda fila (columna 2), bajo el texto y alineado con él. Con el
+       importe a la derecha en una tercera columna, el nombre quedaba con ~84px
+       y se partía ("Transferenc/ia"). Desde 430px vuelve a la fila única. */
+    grid-column: 2 / -1;
+    align-items: flex-start;
+    text-align: left;
+}
+
+/* --------------------------------------------------------------------------
+   El importe no debe partirse ni empujar el ancho de la fila.
+   -------------------------------------------------------------------------- */
+.wallet-transaction__value {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-sm);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-tight);
+    white-space: nowrap;
+}
+
+.wallet-transaction--in .wallet-transaction__value {
+    color: var(--ws-success);
+}
+
+.wallet-transaction--out .wallet-transaction__value {
+    color: var(--ws-text);
+}
+
+/* La dirección se repite como texto: el color no comunica por sí solo. */
+.wallet-transaction__direction {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Desde 430px hay espacio para el icono completo, el importe más grande y la
+   fila única: icono, datos y importe en una sola línea.
+   -------------------------------------------------------------------------- */
+@media (min-width: 430px) {
+    .wallet-transaction {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: var(--ws-space-3);
+    }
+
+    .wallet-transaction__amount {
+        grid-column: auto;
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .wallet-transaction__icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .wallet-transaction__value {
+        font-size: var(--ws-fs-base);
+    }
+}
