@@ -5,16 +5,16 @@
 
 @* ==========================================================================
    Más — App Wallet (rol usuario).
-   Accesos secundarios de la Wallet. Primero los accesos REALES (dashboards e
-   inversiones, que navegan de verdad); después las secciones contempladas por
-   el modelo funcional que todavía no tienen pantalla: se muestran como
-   pendientes, nunca como enlaces falsos. Ni Perfil ni Movimientos funcionales
-   si no existen.
+   Accesos secundarios de la Wallet. Primero los accesos habilitados
+   (dashboards e inversiones, que navegan de verdad); después las secciones
+   contempladas por el modelo funcional que todavía no tienen pantalla: se
+   muestran como pendientes, nunca como enlaces falsos. Ni Perfil ni
+   Movimientos funcionales si no existen.
    ========================================================================== *@
 
 <WalletAppShell Title="Más" Subtitle="Otros accesos de tu Wallet" Eyebrow="MÁS" HeadingId="wallet-more-page-title">
 
-    @* ---------- Accesos reales ---------- *@
+    @* ---------- Accesos con ruta habilitada ---------- *@
     @* En mobile la barra inferior muestra solo Inicio, Cuentas, Transferir y
        Más: estos accesos son la vía a los dashboards y a inversiones. *@
     <WalletPanel HeadingId="more-dashboards-title" Title="Dashboards" Flush="true">
@@ -71,8 +71,8 @@
 </WalletAppShell>
 
 @code {
-    // Accesos REALES: navegan de verdad (usados como accesos secundarios en
-    // mobile, donde no viven en la barra inferior).
+    // Accesos con ruta habilitada: navegan de verdad (usados como accesos
+    // secundarios en mobile, donde no viven en la barra inferior).
     private static readonly IReadOnlyList<WalletMenuItem> DashboardItems =
     [
         new("Dashboard Usuario", IconName.Wallet,

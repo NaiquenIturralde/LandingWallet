@@ -3,7 +3,7 @@
    Obligatorios: Label y Value. Opcionales: Description, Delta y Icon.
    No contiene lógica financiera, cálculo de saldos ni datos: solo presenta
    lo que recibe. Reutiliza la caja de MetricPlaceholder para que el reemplazo
-   por datos reales no cambie el layout.
+   por el dato definitivo no cambie el layout.
    La superficie la aporta la utilidad global .ws-card: el elemento raíz lo
    renderiza este componente, así que su propio CSS scoped sí puede estilizarlo
    (con WalletCard, el elemento raíz llevaría el scope del componente hijo y
@@ -22,7 +22,10 @@
         }
     </div>
 
-    <p class="wallet-metric-card__value">@Value</p>
+    @* Longitud del valor en caracteres: SOLO alimenta el font-size del CSS
+       (presentación). Un importe largo baja de tamaño hasta entrar completo;
+       el componente no formatea, no calcula y no toca el dato. *@
+    <p class="wallet-metric-card__value" style="--ws-value-chars: @Value.Length">@Value</p>
 
     @if (!string.IsNullOrWhiteSpace(Description))
     {

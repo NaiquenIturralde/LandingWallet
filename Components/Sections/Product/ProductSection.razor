@@ -1,19 +1,19 @@
 @namespace LandingWallet.Components.Sections
 
 @* ==========================================================================
-   Sección — Qué es Wallet + Funcionalidades REALES.
+   Sección — Qué es Wallet Aura + funcionalidades de la demo.
 
-   Explica el producto sin duplicar el Hero y SIN métricas del dashboard
-   (los números viven únicamente en los dashboards reales). Cada
-   funcionalidad listada existe hoy en la aplicación y su ruta se indica:
-   no se presentan funciones futuras como terminadas.
+   Explica la demo sin duplicar el Hero y SIN métricas del dashboard (los
+   números viven únicamente en los dashboards). Cada funcionalidad listada
+   existe hoy en la aplicación: no se presentan funciones futuras como
+   terminadas.
    ========================================================================== *@
 
 <SectionShell Id="producto" HeadingId="producto-title" CssClass="product-section">
     <div class="product">
 
-        <SectionHeading HeadingId="producto-title" Eyebrow="QUÉ ES WALLET" Title="¿Qué es Wallet?"
-                        Description="Una aplicación financiera real para consultar cuentas, movimientos e inversiones en un solo lugar —con datos consultados directamente desde BigQuery— y un panel de administración para seguir el estado del sistema." />
+        <SectionHeading HeadingId="producto-title" Eyebrow="QUÉ ES WALLET" Title="¿Qué es Wallet Aura?"
+                        Description="Wallet Aura es una demo de billetera digital desarrollada para mostrar cómo una aplicación puede organizar cuentas, movimientos e inversiones a partir de una estructura de datos y presentarla mediante una interfaz clara." />
 
         <h3 class="product__subtitle">Qué permite hacer</h3>
 
@@ -23,9 +23,9 @@
                     <Icon Name="IconName.Account" Size="20" Decorative="true" />
                 </span>
                 <span class="product__copy">
-                    <span class="product__name">Cuentas y saldos</span>
-                    <span class="product__detail">Consultá tus cuentas en pesos y en dólares con su saldo actual, alias
-                        y CBU. Cada moneda se informa por separado.</span>
+                    <span class="product__name">Cuentas y saldos ficticios</span>
+                    <span class="product__detail">Visualización de las cuentas en pesos y en dólares con su saldo, alias
+                        y CBU de prueba. Cada moneda se informa por separado.</span>
                     </span>
                 </li>
                 <li class="product__feature">
@@ -33,9 +33,9 @@
                         <Icon Name="IconName.Transactions" Size="20" Decorative="true" />
                     </span>
                     <span class="product__copy">
-                        <span class="product__name">Movimientos recientes</span>
-                        <span class="product__detail">Los últimos movimientos con tipo, dirección e importe, resueltos desde
-                            el origen de datos.</span>
+                        <span class="product__name">Movimientos de prueba</span>
+                        <span class="product__detail">Consulta de los movimientos recientes con tipo, dirección e importe,
+                            resueltos desde el dataset del equipo.</span>
                         </span>
                     </li>
                     <li class="product__feature">
@@ -44,18 +44,18 @@
                         </span>
                         <span class="product__copy">
                             <span class="product__name">Inversiones</span>
-                            <span class="product__detail">Seguimiento de las colocaciones reales: tipo, estado, monto invertido
-                                y tasa de rendimiento.</span>
+                            <span class="product__detail">Representación de las colocaciones registradas: tipo, estado,
+                                monto invertido y tasa de rendimiento.</span>
                             </span>
                         </li>
                         <li class="product__feature">
                             <span class="product__icon" aria-hidden="true">
-                                <Icon Name="IconName.Transfer" Size="20" Decorative="true" />
+                                <Icon Name="IconName.Dashboard" Size="20" Decorative="true" />
                             </span>
                             <span class="product__copy">
-                                <span class="product__name">Preparación de transferencias</span>
-                                <span class="product__detail">Interfaz de transferencia con las cuentas de origen reales y sus
-                                    validaciones. La ejecución de operaciones está en preparación y no se simula.</span>
+                                <span class="product__name">Panel de usuario</span>
+                                <span class="product__detail">Resumen de la cuenta: saldo disponible, período, movimientos
+                                    recientes y accesos rápidos a las funciones de la demo.</span>
                                 </span>
                             </li>
                             <li class="product__feature">
@@ -63,9 +63,9 @@
                                     <Icon Name="IconName.Analytics" Size="20" Decorative="true" />
                                 </span>
                                 <span class="product__copy">
-                                    <span class="product__name">Analítica con Looker Studio</span>
-                                    <span class="product__detail">Los dashboards embeben reportes reales de Looker Studio sobre la
-                                        actividad financiera y del sistema.</span>
+                                    <span class="product__name">Gráficos con Looker Studio</span>
+                                    <span class="product__detail">Gráficos desarrollados con Looker Studio a partir de los datos
+                                        de prueba del proyecto.</span>
                                     </span>
                                 </li>
                                 <li class="product__feature">
@@ -73,12 +73,22 @@
                                         <Icon Name="IconName.Audit" Size="20" Decorative="true" />
                                     </span>
                                     <span class="product__copy">
-                                        <span class="product__name">Administración y auditoría</span>
-                                        <span class="product__detail">Panel del rol administrador con indicadores del sistema,
-                                            distribuciones de transacciones y errores de auditoría.</span>
+                                        <span class="product__name">Panel de administración</span>
+                                        <span class="product__detail">Indicadores del sistema, distribuciones de transacciones y
+                                            datos de auditoría de la demo.</span>
                                         </span>
                                     </li>
-                                </ul>
+                                    <li class="product__feature">
+                                        <span class="product__icon" aria-hidden="true">
+                                            <Icon Name="IconName.Menu" Size="20" Decorative="true" />
+                                        </span>
+                                        <span class="product__copy">
+                                            <span class="product__name">Navegación responsive</span>
+                                            <span class="product__detail">Interfaz adaptada a escritorio, tablet y dispositivos
+                                                móviles, con accesos cómodos en cada pantalla.</span>
+                                            </span>
+                                        </li>
+                                    </ul>
 
-                            </div>
-                        </SectionShell>
+                                </div>
+                            </SectionShell>

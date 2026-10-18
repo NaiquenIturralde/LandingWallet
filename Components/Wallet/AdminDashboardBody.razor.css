@@ -6,10 +6,16 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Filas modulares de reportes Looker (WalletLookerCard). Todos los reportes
-   comparten la relación nativa360/340, así que con columnas de igual ancho
-   las cards de una fila terminan con la MISMA altura. Mobile: 1 columna
-   (cards apiladas).
+   Filas modulares de reportes Looker (WalletLookerCard).
+
+   Columnas por ancho disponible, SIEMPRE con la card lo bastante angosta para
+   que la altura del viewport (relación 340/320 del lienzo, ver
+   WalletLookerCard) entre en el área visible descontando la barra superior:
+     · <768px  → 1 columna (móvil, cards apiladas);
+     · ≥768px  → 2 columnas (medido: 1366×768 da cards de 522px → 555px de
+                  lienzo + 48px de encabezado = 603px ≤ 692px visibles);
+   Todas las cards de una fila miden lo mismo, así que terminan con la MISMA
+   altura.
    -------------------------------------------------------------------------- */
 .looker-row {
     display: grid;
@@ -34,10 +40,18 @@
     letter-spacing: var(--ws-ls-normal);
 }
 
-/* Dos columnas desde 430px: con etiquetas cortas los KPIs siguen legibles */
+/* Dos columnas desde 430px: con etiquetas cortas los KPIs siguen legibles.
+   La grilla NUNCA fuerza cuatro columnas si el importe no entra: las
+   cantidades se deciden por el ancho REAL del contenido (medido con
+   sidebar de 208px y padding de 40px por lado).
+     · 430-1023px  → 2 columnas (a 768px: cards de 345px);
+     · 1024-1199px → 3 columnas (736px de contenido → 232px por card);
+     · ≥1200px     → 4 columnas (912px → 216px; 1366px → 255px;
+                      1920px → 348px). */
 .admin__kpis {
     display: grid;
     grid-template-columns: 1fr;
+    /* 16px en todas las grillas: ritmo compacto de los indicadores. */
     gap: var(--ws-space-4);
     min-width: 0;
 }
@@ -73,42 +87,38 @@
 }
 
 /* --------------------------------------------------------------------------
-   Tablet: KPIs en dos columnas y el detalle operativo en dos.
+   Tablet: KPIs en dos columnas y los reportes Looker en dos.
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     .admin__kpis {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    /* Todos los reportes:360×340 → columnas iguales = alturas idénticas
-       en cada fila. */
-    .looker-row--feature {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .looker-row--pair {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    /* Fila3: misma relación nativa360/340 en ambas cards → columnas
-       iguales y alturas idénticas (mismo sistema que --feature). */
-    .looker-row--audit {
+    .looker-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 /* --------------------------------------------------------------------------
-   Desktop y presentación (1024px en adelante).
-   Los KPIs usan 4 columnas fijas: las 8 métricas reales forman 2 filas
-   alineadas, con la misma altura por fila y sin márgenes manuales. A 1024px
-   (con sidebar) cada card queda ~168px: la misma densidad que la grilla de
-   2 columnas del móvil a 430px, ya validada como legible.
-   Los reportes Looker viven en sus propias cards modulares (.looker-row),
-   con columnas proporcionales a su lienzo nativo.
+   Desktop (1024px en adelante): tres columnas de indicadores.
+   A 1024px (con sidebar) cada card queda ~232px: suficiente para que
+   "$ 1.066.268.728,00" entre en una línea a ~20px sin cortarse, cosa que
+   cuatro columnas de 166px no permitían.
    -------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
     .admin__kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop amplio (1200px en adelante): cuatro columnas → 8 métricas en DOS
+   filas alineadas. El importe manda sobre la columna: a 1200px hay 216px por
+   card, a 1366px 255px y a 1920px 348px, y en las tres el importe completo
+   queda en una sola línea (el font-size del valor se calcula con cqi).
+   -------------------------------------------------------------------------- */
+@media (min-width: 1200px) {
+    .admin__kpis {
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: var(--ws-space-6);
     }
 }

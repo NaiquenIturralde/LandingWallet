@@ -57,3 +57,13 @@
     font-size: var(--ws-fs-sm);
     color: var(--ws-text-muted);
 }
+
+/* Bajada opcional: contexto de los gráficos, en medida cómoda de lectura */
+.analytics-head__desc {
+    grid-column: 1 / -1;
+    margin: 0;
+    max-width: 72ch;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}

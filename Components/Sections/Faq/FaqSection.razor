@@ -3,11 +3,10 @@
 @* ==========================================================================
    Sección — Preguntas frecuentes.
 
-   Solo preguntas cuya respuesta se respalda con la APLICACIÓN REAL (cuentas
-   multi-moneda, consulta de cuentas, movimientos recientes, contenido del
-   dashboard, inversiones y rol admin). Las preguntas sobre transferencias
-   ejecutadas, destinatarios o cuentas externas se omitieron: esas funciones
-   todavía no existen y no se presentan como terminadas.
+   Preguntas ancladas en el relato de la demo: origen de los datos, contenido
+   de los gráficos, tecnologías y alcance pendiente. Lo que la aplicación no
+   puede respaldar (por ejemplo, la ejecución de transferencias) se aclara
+   como fuera de alcance: nunca se presenta como terminado.
    ========================================================================== *@
 
 <SectionShell Id="ayuda" HeadingId="ayuda-title" CssClass="faq-section">
@@ -28,24 +27,24 @@
 
 @code {
     /// <summary>
-    /// Preguntas verificables contra el comportamiento real de la aplicación.
-    /// No se listan funciones que aún no existen (transferencias ejecutadas,
-    /// destinatarios guardados, cuentas externas).
+    /// Preguntas y respuestas de la demo: origen de los datos, gráficos,
+    /// tecnologías y alcance. Ninguna respuesta presenta como terminada una
+    /// función que todavía no existe.
     /// </summary>
     private static readonly IReadOnlyList<FaqEntry> Entries =
     [
-        new("¿Puedo tener cuentas en diferentes monedas?",
-            "Sí. Wallet informa tus cuentas en pesos y en dólares por separado: cada moneda muestra su propio saldo y las distintas monedas nunca se suman ni se convierten entre sí."),
-        new("¿Cómo consulto mis cuentas?",
-            "Desde el panel «Tus cuentas» del dashboard o desde la sección Cuentas. Cada cuenta muestra tipo, alias, CBU, moneda, estado y saldo actual."),
-        new("¿Dónde puedo ver mis movimientos recientes?",
-            "El panel «Movimientos recientes» del dashboard muestra los últimos movimientos con tipo, dirección e importe. El listado completo se habilitará en una etapa futura."),
-        new("¿Qué información muestra el dashboard?",
-            "Saldo disponible por cuenta, resumen del período (ingresos, egresos y balance), cuentas, movimientos recientes, inversiones y el reporte de actividad en Looker Studio."),
-        new("¿Cómo funcionan las inversiones disponibles?",
-            "La sección Inversiones lista tus colocaciones reales: tipo, estado, monto invertido, tasa de rendimiento y monto resultante, tal como los informa el sistema."),
-        new("¿Quién puede ver el panel de administración?",
-            "El rol administrador. Concentra indicadores del sistema —usuarios, cuentas, transacciones, auditorías y alertas— con sus distribuciones y el reporte analítico de Looker Studio."),
+        new("¿Puedo usar esta aplicación para realizar transferencias reales?",
+            "No. Wallet Aura es una demo con datos ficticios. La interfaz muestra cómo podría funcionar el flujo, pero no ejecuta operaciones financieras reales."),
+        new("¿Los saldos y movimientos son verdaderos?",
+            "No. Son datos ficticios creados para probar y representar el funcionamiento del sistema."),
+        new("¿De dónde salen los datos?",
+            "El equipo creó un dataset en BigQuery y cargó datos de prueba para cuentas, movimientos, inversiones y auditoría."),
+        new("¿Qué muestran los gráficos?",
+            "Representan ingresos, egresos, evolución de actividad y distribución de movimientos a partir de los datos de prueba del proyecto."),
+        new("¿Qué tecnologías se utilizaron?",
+            "Blazor, C#, .NET, SQL, BigQuery y Looker Studio, junto con criterios de diseño UX/UI y desarrollo responsive."),
+        new("¿Qué parte está pendiente?",
+            "Algunas funcionalidades, como la ejecución de transferencias y determinadas vistas de consulta, forman parte de futuras etapas del proyecto."),
     ];
 
     /// <summary>Par pregunta/respuesta de la FAQ.</summary>

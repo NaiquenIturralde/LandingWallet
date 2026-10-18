@@ -34,11 +34,26 @@
     .product__features {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    /* Si la fila queda con un ítem suelto, el cierre ocupa las dos columnas. */
+    .product__feature:last-child:nth-child(odd) {
+        grid-column: span 2;
+    }
 }
 
 @media (min-width: 1200px) {
     .product__features {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Siete funciones cierran 3 + 3 + 1: la última ocupa la fila completa.
+       Con cinco, cierran 3 + 2 y la última ocupa el ancho de dos. */
+    .product__feature:last-child:nth-child(3n + 1) {
+        grid-column: span 3;
+    }
+
+    .product__feature:last-child:nth-child(3n + 2) {
+        grid-column: span 2;
     }
 }
 

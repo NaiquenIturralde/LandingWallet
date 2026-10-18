@@ -121,6 +121,19 @@
     color: var(--ws-text-muted);
 }
 
+/* Aclaración de la demo: bloque discreto que no compite con el lead */
+.hero__note {
+    margin: 0;
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-left: 2px solid var(--ws-cyan);
+    border-radius: var(--ws-radius-sm);
+    background-color: var(--ws-card-translucent);
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
 .hero__meta {
     margin: 0;
     font-size: var(--ws-fs-sm);
@@ -172,6 +185,148 @@
 }
 
 /* --------------------------------------------------------------------------
+   Columna del mockup (derecha en desktop)
+   Imagen vertical de referencia de la wallet (736 × 1412): ancho contenido y
+   ALTO AUTOMÁTICO con object-fit: contain — nunca se deforma. El ancho es un
+   clamp sobre el ancho real del hero: ~33vw (≈35 % del hero a 1366px, dentro
+   del rango pedido) con tope absoluto de 520px para que no se vuelva enorme
+   en pantallas muy anchas. En móvil y tablet se apila debajo del texto con
+   anchos menores; .hero ya recorta con overflow: hidden, así que no puede
+   generar scroll horizontal.
+   -------------------------------------------------------------------------- */
+.hero__media {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ws-space-4);
+    min-width: 0;
+    animation: hero-rise var(--ws-dur-slow) var(--ws-ease-out) both;
+}
+
+.hero__mockup {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(100%, 300px);
+    max-height: min(72vh, 620px);
+    object-fit: contain;
+    border-radius: var(--ws-radius-lg);
+    box-shadow: var(--ws-shadow-card);
+}
+
+/* --------------------------------------------------------------------------
+   Tarjeta Aura — funcionalidad futura (NO interactiva).
+   Sin href, sin botón y sin flecha: es un bloque informativo que representa
+   lo que todavía está en desarrollo. La superficie y el borde siguen los
+   tokens del sistema; acá solo se agrega el layout propio.
+   -------------------------------------------------------------------------- */
+.hero__aura {
+    width: 100%;
+    max-width: 420px;
+    padding: var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-lg);
+    background-color: var(--ws-card-translucent);
+    box-shadow: var(--ws-shadow-card);
+}
+
+.hero__aura-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ws-space-2) var(--ws-space-3);
+    min-width: 0;
+}
+
+.hero__aura-logo {
+    display: block;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.hero__aura-id {
+    flex: 1 1 120px;
+    min-width: 0;
+}
+
+.hero__aura-name {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    color: var(--ws-text);
+}
+
+.hero__aura-role {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    color: var(--ws-text-muted);
+    overflow-wrap: anywhere;
+}
+
+/* Etiqueta de estado SIEMPRE visible: la tarjeta nunca parece accionable. */
+.hero__aura-tag {
+    margin-inline-start: auto;
+    flex-shrink: 0;
+    padding: var(--ws-space-1) var(--ws-space-3);
+    border: var(--ws-hairline) solid var(--ws-border-cyan);
+    border-radius: var(--ws-radius-pill);
+    background-color: var(--ws-cyan-soft);
+    color: var(--ws-cyan);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.hero__aura-desc {
+    margin: var(--ws-space-3) 0 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* Tablet: la imagen baja de tamaño para no competir con el bloque de texto. */
+@media (min-width: 768px) {
+    .hero__mockup {
+        max-width: min(100%, 340px);
+        max-height: min(80vh, 700px);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop (1024px en adelante): composición de DOS columnas.
+   Texto a la izquierda (deja de centrarse solo) y mockup a la derecha,
+   centrado verticalmente por el align-items: center del layout. La columna
+   del mockup pesa ~42 % del ancho del hero (0.85fr de 2fr) y la imagen se
+   acota a 33vw / 520px: márgenes equilibrados y sin espacio lateral muerto.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .hero__layout {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    .hero__content {
+        /* Con columna visual el bloque se alinea a la izquierda de su track:
+           centrarlo dejaría un hueco asimétrico contra el mockup. */
+        margin-inline: 0;
+    }
+
+    .hero__mockup {
+        max-width: clamp(320px, 33vw, 520px);
+        /* Con la tarjeta Aura debajo, el mockup se acota para que la columna
+           derecha (mockup + tarjeta) quede equilibrada contra el texto y el
+           par siga visible cerca del primer pliegue. */
+        max-height: min(80vh, 760px);
+    }
+}
+
+/* --------------------------------------------------------------------------
    Tablet: CTAs en fila
    -------------------------------------------------------------------------- */
 @media (min-width: 430px) {
@@ -218,7 +373,8 @@
    también los delays o el contenido queda invisible hasta que expiran.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-    .hero__content > * {
+    .hero__content > *,
+    .hero__media {
         animation: none !important;
     }
 

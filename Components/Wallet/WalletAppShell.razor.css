@@ -9,9 +9,9 @@
     max-width: var(--ws-container-max);
     margin-inline: auto;
     padding-inline: var(--ws-container-pad);
-    /* El espacio de la barra inferior ya lo reserva WalletLayout: acá solo
-       queda el margen de respiro del contenido. */
-    padding-bottom: var(--ws-space-4);
+    /* Ritmo compacto: el espacio de la barra inferior ya no existe (en móvil
+       la navegación es un panel desplegable), así que solo queda el respiro. */
+    padding-bottom: var(--ws-space-3);
 }
 
 /* --------------------------------------------------------------------------
@@ -116,6 +116,121 @@
     flex-shrink: 0;
 }
 
+/* Botón de menú en el topbar: en MÓVIL abre el panel desplegable de
+   navegación (la sidebar no existe por debajo de 1024px). En desktop ese rol
+   lo cumple el control del encabezado de la propia sidebar
+   (.wallet-nav__toggle), que es el que se muestra acá abajo.
+   Conserva los 44px de área táctil mínima que fija el Design System. */
+.wallet-app__nav-toggle {
+    display: block;
+}
+
+@media (min-width: 1024px) {
+    .wallet-app__nav-toggle {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado de la navegación (sidebar desktop): rótulo + control de contraer/
+   expandir. En móvil la navegación es el panel desplegable que abre el botón
+   del topbar, así que el encabezado no existe (display: none en base).
+   -------------------------------------------------------------------------- */
+.wallet-nav__head {
+    display: none;
+}
+
+.wallet-nav__toggle {
+    display: none;
+}
+
+.wallet-nav__head-label {
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+}
+
+@media (min-width: 1024px) {
+    .wallet-nav__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--ws-space-2);
+        padding-bottom: var(--ws-space-3);
+        border-bottom: var(--ws-hairline) solid var(--ws-border);
+    }
+
+    .wallet-nav__toggle {
+        display: block;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   MÓVIL (por debajo de 1024px): la navegación es un PANEL DESPLEGABLE bajo la
+   barra superior, no una barra fija al pie — así desaparece la reserva de
+   --ws-bottom-nav-h que dejaba un hueco vacío al final del documento.
+
+   Se aplica SOLO a las rutas: la variante embebida (Landing) conserva su barra
+   contenida al pie del marco, porque ahí no existe el botón del topbar que la
+   abra. Se usa max-width porque el estado por defecto (móvil) es el panel y el
+   bloque ≥1024 ya define la sidebar con selectores de igual especificidad.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023.98px) {
+    .wallet-app:not(.wallet-app--embedded) .wallet-nav {
+        position: fixed;
+        top: var(--ws-header-h);
+        left: 0;
+        right: 0;
+        bottom: auto;
+        z-index: var(--ws-z-overlay);
+        /* Cerrado por defecto: lo abre el botón del topbar. */
+        display: none;
+        max-height: calc(100dvh - var(--ws-header-h));
+        overflow-y: auto;
+        padding: var(--ws-space-3);
+        min-height: 0;
+        border-top: 0;
+        border-bottom: var(--ws-hairline) solid var(--ws-border);
+        box-shadow: var(--ws-shadow-md);
+    }
+
+    .wallet-app:not(.wallet-app--embedded).wallet-app--nav-open .wallet-nav {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .wallet-app:not(.wallet-app--embedded) .wallet-nav__list {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: var(--ws-space-1);
+        width: 100%;
+        max-width: none;
+    }
+
+    .wallet-app:not(.wallet-app--embedded) .wallet-nav__item {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .wallet-app:not(.wallet-app--embedded) ::deep .wallet-nav__entry {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: var(--ws-space-3);
+        min-height: 44px;
+        padding: var(--ws-space-2) var(--ws-space-3);
+        border-radius: var(--ws-radius-md);
+        text-align: left;
+    }
+
+    .wallet-app:not(.wallet-app--embedded) .wallet-nav__label {
+        font-size: var(--ws-fs-sm);
+    }
+}
+
 /* Historial de navegación (Atrás / Adelante): par de botones discretos que
    comparten grupo para que se lean como una sola unidad y no se mezclen con
    notificaciones o el avatar. Los botones conservan los 44px de área táctil
@@ -148,8 +263,8 @@
 .wallet-app__intro {
     display: flex;
     flex-direction: column;
-    gap: var(--ws-space-2);
-    padding-block: var(--ws-space-5) var(--ws-space-6);
+    gap: var(--ws-space-1);
+    padding-block: var(--ws-space-3);
 }
 
 .wallet-app__title {
@@ -172,7 +287,7 @@
 .wallet-app__body {
     display: flex;
     flex-direction: column;
-    gap: var(--ws-space-6);
+    gap: var(--ws-space-3);
     min-width: 0;
 }
 
@@ -238,7 +353,7 @@
    secundario. Es un <span>: no es clickeable ni focusable. Solo desktop. */
 .wallet-nav__section {
     display: block;
-    padding: var(--ws-space-4) var(--ws-space-3) var(--ws-space-1);
+    padding: var(--ws-space-3) var(--ws-space-3) var(--ws-space-1);
     font-family: var(--ws-font-body);
     font-size: var(--ws-fs-xs);
     font-weight: var(--ws-weight-semibold);
@@ -315,15 +430,15 @@
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     .wallet-app {
-        padding-bottom: var(--ws-space-6);
+        padding-bottom: var(--ws-space-4);
     }
 
     .wallet-app__body {
-        gap: var(--ws-space-8);
+        gap: var(--ws-space-4);
     }
 
     .wallet-app__intro {
-        padding-block: var(--ws-space-8) var(--ws-space-6);
+        padding-block: var(--ws-space-4) var(--ws-space-3);
     }
 
     .wallet-app__title {
@@ -350,8 +465,11 @@
    enlaces falsos).
    -------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
-    .wallet-app {
-        max-width: var(--ws-container-wide);
+    /* El contenido usa TODO el ancho disponible a la derecha de la sidebar: en
+       desktop no hay tope de contenedor. La variante embebida (Landing)
+       conserva su propio límite para no romper la sección que la contiene. */
+    .wallet-app:not(.wallet-app--embedded) {
+        max-width: none;
     }
 
     .wallet-nav {
@@ -414,6 +532,41 @@
 
     .wallet-nav__label {
         font-size: var(--ws-fs-sm);
+    }
+
+    /* ------------------------------------------------------------------
+       Sidebar contraída (rail de iconos). La anchura la define
+       --ws-sidebar-w, que reduce html.wallet-nav-collapsed en tokens.css:
+       la columna y la reserva de la layout cambian juntas y el contenido
+       adopta el ancho liberado. Se ocultan etiquetas y rótulos de grupo;
+       los ítems conservan su nombre accesible (NavLink y aria-label).
+       ------------------------------------------------------------------ */
+    .wallet-app--nav-collapsed .wallet-nav {
+        gap: var(--ws-space-3);
+        padding-inline: var(--ws-space-2);
+    }
+
+    /* Etiquetas, rótulos de grupo y rótulo del encabezado ocultos VISUALMENTE,
+       nunca del árbol de accesibilidad: con display:none los enlaces de la
+       sidebar perderían su nombre accesible. El patrón es el mismo de
+       .ws-sr-only (utilities.css). */
+    .wallet-app--nav-collapsed .wallet-nav__label,
+    .wallet-app--nav-collapsed .wallet-nav__head-label,
+    .wallet-app--nav-collapsed .wallet-nav__section {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .wallet-app--nav-collapsed ::deep .wallet-nav__entry {
+        justify-content: center;
+        padding-inline: var(--ws-space-2);
     }
 }
 

@@ -30,6 +30,16 @@
         </a>
 
         <div class="wallet-app__actions">
+            @* Menú de navegación en MÓVIL: abre/cierra el panel desplegable
+               (ver .wallet-app--nav-open). En desktop este botón se oculta porque
+               la navegación es la sidebar y su control vive en el encabezado de
+               la propia sidebar (ver .wallet-nav__toggle). *@
+            <div class="wallet-app__nav-toggle">
+                <WalletIconButton IconName="@(_navOpen ? IconName.Close : IconName.Menu)"
+                                  AriaLabel="@(_navOpen ? "Cerrar el menú de navegación" : "Abrir el menú de navegación")"
+                                  OnClick="ToggleNavMenuAsync" />
+            </div>
+
             @* Historial REAL del navegador (history.back / history.forward):
                no son rutas simuladas, recorren el historial que ya existe.
                Blazor no expone ese historial, por eso se invoca por JS interop. *@
@@ -53,7 +63,22 @@
     </header>
 
     <nav class="wallet-nav" aria-label="@NavigationLabel">
-        <ul class="wallet-nav__list">
+        @* Encabezado de la sidebar (solo desktop): el control de contraer/
+           expandir vive ACÁ, dentro de la navegación, para que sea visible en
+           todas las pantallas de la app. En móvil la sidebar no existe: la
+           navegación es el panel desplegable que abre el botón del topbar. *@
+        <div class="wallet-nav__head">
+            <span class="wallet-nav__head-label">Menú</span>
+            <div class="wallet-nav__toggle">
+                <WalletIconButton IconName="@(_navCollapsed ? IconName.Menu : IconName.MenuOpen)"
+                                  AriaLabel="@(_navCollapsed ? "Expandir el menú lateral" : "Contraer el menú lateral")"
+                                  OnClick="ToggleNavAsync" />
+            </div>
+        </div>
+
+        @* Clic en la lista = clic en un destino: el panel desplegable móvil se
+           cierra solo al navegar. En desktop no tiene efecto (no hay panel). *@
+        <ul class="wallet-nav__list" @onclick="CloseNavMenuAsync">
             @foreach (var item in NavigationItems)
             {
                 @if (item.IsSectionLabel)
@@ -177,11 +202,112 @@
     [Parameter]
     public bool Embedded { get; set; }
 
-    /// <summary>Clase raíz: variante embedded solo cuando se pide.</summary>
-    private string RootClass => Embedded ? "wallet-app wallet-app--embedded" : "wallet-app";
+    /// <summary>
+    /// Clase raíz: variante embedded solo cuando se pide y la variante de
+    /// sidebar contraída cuando el usuario la pidió (solo tiene efecto en
+    /// desktop, donde la navegación es columna).
+    /// </summary>
+    private string RootClass
+    {
+        get
+        {
+            var classes = "wallet-app";
+
+            if (Embedded)
+            {
+                classes += " wallet-app--embedded";
+            }
+
+            if (_navCollapsed)
+            {
+                classes += " wallet-app--nav-collapsed";
+            }
+
+            if (_navOpen)
+            {
+                classes += " wallet-app--nav-open";
+            }
+
+            return classes;
+        }
+    }
 
     // Con al menos una sección sin ruta hay que explicarlo a lectores de pantalla.
     private bool HasUnlinkedItems => NavigationItems.Any(item => !item.IsLink);
+
+    /// <summary>
+    /// Sidebar contraída (solo desktop). El estado se restaura en el primer
+    /// render desde localStorage y se persiste en cada toggle: así sobrevive a
+    /// los cambios de vista —cada ruta vuelve a crear el shell— y a las
+    /// recargas. El control no existe en móvil: la navegación es la barra
+    /// inferior y contraerla no tendría significado.
+    /// </summary>
+    private bool _navCollapsed;
+
+    /// <summary>
+    /// Panel desplegable de navegación en MÓVIL. Es un estado efímero de la
+    /// pantalla (a diferencia de _navCollapsed): NO se persiste, se cierra al
+    /// navegar y no existe en desktop, donde la navegación es la sidebar.
+    /// </summary>
+    private bool _navOpen;
+
+    /// <summary>
+    /// Abre/cierra el panel desplegable de navegación en móvil.
+    /// </summary>
+    private Task ToggleNavMenuAsync()
+    {
+        _navOpen = !_navOpen;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Cierra el panel desplegable móvil. Se dispara al hacer clic en cualquier
+    /// destino de la lista: al navegar, el menú no puede quedar abierto.
+    /// </summary>
+    private Task CloseNavMenuAsync()
+    {
+        if (_navOpen)
+        {
+            _navOpen = false;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Restaura el estado de la sidebar apenas monta el shell. Si cambia,
+    /// vuelve a renderizar para que la clase raíz (y el botón) queden
+    /// consistentes con el estado persistido.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var collapsed = await JS.InvokeAsync<bool>("walletNav.getNavCollapsed");
+
+        if (collapsed == _navCollapsed)
+        {
+            return;
+        }
+
+        _navCollapsed = collapsed;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Contrae/expandir la sidebar. La clase <c>wallet-nav-collapsed</c> en
+    /// <c>html</c> reduce <c>--ws-sidebar-w</c> (tokens.css): la columna de
+    /// navegación y la reserva de la layout bajan juntas, así el contenido
+    /// adopta el ancho liberado sin desincronizarse.
+    /// </summary>
+    private async Task ToggleNavAsync()
+    {
+        _navCollapsed = !_navCollapsed;
+        await JS.InvokeVoidAsync("walletNav.setNavCollapsed", _navCollapsed);
+    }
 
     /// <summary>
     /// Retrocede en el historial REAL del navegador (history.back()).

@@ -19,13 +19,18 @@
     <div class="wallet-balance-hero__principal">
         <p class="wallet-balance-hero__label" id="wallet-balance-hero-title">Saldo disponible</p>
 
-        <p class="wallet-balance-hero__value">@WalletFormat.Money(Principal.Balance, Principal.CurrencyCode)</p>
+        @* Longitud del valor en caracteres: SOLO alimenta el font-size del CSS
+           (presentación). El saldo protagonista se muestra en UNA sola línea:
+           el importe largo baja de punto hasta entrar completo en la tarjeta. *@
+        <p class="wallet-balance-hero__value" style="--ws-value-chars: @BalanceText.Length">@BalanceText</p>
 
         <div class="wallet-balance-hero__meta">
             @* El chip de moneda en texto: la distinción nunca depende del color. *@
             <span class="wallet-balance-hero__currency">@Principal.CurrencyCode</span>
             <span class="wallet-balance-hero__account">@Principal.Type</span>
         </div>
+
+        <p class="wallet-balance-hero__footnote">Valor de demostración basado en datos ficticios.</p>
     </div>
 
     @if (Others.Count > 0)
@@ -57,6 +62,9 @@
     public IReadOnlyList<WalletPresentationAccount> Accounts { get; set; } = [];
 
     private WalletPresentationAccount Principal => Accounts[0];
+
+    /// <summary>Saldo principal, ya formateado por la fuente de datos.</summary>
+    private string BalanceText => WalletFormat.Money(Principal.Balance, Principal.CurrencyCode);
 
     private IReadOnlyList<WalletPresentationAccount> Others => [.. Accounts.Skip(1)];
 }

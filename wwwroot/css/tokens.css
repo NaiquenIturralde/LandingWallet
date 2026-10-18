@@ -194,7 +194,9 @@
        --------------------------------------------------------------------- */
     --ws-container-max: 1200px;
     --ws-container-narrow: 860px;
-    --ws-container-pad: clamp(1.25rem, 4vw, 2.5rem);
+    /* Gutters horizontales: se redujeron para que el contenido aproveche el
+       ancho disponible sin perder el ritmo mobile-first. */
+    --ws-container-pad: clamp(1.125rem, 3vw, 2rem);
 
     /* Ancho de la App Wallet en pantallas grandes (tablet, notebook, desktop
        y TV 1920x1080). Es mayor que --ws-container-max para aprovechar el
@@ -217,23 +219,22 @@
        no pueden desincronizarse. */
     --ws-sidebar-w: 208px;
 
-    /* Alto reservado para la navegación inferior de la App Wallet.
-       La propia barra usa este mismo token como alto mínimo, así que reserva y
-       barra no pueden desincronizarse.
-
-       El valor base cubre el peor caso medido en pantallas angostas
-       (320–430px), donde la etiqueta de una sección ocupa dos líneas y la barra
-       alcanza 89px reales. Desde 500px todas las etiquetas entran en una línea
-       y alcanza un valor menor. */
-    --ws-bottom-nav-h: 96px;
+    /* Alto reservado para la navegación inferior de la App Wallet: SIN reserva.
+       En móvil la navegación es un panel desplegable bajo la barra superior
+       (WalletAppShell), no una barra fija al pie, así que no hay espacio que
+       dejar libre al final del documento. El token sigue existiendo porque
+       WalletLayout lo suma a su padding inferior y .wallet-nav lo usa como alto
+       mínimo: con 0px ambas reservas desaparecen solas. */
+    --ws-bottom-nav-h: 0px;
 
     /* Alto reservado para la navegación inferior: desde 1024px deja de ser una
        barra flotante de móvil y pasa a ser una fila más dentro del layout. */
     --ws-bottom-nav-h-lg: 0px;
 
-    /* Ritmo vertical de secciones (mobile-first) */
-    --ws-section-py: clamp(3.5rem, 9vw, 7rem);
-    --ws-section-gap: clamp(2rem, 5vw, 3.5rem);
+    /* Ritmo vertical de secciones (mobile-first). Reducido: los bloques de la
+       portada pedían menos aire entre secciones sin achicar la tipografía. */
+    --ws-section-py: clamp(2.25rem, 5.5vw, 4.5rem);
+    --ws-section-gap: clamp(1.5rem, 3.5vw, 2.5rem);
 
     /* ---------------------------------------------------------------------
        Bordes
@@ -282,11 +283,12 @@
     }
 }
 
-/* Con ancho suficiente, las etiquetas de la barra inferior entran en una sola
-   línea y el espacio reservado se ajusta a ese alto real. */
+/* Con ancho suficiente la navegación sigue sin necesitar reserva: el panel
+   desplegable no es una barra fija al pie. Se mantiene el breakpoint por si
+   algún componente futuro vuelve a necesitarlo. */
 @media (min-width: 500px) {
     :root {
-        --ws-bottom-nav-h: 84px;
+        --ws-bottom-nav-h: 0px;
     }
 }
 
@@ -296,5 +298,17 @@
 @media (min-width: 1024px) {
     :root {
         --ws-bottom-nav-h: var(--ws-bottom-nav-h-lg);
+    }
+}
+
+/* Estado de la navegación: sidebar contraída (botón de WalletAppShell +
+   wallet-nav.js). Al reducir el token, la columna de navegación (.wallet-nav
+   usa --ws-sidebar-w como width) y la reserva de la layout
+   (.wallet-layout__main usa padding-left con el mismo token) bajan juntas:
+   así el contenido adopta el ancho liberado sin desincronizarse. Solo desktop:
+   en móvil la navegación es la barra inferior. */
+@media (min-width: 1024px) {
+    html.wallet-nav-collapsed {
+        --ws-sidebar-w: 76px;
     }
 }

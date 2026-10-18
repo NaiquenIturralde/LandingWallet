@@ -9,10 +9,14 @@
     gap: var(--ws-space-2);
     height: 100%;
     min-width: 0;
-    /* La utilidad .ws-card aporta superficie y borde. El padding sigue el
-       ritmo único de las cards de Wallet: 20px (--ws-space-5) en móvil y
-       24px desde 430px (ver el bloque @media al final). */
-    padding: var(--ws-space-5);
+    /* La utilidad .ws-card aporta superficie y borde. El padding sigue un
+       ritmo COMPACTO (16px en todos los anchos, ver la nota de la grilla en
+       AdminDashboardBody): dos filas de indicadores tienen que caber en el
+       área visible de un desktop descontando la barra superior. */
+    padding: var(--ws-space-4);
+    /* Contenedor de ancho: habilita las cqi con las que el valor calcula su
+       font-size contra el ancho REAL de la card, no contra el viewport. */
+    container-type: inline-size;
 }
 
 /* --------------------------------------------------------------------------
@@ -49,47 +53,47 @@
     }
 }
 
-/* Ritmo único de cards: desde 430px el padding sube a 24px, igual que el
-   resto de las cards principales. */
-@media (min-width: 430px) {
-    .wallet-metric-card {
-        padding: var(--ws-space-6);
-    }
-}
-
 /* --------------------------------------------------------------------------
    Encabezado: label + icono opcional
    -------------------------------------------------------------------------- */
 .wallet-metric-card__head {
     display: flex;
+    /* Si el rótulo no comparte la fila con el icono (una palabra larga no
+       entra), el icono pasa a la línea siguiente en vez de cortar el texto. */
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--ws-space-3);
+    gap: var(--ws-space-2);
     min-width: 0;
 }
 
 .wallet-metric-card__label {
     margin: 0;
-    min-width: 0;
     font-family: var(--ws-font-body);
     font-size: var(--ws-fs-xs);
     font-weight: var(--ws-weight-semibold);
     letter-spacing: var(--ws-ls-wide);
     text-transform: uppercase;
     color: var(--ws-text-muted);
-    /* En grillas de dos columnas (430px) las etiquetas largas deben poder
-       partirse en lugar de empujar el layout. */
-    overflow-wrap: anywhere;
+    /* min-content = ancho de la palabra más larga: el rótulo se acomoda
+       SOLO entre palabras ("Volumen aprobado" baja a dos líneas) y nunca
+       dentro de una ("TRANSACCIONES" entra entero). El basis en min-content
+       es lo que habilita el wrap del icono cuando tampoco cabe al lado. */
+    flex: 1 1 min-content;
+    min-width: min-content;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
 }
 
 .wallet-metric-card__icon {
     display: grid;
     place-items: center;
-    /* 40px: chip de icono unificado con WalletAccountCard y las filas de
-       movimiento (el de WalletQuickActions queda en 36px porque su tile solo
-       tiene 38px de ancho útil a 320px: está medido, no es arbitrario). */
-    width: 40px;
-    height: 40px;
+    /* 32px: chip compacto de indicador (mismo módulo que el encabezado de
+       WalletLookerCard). Deja 40px más de ancho útil para el rótulo en una
+       grilla de cuatro columnas. */
+    width: 32px;
+    height: 32px;
     border-radius: var(--ws-radius-sm);
     background-color: var(--ws-cyan-soft);
     border: var(--ws-hairline) solid var(--ws-border-cyan);
@@ -103,19 +107,29 @@
 .wallet-metric-card__value {
     margin: 0;
     font-family: var(--ws-font-display);
-    font-size: var(--ws-fs-2xl);
+    /* Importe o cifra en UNA sola línea: sin cortes, sin puntos suspensivos y
+       sin abreviaturas. El tamaño se resuelve contra el ancho de contenido de
+       la card (cqi) y la longitud real del texto (--ws-value-chars, la aporta
+       el componente): un importe largo baja de punto hasta entrar completo,
+       mientras una cifra corta conserva el tamaño de display (tope 2rem). El
+       0,56 es el ancho máximo en em por carácter de lo que formatea
+       WalletFormat (dígitos con separadores), con margen. */
+    font-size: clamp(1rem, calc(100cqi / (var(--ws-value-chars, 4) * 0.56)), 2rem);
     font-weight: var(--ws-weight-semibold);
     line-height: var(--ws-lh-tight);
     letter-spacing: var(--ws-ls-tight);
     color: var(--ws-text);
-    /* Las cifras agrupadas nunca deben partirse ni desbordar */
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 .wallet-metric-card__description {
     margin: 0;
-    font-size: var(--ws-fs-sm);
-    line-height: var(--ws-lh-relaxed);
+    /* Tipografía secundaria compacta: baja la altura de la card sin perder
+       contraste (--ws-muted sobre --ws-card supera AA). */
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-normal);
     color: var(--ws-text-muted);
 }
 

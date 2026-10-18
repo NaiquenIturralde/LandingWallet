@@ -16,8 +16,8 @@
                 HeadingId="wallet-transfer-page-title">
 
     @* ---------- Estado del flujo ---------- *@
-    <WalletAlert Variant="AlertVariant.Info" Title="Flujo en preparación"
-                 Text="La transferencia todavía no puede ejecutarse: el procesamiento de operaciones no está habilitado en esta etapa." />
+    <WalletAlert Variant="AlertVariant.Info" Title="Operaciones no habilitadas"
+                 Text="La interfaz permite explorar el flujo de una transferencia, pero la ejecución de operaciones financieras no está habilitada. Esta función forma parte de una futura etapa del proyecto." />
 
     @* ---------- Paso 1: cuenta de origen ---------- *@
     <WalletPanel HeadingId="transfer-origin-title" Title="Cuenta de origen" IconName="IconName.Wallet">
@@ -64,7 +64,7 @@
                 }
             </ul>
 
-            @* Dato informativo: el importe real de cada cuenta, sin conversión *@
+            @* Dato informativo: el importe de cada cuenta, sin conversión *@
             <p class="transfer__note">
                 <span class="transfer__note-icon" aria-hidden="true">
                     <Icon Name="IconName.Info" Size="16" Decorative="true" />

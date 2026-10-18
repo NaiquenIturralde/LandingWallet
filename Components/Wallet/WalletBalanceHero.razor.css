@@ -19,8 +19,8 @@
        sobrante quede parejo por arriba y por abajo. En móvil —alto auto—
        esta regla no tiene efecto y el contenido conserva su ritmo natural. */
     justify-content: center;
-    gap: var(--ws-space-4);
-    padding: var(--ws-space-5);
+    gap: var(--ws-space-3);
+    padding: var(--ws-space-4);
     /* Iluminación de acento: fondo propio de la card, sin overflow ni z-index
        negativo (el glow se pinta detrás del contenido sin recortarlo). */
     background-image: var(--ws-glow-cyan);
@@ -28,6 +28,10 @@
     background-position: right -30% top -60%;
     background-size: 120% 150%;
     border-color: var(--ws-border-cyan);
+    /* Contenedor de ancho: habilita las cqi con las que el saldo calcula su
+       font-size contra el ancho REAL de la card (content box), no contra el
+       viewport. Misma estrategia que WalletMetricCard. */
+    container-type: inline-size;
 }
 
 /* --------------------------------------------------------------------------
@@ -52,13 +56,23 @@
 .wallet-balance-hero__value {
     margin: 0;
     font-family: var(--ws-font-display);
-    font-size: var(--ws-fs-3xl);
+    /* Saldo en UNA sola línea, símbolo incluido: sin cortes, sin puntos
+       suspensivos y sin abreviaturas. El tamaño se calcula contra el ancho de
+       contenido de la card (cqi) y la longitud real del valor
+       (--ws-value-chars, la aporta el componente): un importe largo baja de
+       punto hasta entrar completo, mientras uno corto conserva su tamaño de
+       display (tope --ws-fs-3xl: en una card de ~40 % de ancho un tope mayor
+       desproporcionaba la composición). El 0,56 es el ancho máximo en em por
+       carácter de lo que formatea WalletFormat, con margen — mismo criterio
+       que WalletMetricCard, donde ya está medido. */
+    font-size: clamp(1.25rem, calc(100cqi / (var(--ws-value-chars, 12) * 0.56)), var(--ws-fs-3xl));
     font-weight: var(--ws-weight-semibold);
     line-height: var(--ws-lh-tight);
     letter-spacing: var(--ws-ls-tight);
     color: var(--ws-text);
-    /* El importe nunca desborda su tarjeta */
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 .wallet-balance-hero__meta {
@@ -86,6 +100,15 @@
     font-size: var(--ws-fs-sm);
     color: var(--ws-text-muted);
     overflow-wrap: anywhere;
+}
+
+/* Aclaración obligatoria del importe: el saldo de esta card es un valor de
+   demostración, no una cifra real. */
+.wallet-balance-hero__footnote {
+    margin: 0;
+    font-size: var(--ws-fs-xs);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
 }
 
 /* --------------------------------------------------------------------------
@@ -145,14 +168,11 @@
 }
 
 /* --------------------------------------------------------------------------
-   Desde 430px hay ancho para agrandar el saldo y el padding de la card.
+   Desde 430px hay ancho para agrandar el padding de la card. El font-size del
+   saldo NO se fija acá: lo resuelve el clamp por cqi de la regla anterior.
    -------------------------------------------------------------------------- */
 @media (min-width: 430px) {
     .wallet-balance-hero {
-        padding: var(--ws-space-6);
-    }
-
-    .wallet-balance-hero__value {
-        font-size: var(--ws-fs-4xl);
+        padding: var(--ws-space-5);
     }
 }

@@ -47,6 +47,10 @@ public enum IconName
     ArrowBack,
     ArrowForward,
     More,
+    /// <summary>Menú lateral abierto (menu_open) — acción de contraer la sidebar.</summary>
+    MenuOpen,
+    /// <summary>Menú lateral (menu) — acción de expandir la sidebar contraída.</summary>
+    Menu,
 
     // --- Tipos de movimiento de la App Wallet ---
     Deposit,

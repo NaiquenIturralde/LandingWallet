@@ -25,11 +25,22 @@
     .tech__list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    /* Si la fila queda con un ítem suelto, el cierre ocupa las dos columnas:
+       no queda una celda vacía al final de la grilla. */
+    .tech__item:last-child:nth-child(odd) {
+        grid-column: span 2;
+    }
 }
 
 @media (min-width: 1200px) {
     .tech__list {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Con tres columnas, cinco ítems cierran 3 + 2 sin dejar huecos. */
+    .tech__item:last-child:nth-child(3n + 2) {
+        grid-column: span 2;
     }
 }
 

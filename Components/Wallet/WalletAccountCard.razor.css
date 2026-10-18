@@ -6,7 +6,9 @@
 .wallet-account {
     display: flex;
     flex-direction: column;
-    gap: var(--ws-space-4);
+    /* Ritmo compacto y parejo: la card se equilibra sin bloques demasiado
+       separados (encabezado → saldo → metadatos). */
+    gap: var(--ws-space-3);
     /* La card nunca supera a su contenedor ni se dimensiona por su contenido */
     width: 100%;
     max-width: 100%;
@@ -146,14 +148,15 @@
 }
 
 /* --------------------------------------------------------------------------
-   Metadatos
-   Mobile-first: una columna mientras el ancho sea reducido. Recién desde
-   768px hay espacio para dos columnas sin partir el CBU ni comprimir la
+   Metadatos (fila inferior)
+   Mobile-first: una columna mientras el ancho sea reducido. Desde 768px
+   CBU, moneda y estado comparten UNA fila: el estado queda alineado a la
+   derecha con el resto de la información, nunca centrado debajo de la
    moneda.
    -------------------------------------------------------------------------- */
 .wallet-account__attrs {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: var(--ws-space-3);
     margin: 0;
     min-width: 0;
@@ -204,18 +207,26 @@
 }
 
 /* --------------------------------------------------------------------------
-   Tablet y desktop: dos columnas para los metadatos.
-   El CBU ocupa la fila completa porque sus 22 dígitos no entran en media
-   columna. Moneda y Estado comparten la segunda fila: el badge conserva su
-   tamaño natural (es shrink-to-fit) sin deformarse ni dejar huecos.
+   Tablet y desktop: CBU · Moneda · Estado en una sola fila.
+   space-between reparte la fila (CBU a la izquierda, moneda al centro,
+   estado a la derecha) y el CBU conserva el ancho que necesita sin partir
+   sus 22 dígitos.
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     .wallet-account__attrs {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        column-gap: var(--ws-space-4);
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: var(--ws-space-3) var(--ws-space-4);
     }
 
-    .wallet-account__attr:first-child {
-        grid-column: 1 / -1;
+    .wallet-account__attr--cbu {
+        flex: 1 1 14ch;
+    }
+
+    .wallet-account__attr--state {
+        margin-inline-start: auto;
+        text-align: right;
     }
 }

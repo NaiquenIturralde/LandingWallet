@@ -3,16 +3,17 @@
 @* ==========================================================================
    Sección — Tecnología y datos.
 
-   Explica el stack REAL del proyecto (verificado en el código): Blazor/.NET,
-   BigQuery como fuente de verdad, Looker Studio para analítica, dos roles y
-   diseño responsive. Sin métricas (se repiten solo en los dashboards).
+   Explica el stack del proyecto (verificado en el código): Blazor/.NET,
+   dataset del equipo en BigQuery, Looker Studio para los gráficos, dos roles
+   representados y diseño responsive. Sin métricas (se repiten solo en los
+   dashboards).
    ========================================================================== *@
 
 <SectionShell Id="tecnologia" HeadingId="tecnologia-title" CssClass="tech-section">
     <div class="tech">
 
-        <SectionHeading HeadingId="tecnologia-title" Eyebrow="TECNOLOGÍA" Title="Datos reales, de punta a punta"
-                        Description="La interfaz no inventa nada: cada valor se consulta en BigQuery y se presenta con los mismos componentes en web, móvil y escritorio." />
+        <SectionHeading HeadingId="tecnologia-title" Eyebrow="TECNOLOGÍA" Title="Datos de prueba conectados a BigQuery"
+                        Description="La interfaz consulta un dataset creado por el equipo en BigQuery y presenta datos ficticios de prueba mediante componentes web y gráficos de Looker Studio." />
 
         <ul class="tech__list">
             <li class="tech__item">
@@ -21,51 +22,49 @@
                 </span>
                 <span class="tech__copy">
                     <span class="tech__name">Blazor y .NET</span>
-                    <span class="tech__detail">Aplicación interactiva en C# con componentes Razor y servidor en tiempo
-                        real.</span>
+                    <span class="tech__detail">Aplicación web construida con componentes Razor, C# y .NET.</span>
+                </span>
+            </li>
+            <li class="tech__item">
+                <span class="tech__icon" aria-hidden="true">
+                    <Icon Name="IconName.Analytics" Size="20" Decorative="true" />
+                </span>
+                <span class="tech__copy">
+                    <span class="tech__name">BigQuery</span>
+                    <span class="tech__detail">Dataset creado por el equipo para organizar cuentas, movimientos,
+                        inversiones y datos de auditoría de prueba.</span>
                     </span>
                 </li>
                 <li class="tech__item">
                     <span class="tech__icon" aria-hidden="true">
-                        <Icon Name="IconName.Analytics" Size="20" Decorative="true" />
+                        <Icon Name="IconName.TrendingUp" Size="20" Decorative="true" />
                     </span>
                     <span class="tech__copy">
-                        <span class="tech__name">Google BigQuery</span>
-                        <span class="tech__detail">Fuente única de verdad: vistas de reporting de saldos, movimientos,
-                            inversiones y auditoría.</span>
+                        <span class="tech__name">Looker Studio</span>
+                        <span class="tech__detail">Herramienta utilizada para construir y mostrar los gráficos del
+                            proyecto.</span>
                         </span>
                     </li>
                     <li class="tech__item">
                         <span class="tech__icon" aria-hidden="true">
-                            <Icon Name="IconName.TrendingUp" Size="20" Decorative="true" />
+                            <Icon Name="IconName.Wallet" Size="20" Decorative="true" />
                         </span>
                         <span class="tech__copy">
-                            <span class="tech__name">Looker Studio</span>
-                            <span class="tech__detail">Reportes analíticos reales embebidos en los dashboards de usuario y
-                                administrador.</span>
+                            <span class="tech__name">Diseño responsive</span>
+                            <span class="tech__detail">Interfaz adaptada para escritorio, tablet y dispositivos móviles.</span>
+                        </span>
+                    </li>
+                    <li class="tech__item">
+                        <span class="tech__icon" aria-hidden="true">
+                            <Icon Name="IconName.Users" Size="20" Decorative="true" />
+                        </span>
+                        <span class="tech__copy">
+                            <span class="tech__name">Dos recorridos representados en la demo</span>
+                            <span class="tech__detail">Usuario y administrador, cada uno con su navegación y sus
+                                paneles propios.</span>
                             </span>
                         </li>
-                        <li class="tech__item">
-                            <span class="tech__icon" aria-hidden="true">
-                                <Icon Name="IconName.Users" Size="20" Decorative="true" />
-                            </span>
-                            <span class="tech__copy">
-                                <span class="tech__name">Dos roles reales</span>
-                                <span class="tech__detail">Usuario y Administrador, cada uno con su navegación y sus paneles
-                                    propios.</span>
-                                </span>
-                            </li>
-                            <li class="tech__item">
-                                <span class="tech__icon" aria-hidden="true">
-                                    <Icon Name="IconName.Wallet" Size="20" Decorative="true" />
-                                </span>
-                                <span class="tech__copy">
-                                    <span class="tech__name">Responsive mobile-first</span>
-                                    <span class="tech__detail">Barra inferior fija en móvil, sidebar lateral en escritorio y layouts
-                                        adaptados a cada pantalla.</span>
-                                    </span>
-                                </li>
-                            </ul>
+                    </ul>
 
-                        </div>
-                    </SectionShell>
+                </div>
+            </SectionShell>

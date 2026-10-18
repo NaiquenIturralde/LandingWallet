@@ -43,10 +43,11 @@
     display: flex;
     align-items: center;
     gap: var(--ws-space-3);
-    padding: var(--ws-space-3) var(--ws-space-4);
+    padding: var(--ws-space-2) var(--ws-space-3);
     min-width: 0;
-    /* La línea divisoria vive en el header (FUERA del aspect ratio): así el
-       viewport conserva la proporción exacta360/340 sin restar bordes. */
+    /* La línea divisoria vive en el header (FUERA de la relación de aspecto):
+       así el viewport conserva la proporción exacta del lienzo sin restar
+       bordes. Padding compacto: el encabezado no compite con el gráfico. */
     border-bottom: var(--ws-hairline) solid var(--ws-border);
 }
 
@@ -66,10 +67,28 @@
     margin: 0;
     min-width: 0;
     flex: 1 1 auto;
-    font-size: var(--ws-fs-base);
+    /* Títulos que envuelven por PALABRA, nunca dentro de una palabra:
+       overflow-wrap y word-break normales impiden el corte «Evoluc / ión de
+       la / activid / ad». El encabezado crece en altura en lugar de
+       comprimir el título, y la tipografía baja un escalón en pantallas
+       angostas (escala fluida de tokens). */
+    font-size: clamp(0.9375rem, 0.875rem + 0.35vw, var(--ws-fs-base));
     font-weight: var(--ws-weight-semibold);
+    line-height: var(--ws-lh-snug);
     color: var(--ws-text);
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}
+
+/* Explicación breve del gráfico (opcional, definida en el catálogo): va
+   debajo del título y por encima del iframe, en lenguaje no técnico. */
+.looker-card__desc {
+    margin: 0;
+    padding: var(--ws-space-2) var(--ws-space-3);
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
 }
 
 .looker-card__badge {
@@ -117,23 +136,46 @@
 
 /* --------------------------------------------------------------------------
    Viewport del reporte: SOLO el iframe, con la relación nativa del lienzo
-   rediseñado (360×340). El header queda fuera de la proporción. El canvas
-   ya fue diseñado para mobile, así que NO hay scroll horizontal: el
-   contenido debe caber en el ancho disponible (overflow: hidden recorta
-   solo las esquinas del radio, nunca un error de tamaño).
+   que aporta el catálogo (WalletLookerReports.Width/Height → inline en el
+   componente). Medido sobre los 9 embeds: el área de reporte de Looker
+   escala SOLO por ancho con relación 340/320, así que con esa misma relación
+   el gráfico completo —título, filtro, ejes y leyenda— entra en el viewport
+   y Looker NO queda con scroll interno. El header queda fuera de la
+   proporción. overflow: hidden recorta solo las esquinas del radio: no
+   oculta contenido del reporte.
    -------------------------------------------------------------------------- */
 .looker-card__frame {
     width: 100%;
     min-width: 0;
-    aspect-ratio: 360 / 340;
     overflow: hidden;
     background-color: var(--ws-surface);
+
+    /* Piso de alto del VIEW de Looker. Medido: con un iframe angosto
+       (< ~400px de ancho) Looker fija su vista en 750px aunque el lienzo
+       pida menos; si el iframe mide menos que eso aparece un scroll interno
+       que solo revela espacio vacío (el gráfico ya se ve completo arriba).
+       El iframe pasa a medir max(100%, 750px): en modo angosto no scrollea
+       y el excedente lo recorta ESTE overflow (sin banda visible dentro de
+       la card); en el resto de los anchos manda el 100% —la relación nativa
+       del lienzo— y la regla no altera nada. */
+    --looker-view-min-h: 750px;
 }
 
 .looker-card__frame iframe {
     display: block;
     width: 100%;
     height: 100%;
+    min-height: var(--looker-view-min-h);
     border: 0;
     background-color: var(--ws-card);
+}
+
+/* --------------------------------------------------------------------------
+   Card a todo el ancho (informe principal del dashboard).
+   grid-column va en el CSS propio: la card ES el elemento de la grilla, así
+   que su scope sí alcanza. El viewport sigue usando la relación nativa, así
+   que el alto acompaña al ancho sin dejar bandas vacías.
+   -------------------------------------------------------------------------- */
+.looker-card--full {
+    grid-column: 1 / -1;
 }

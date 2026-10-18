@@ -1,16 +1,27 @@
 /* ==========================================================================
    Sección — Preguntas frecuentes
-   Lista acordeón de FaqItem; ancho de lectura cómodo y ritmo compacto.
+   Lista acordeón de FaqItem; ancho de lectura amplio (~920px) y ritmo
+   compacto. El título baja de la escala de h2 global (--ws-fs-4xl: 56px en
+   desktop) a ~48px: la FAQ no compite con el título de la portada.
    ========================================================================== */
 
 .faq {
     display: flex;
     flex-direction: column;
-    gap: var(--ws-space-5);
+    gap: var(--ws-space-4);
     min-width: 0;
 }
 
 .faq__list {
-    max-width: 860px;
+    /* 920px: ancho de lectura cómodo que aprovecha el contenedor sin dejar
+       un hueco muerto a la derecha. Sigue por debajo del límite de lectura. */
+    max-width: 920px;
     min-width: 0;
+}
+
+/* Título de ESTA sección, más contenido que el h2 global. ::deep es
+   necesario: el <h2> lo renderiza SectionHeading y su elemento no lleva el
+   scope de este archivo (la <section> la renderiza SectionShell). */
+.faq ::deep .section-heading__title {
+    font-size: clamp(1.75rem, 1.5rem + 1.75vw, 3rem);
 }

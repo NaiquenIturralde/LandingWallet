@@ -6,9 +6,9 @@
 
 # Wallet
 
-Wallet es una solución de billetera digital que integra una aplicación web desarrollada en Blazor con una arquitectura de datos en Google BigQuery y dashboards analíticos desarrollados en Looker Studio.
+Wallet es una demo de billetera digital (proyecto académico/profesional de equipo) que integra una aplicación web desarrollada en Blazor con una arquitectura de datos en Google BigQuery y dashboards analíticos desarrollados en Looker Studio.
 
-El proyecto busca integrar experiencia de usuario, navegación de una billetera digital, procesamiento y organización de datos, consultas analíticas y visualización de información real.
+El equipo creó el dataset en BigQuery y lo cargó con datos ficticios de prueba para representar cuentas, movimientos, inversiones y auditoría. El proyecto busca integrar experiencia de usuario, navegación de una billetera digital, procesamiento y organización de datos, consultas analíticas y visualización de información.
 
 ## Tecnologías
 
@@ -25,7 +25,7 @@ El proyecto busca integrar experiencia de usuario, navegación de una billetera 
 ## Arquitectura general
 
 ```text
-BigQuery (datos reales)
+BigQuery (dataset del equipo con datos ficticios de prueba)
 → vistas y consultas SQL (wallet_mart / wallet_core)
 → Looker Studio (capa de visualización analítica)
 → dashboards analíticos
@@ -45,7 +45,7 @@ La aplicación Blazor consulta BigQuery directamente desde el servidor: no exist
 - Filtro por moneda (ARS | USD) en el dashboard de usuario: filtra los datos sin convertir valores.
 - Navegación responsive: sidebar en escritorio y barra inferior en móvil, con navegación unificada para ambos roles.
 - Integración de reportes de Looker Studio: 3 reportes para Usuario y 6 para Administrador, embebidos en cards modulares.
-- Landing pública con presentación del producto y exhibición de los dashboards reales.
+- Landing pública con presentación del proyecto y exhibición de los dashboards de la demo.
 
 No están habilitados en esta etapa: perfil, historial completo de movimientos, destinatarios guardados y cambio de moneda (se muestran como secciones pendientes, sin enlaces falsos).
 
@@ -66,7 +66,7 @@ El sistema contiene dos perspectivas principales.
 
 ### Dashboard Usuario
 
-Visualiza información real consultada en BigQuery:
+Visualiza la información consultada en BigQuery (datos de prueba del equipo):
 
 - Saldo disponible por cuenta, filtrado por moneda (ARS/USD).
 - Resumen del período: ingresos, egresos y balance, también por moneda.
@@ -87,7 +87,7 @@ Permite analizar la plataforma a nivel global:
 - Alertas totales y sin leer.
 - Reportes Looker Studio: volumen transaccionado, altas de usuarios, transacciones por tipo, errores de auditoría por tipo, evolución de errores y estado de las transacciones.
 
-## Informe de vistas reales del dashboard
+## Informe de vistas del dashboard
 
 Vistas verificadas en el código de acceso a datos (`WalletBigQueryDataSource.cs`).
 

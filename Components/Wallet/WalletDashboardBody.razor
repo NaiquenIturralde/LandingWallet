@@ -1,5 +1,5 @@
 @* ==========================================================================
-   WalletDashboardBody — contenido REAL del Dashboard de Usuario.
+   WalletDashboardBody — contenido del Dashboard de Usuario (demo).
 
    ÚNICA implementación del dashboard de usuario: la consume la ruta
    /wallet/dashboard (dentro de WalletAppShell) Y la Landing (sección
@@ -9,20 +9,30 @@
    No incluye el chrome de la app (topbar/navegación): eso pertenece a la ruta.
 
    JERARQUÍA (el orden responde a lo que el usuario necesita primero):
-     1. Saldo disponible        → WalletBalanceHero (dato protagonista)
-     2. Métricas del período    → WalletPeriodSummaryCard (ingresos, egresos, balance)
-     3. Acciones                → WalletQuickActions (solo rutas reales)
-     4. Cuentas                 → WalletAccountCard
-     5. Movimientos recientes   → WalletTransactionList (ancho completo)
-     6. Tu actividad            → AnalyticsHeader + WalletLookerCard ×3 (modular)
+     1. Fila superior           → saldo disponible (~40 %) + resumen del
+                                  período (~60 %), con selector de moneda
+     2. Visualización de datos  → AnalyticsHeader + grilla Looker («Movimientos
+                                  por día» a todo el ancho; «Ingresos y egresos»
+                                  y «Distribución de egresos» en dos columnas)
+     3. Cuentas + Acciones      → WalletAccountCard y WalletQuickActions en la
+                                  MISMA fila en desktop; en móvil las acciones
+                                  quedan debajo de las cuentas
+     4. Movimientos recientes   → WalletTransactionList (ancho completo)
+
+   El bloque de "Resumen del período" se retiró: los tres importes que informa
+   la fuente para el período vigente están en $ 0,00 y no aportan información
+   confiable. Ingresos y egresos reaparecen SOLO si la fuente informa
+   movimiento real; el balance del período no se muestra. No se inventa un
+   selector de fechas: la fuente expone un único rango por moneda.
 
    La representación de inversiones se eliminó de ESTE inicio (su
    funcionalidad vive en /wallet/inversiones); no se consulta
    vw_inversiones_reporting desde acá.
 
    DATOS: TODOS provienen de BigQuery a través de IWalletDashboardService
-   (vw_dashboard_usuario, vw_saldo_cuentas, vw_transacciones_reporting).
-   No hay valores hardcodeados ni datos demo.
+   (vw_dashboard_usuario, vw_saldo_cuentas, vw_transacciones_reporting):
+   corresponden al dataset de prueba cargado por el equipo. No hay valores
+   hardcodeados en la interfaz.
 
    ESTADOS: carga, error con reintento y sin datos. El reporte de Looker Studio
    queda fuera de esos estados porque no depende de la carga financiera.
@@ -30,19 +40,24 @@
 
 @inject IWalletDashboardService DashboardService
 
-@if (ShowCurrencySelector)
-{
-    @* Selector global de moneda [ ARS | USD ]: filtra TODOS los datos del
-       dashboard (saldo, resumen, cuentas y movimientos) por moneda. NO
-       convierte valores. Vive acá, no en cada card: un solo estado. En móvil
-       queda debajo del título y antes de las métricas; en desktop se alinea a
-       la derecha (ver CSS). La Landing lo oculta con ShowCurrencySelector. *@
-    <div class="wallet-dashboard__currency">
-        @* Value lleva @: en un parámetro de tipo string, Razor pasaría el
-           literal "_selectedCurrency" en lugar de la variable. *@
-        <WalletCurrencySelector Value="@_selectedCurrency" ValueChanged="OnCurrencyChanged" />
-    </div>
-}
+@* ---------- 0. Presentación de la pantalla (texto de la demo) ---------- *@
+@* Va antes de cualquier estado: describe el panel y aclara el origen de los
+   datos sin depender de la carga. Se renderiza también en la Landing
+   (ShowcaseSection), que usa este mismo componente. *@
+<p class="wallet-dashboard__intro">
+    Este panel reúne la información principal de una cuenta: saldo disponible, resumen del
+    período, movimientos recientes y accesos rápidos a las funciones de la demo.
+</p>
+
+<p class="wallet-dashboard__note">
+    <span class="wallet-dashboard__note-icon" aria-hidden="true">
+        <Icon Name="IconName.Info" Size="16" Decorative="true" />
+    </span>
+    <span>
+        Los importes, nombres y movimientos son datos ficticios utilizados para demostrar la
+        experiencia y la estructura del sistema.
+    </span>
+</p>
 
 @if (_loadFailed)
 {
@@ -56,13 +71,13 @@
 }
 else
 {
-    @* ---------- 1 y 2. Saldo disponible + métricas del período ---------- *@
+    @* ---------- 1 y 2. Encabezado + saldo disponible + contexto del período ---------- *@
     <div class="wallet-dashboard__top">
 
         @if (_isLoading)
         {
             <div class="wallet-dashboard__skeleton" aria-busy="true">
-                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+                <WalletSkeleton Shape="SkeletonShape.Block" Height="140px" />
             </div>
         }
         else if (_accounts.Count > 0)
@@ -79,130 +94,184 @@ else
             <WalletEmptyState IconName="IconName.Account" Title="@NoAccountTitle" Description="@NoAccountDescription" />
         }
 
-        <WalletPanel HeadingId="wallet-period-title" Title="@PeriodTitle" Hint="@PeriodHint" IconName="IconName.Analytics">
+        @* El período vive en la MISMA fila que el saldo: en desktop la card de
+           saldo ocupa ~40 % del ancho y el resumen del período ~60 %; en móvil
+           se apilan (saldo primero). El rango lo informa la fuente
+           (inicio_periodo / fin_periodo de vw_dashboard_usuario) y el selector
+           de moneda es el único control de filtro real de la pantalla. *@
+        <section class="wallet-dashboard__period" aria-labelledby="wallet-period-block-title">
+            <div class="wallet-dashboard__period-head">
+                <h2 id="wallet-period-block-title" class="wallet-dashboard__period-title">Resumen del período</h2>
 
-            @if (_isLoading)
-            {
-                <div class="wallet-dashboard__skeleton" aria-busy="true">
-                    <WalletSkeleton Shape="SkeletonShape.Block" Height="150px" />
-                </div>
-            }
-            else if (_periodSummary is { } summary)
-            {
-                <WalletPeriodSummaryCard Summary="summary" />
-
-                @* Distinción explícita entre balance del período y saldo de la
-                   cuenta: son dos datos distintos y no deben confundirse. *@
-                <p class="wallet-dashboard__note">
-                    <span class="wallet-dashboard__note-icon" aria-hidden="true">
-                        <Icon Name="IconName.Info" Size="16" Decorative="true" />
-                    </span>
-                    <span>
-                        El balance es el resultado del período: ingresos menos egresos.
-                        No es el saldo actual de la cuenta.
-                    </span>
-                </p>
-            }
-            else
-            {
-                <WalletEmptyState IconName="IconName.Analytics" Title="Todavía no hay un resumen del período"
-                                  Description="Cuando se registren movimientos del período, vas a ver acá los ingresos, los egresos y el balance."
-                                  Compact="true" />
-            }
-        </WalletPanel>
-    </div>
-
-    @* ---------- 3. Acciones rápidas ---------- *@
-    <WalletPanel HeadingId="wallet-actions-title" Title="Acciones rápidas" IconName="IconName.Transfer">
-        <WalletQuickActions />
-    </WalletPanel>
-
-    @* ---------- 4. Mis cuentas ---------- *@
-    <WalletPanel HeadingId="wallet-accounts-title" Title="Tus cuentas" Hint="@_selectedCurrency"
-                 IconName="IconName.Account">
-
-        @if (_isLoading)
-        {
-            <div class="wallet-dashboard__skeleton" aria-busy="true">
-                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
-                <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
-            </div>
-        }
-        else if (_accounts.Count == 0)
-        {
-            <WalletEmptyState IconName="IconName.Account" Title="@NoAccountTitle" Description="@NoAccountDescription" />
-        }
-        else
-        {
-            <div class="wallet-dashboard__accounts">
-                @foreach (var account in _accounts)
+                @if (ShowCurrencySelector)
                 {
-                    @* La cuenta en dólares usa el acento alternativo para
-                       distinguirse sin depender del código de moneda. *@
-                    <WalletAccountCard Account="account" AlternateAccent="@(account.CurrencyCode != "ARS")" />
+                    @* Selector global de moneda [ ARS | USD ]: filtra TODOS los
+                   datos del dashboard (saldo, cuentas y movimientos) por
+                   moneda. NO convierte valores. La Landing lo oculta con
+                   ShowCurrencySelector. Value lleva @: en un parámetro string,
+                   Razor pasaría el literal en lugar de la variable. *@
+                    <WalletCurrencySelector Value="@_selectedCurrency" ValueChanged="OnCurrencyChanged" />
                 }
             </div>
 
-            <p class="wallet-dashboard__note">
-                <span class="wallet-dashboard__note-icon" aria-hidden="true">
-                    <Icon Name="IconName.Info" Size="16" Decorative="true" />
-                </span>
-                <span>
-                    El saldo se obtiene a partir de los movimientos registrados de la cuenta.
-                    Cada moneda se informa por separado: nunca se suman ni se convierten.
-                </span>
+            @if (_periodRange is { } range)
+            {
+                @* «Del … al …» queda para lectores de pantalla; a la vista, las dos
+               fechas se separan con un guion para que no se peguen. *@
+                <p class="wallet-dashboard__period-range">
+                    <span class="ws-sr-only">Del </span>@WalletFormat.Date(range.Start)<span
+                    class="wallet-dashboard__period-sep" aria-hidden="true">–</span><span class="ws-sr-only"> al
+                </span>@WalletFormat.Date(range.End)
             </p>
-        }
-    </WalletPanel>
 
-    @* ---------- 5. Movimientos recientes: ancho completo ---------- *@
-    <WalletPanel HeadingId="wallet-movements-title" Title="Movimientos recientes" Hint="@MovementsHint" Flush="true">
+            @if (_periodSummary is { } summary && (summary.Income != 0 || summary.Expense != 0))
+            {
+                <ul class="wallet-dashboard__period-flows">
+                    <li class="wallet-dashboard__period-flow">
+                        <span class="wallet-dashboard__period-flow-label">Ingresos</span>
+                        <span class="wallet-dashboard__period-flow-value">@WalletFormat.Money(summary.Income,
+                                                                                                                                                                                                                                                                                                                                        summary.CurrencyCode)</span>
+                        </li>
+                        <li class="wallet-dashboard__period-flow">
+                            <span class="wallet-dashboard__period-flow-label">Egresos</span>
+                            <span class="wallet-dashboard__period-flow-value">@WalletFormat.Money(summary.Expense,
+                                                                                                                                                                                                                                                                                                                                                                                        summary.CurrencyCode)</span>
+                            </li>
+                        </ul>
+                    }
+            else if (!_isLoading && _periodRange is not null)
+                    {
+                        @* La fuente informa el período pero no registra ingresos ni
+                   egresos en ese rango: se explica sin mostrar cifras
+                   inventadas ni dejar la card vacía. *@
+                        <p class="wallet-dashboard__period-empty">
+                            La fuente no informa ingresos ni egresos para este período.
+                        </p>
+                    }
+                }
+            </section>
+        </div>
 
-        @if (_isLoading)
-        {
-            <div class="wallet-dashboard__skeleton wallet-dashboard__skeleton--rows" aria-busy="true">
-                <WalletSkeleton Shape="SkeletonShape.Line" Lines="5" Height="44px" />
+        @* ---------- 3. Analítica Looker MODULAR: un card por reporte ---------- *@
+        @* ---------- 3. Analítica Looker MODULAR: DOS COLUMNAS INDEPENDIENTES ---------- *@
+        @* Estructura desktop (≥1024px): dos wrappers con flujo vertical
+           PROPIO —sin filas compartidas—, así una card baja no deja hueco al
+           lado de la más alta de la otra columna:
+             · Izquierda: «Movimientos por día» + «Actividad diaria».
+             · Derecha: «Ingresos y egresos» + «Distribución de egresos».
+           Gap uniforme de 16px (columna y entre columnas); alturas naturales
+           de cada reporte (sin igualar); columnas fluidas 1.7fr / 1fr —la
+           izquierda tiene reportes de proporción baja y la derecha los altos—
+           para que terminen a similar altura y el bloque llene el ancho del
+           contenedor. Tablet y móvil: una sola columna. El viewport usa el
+           ALTO REAL del contenido de cada reporte: sin scroll interno ni
+           recortes; el espacio vacío propio del lienzo de Looker Studio NO
+           se oculta. Los datos los sirve Looker Studio. *@
+        <AnalyticsHeader HeadingId="wallet-activity-title" Title="Visualización de datos"
+                         Description="Los gráficos fueron construidos en Looker Studio a partir del dataset creado por el equipo en BigQuery. Permiten representar ingresos, egresos, evolución de la actividad y distribución de movimientos. La integración con BigQuery es funcional; los registros utilizados son datos ficticios de prueba." />
+
+        <div class="wallet-dashboard__looker">
+            <div class="wallet-dashboard__looker-col">
+                <WalletLookerCard Report="WalletLookerReports.User[3]" />
+                <WalletLookerCard Report="WalletLookerReports.User[1]" />
             </div>
-        }
-        else
-        {
-            @* La lista presenta los movimientos que recibe y ya resuelve
+            <div class="wallet-dashboard__looker-col">
+                <WalletLookerCard Report="WalletLookerReports.User[0]" />
+                <WalletLookerCard Report="WalletLookerReports.User[2]" />
+            </div>
+        </div>
+
+        @* ---------- 4. Cuentas + Acciones rápidas: apilados ---------- *@
+        @* «Tus cuentas» conserva su panel y ocupa TODO el ancho disponible.
+           Debajo, «Acciones rápidas» va SIN card exterior: solo el título
+           (mismo h2 y mismo id que antes) y la fila de los cuatro accesos de
+           WalletQuickActions —4 botones independientes a todo el ancho en
+           desktop y tablet, apilados con el mismo diseño en móvil—. Las
+           acciones sin ruta nunca aparecen: WalletQuickActions solo lista
+           secciones con destino habilitado. *@
+        <div class="wallet-dashboard__duo">
+            <div class="wallet-dashboard__duo-main">
+                <WalletPanel HeadingId="wallet-accounts-title" Title="Tus cuentas" Hint="@_selectedCurrency"
+                             IconName="IconName.Account">
+
+                    @if (_isLoading)
+                    {
+                        <div class="wallet-dashboard__skeleton" aria-busy="true">
+                            <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+                            <WalletSkeleton Shape="SkeletonShape.Block" Height="180px" />
+                        </div>
+                    }
+                    else if (_accounts.Count == 0)
+                    {
+                        <WalletEmptyState IconName="IconName.Account" Title="@NoAccountTitle" Description="@NoAccountDescription" />
+                    }
+                    else
+                    {
+                        <div class="wallet-dashboard__accounts">
+                            @foreach (var account in _accounts)
+                            {
+                                @* La cuenta en dólares usa el acento alternativo para
+                       distinguirse sin depender del código de moneda. *@
+                                <WalletAccountCard Account="account" AlternateAccent="@(account.CurrencyCode != "ARS")" />
+                            }
+                        </div>
+
+                        <p class="wallet-dashboard__note">
+                            <span class="wallet-dashboard__note-icon" aria-hidden="true">
+                                <Icon Name="IconName.Info" Size="16" Decorative="true" />
+                            </span>
+                            <span>
+                                El saldo se obtiene a partir de los movimientos registrados de la cuenta.
+                                Cada moneda se informa por separado: nunca se suman ni se convierten.
+                            </span>
+                        </p>
+                    }
+                </WalletPanel>
+            </div>
+
+            <div class="wallet-dashboard__duo-side">
+                @* Sin card exterior: título + fila de los cuatro accesos. *@
+                <section class="wallet-dashboard__quick" aria-labelledby="wallet-actions-title">
+                    <h2 id="wallet-actions-title" class="wallet-dashboard__quick-title">Acciones rápidas</h2>
+                    <WalletQuickActions />
+                </section>
+            </div>
+        </div>
+
+        @* ---------- 5. Movimientos recientes: ancho completo ---------- *@
+        <WalletPanel HeadingId="wallet-movements-title" Title="Movimientos recientes" Hint="@MovementsHint" Flush="true">
+
+            @if (_isLoading)
+            {
+                <div class="wallet-dashboard__skeleton wallet-dashboard__skeleton--rows" aria-busy="true">
+                    <WalletSkeleton Shape="SkeletonShape.Line" Lines="5" Height="44px" />
+                </div>
+            }
+            else
+            {
+                @* La lista presenta los movimientos que recibe y ya resuelve
                estado vacío: la pantalla no repite ese mensaje. El estado vacío
                es por moneda: nunca se muestran movimientos ARS como USD. *@
-            <div class="wallet-dashboard__list">
-                <WalletTransactionList Movements="_movements" EmptyTitle="@NoMovementsTitle"
-                                       EmptyDescription="@NoMovementsDescription" />
-            </div>
+                <div class="wallet-dashboard__list">
+                    <WalletTransactionList Movements="_movements" EmptyTitle="@NoMovementsTitle"
+                                           EmptyDescription="@NoMovementsDescription" />
+                </div>
 
-            <div class="wallet-dashboard__actions">
-                @* No existe todavía el listado completo: la acción queda
+                <div class="wallet-dashboard__actions">
+                    @* No existe todavía el listado completo: la acción queda
                    visible pero deshabilitada, no como enlace falso. *@
-                <WalletButton Text="Ver todos los movimientos" Variant="WalletButtonVariant.Secondary" IconName="IconName.Arrow"
-                              Disabled="true" FullWidth="true" />
+                    <WalletButton Text="Ver todos los movimientos" Variant="WalletButtonVariant.Secondary" IconName="IconName.Arrow"
+                                  Disabled="true" FullWidth="true" />
 
-                <p class="wallet-dashboard__pending">
-                    El listado completo estará disponible cuando se habilite la sección de movimientos.
-                </p>
-            </div>
-        }
-    </WalletPanel>
-}
+                    <p class="wallet-dashboard__pending">
+                        El listado completo estará disponible cuando se habilite la sección de movimientos.
+                    </p>
+                </div>
+            }
+        </WalletPanel>
+    }
 
-@* ---------- 6. Analítica Looker MODULAR: un card por reporte real ---------- *@
-@* Los3 reportes individuales del rol usuario, cada uno en SU card
-   (WalletLookerCard): el principal a ancho completo (jerarquía máxima) y los
-   dos secundarios en dos columnas — la composición de la referencia visual.
-   Sin capa intermedia: encabezado compacto y gráficos inmediatos. Los datos
-   los sirve Looker Studio; el viewport de cada card usa la relación nativa
-   del lienzo (360/340) sin scroll horizontal. *@
-<AnalyticsHeader HeadingId="wallet-activity-title" Title="Tu actividad" />
 
-<WalletLookerCard Report="WalletLookerReports.User[0]" />
-
-<div class="ws-grid ws-grid--2">
-    <WalletLookerCard Report="WalletLookerReports.User[1]" />
-    <WalletLookerCard Report="WalletLookerReports.User[2]" />
-</div>
 
 @code {
     /// <summary>
@@ -317,18 +386,6 @@ else
             cts.Dispose();
         }
     }
-
-    /// <summary>
-    /// Título del resumen. El rango temporal sale de la fuente
-    /// (<c>inicio_periodo</c> / <c>fin_periodo</c>): ya no se asume un mes.
-    /// Si la fuente no lo informa, queda genérico.
-    /// </summary>
-    private string PeriodTitle => _periodRange is { } range
-        ? $"Resumen del período · {WalletFormat.Date(range.Start)} – {WalletFormat.Date(range.End)}"
-        : "Resumen del período";
-
-    /// <summary>Moneda del resumen. Sin resumen no se anuncia ninguna.</summary>
-    private string? PeriodHint => _periodSummary?.CurrencyCode;
 
     /// <summary>
     /// Rótulo del panel de movimientos: informa el recorte real, sin afirmar que

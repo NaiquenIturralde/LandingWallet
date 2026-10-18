@@ -1,52 +1,85 @@
 @* ==========================================================================
    WalletLookerCard — card tech premium para UN reporte individual de Looker.
 
-   Componente ÚNICO para los9 reportes del catálogo WalletLookerReports:
-   no hay copias por reporte.
+   Componente ÚNICO para todos los reportes del catálogo WalletLookerReports:
+   no hay copias por reporte. Cada card usa el tamaño que declara SU reporte
+   en el catálogo: la relación de aspecto NATIVA del lienzo (320×340 u
+   600×450), de modo que el alto acompaña al ancho sin deformar ni recortar
+   el informe.
 
    · el wrapper NO lleva .ws-card: la card glass es la única superficie;
-   · el HEADER de la card está FUERA del aspect ratio (solo aporta título,
-     badge y enlace);
-   · el viewport del reporte (.looker-card__frame) usa aspect-ratio: 360 / 340
-     —la relación nativa del lienzo rediseñado— y overflow: hidden: sin
-     scroll horizontal y sin recorte vertical;
+   · el HEADER de la card está FUERA de la relación de aspecto (aporta título,
+     descripción opcional, badge y enlace);
+   · el viewport del reporte (.looker-card__frame) usa la relación NATIVA del
+     lienzo que declara el catálogo (ver WalletLookerReports) y
+     overflow: hidden solo para recortar a los radios: sin scroll horizontal y
+     SIN scroll interno en Looker, porque el alto exacto que pide el lienzo
+     está disponible;
    · el iframe es width: 100% + height: 100%: se adapta al ancho disponible
      de la card (sin min-width, sin tamaño fijo, sin transform/zoom);
    · los datos los sirve Looker: aquí no se calcula ni se copia nada.
    ========================================================================== *@
 
-<div class="looker-card">
-    <header class="looker-card__head">
-        <span class="looker-card__icon" aria-hidden="true">
-            <Icon Name="Report.Icon" Size="18" Decorative="true" />
-        </span>
-        <h3 class="looker-card__title">@Report.Title</h3>
-        <span class="looker-card__badge">@Badge</span>
-        <a class="looker-card__open" href="@FullUrl" target="_blank" rel="noopener noreferrer"
-           aria-label="Abrir «@Report.Title» en Looker Studio (pestaña nueva)">
-            <Icon Name="IconName.Arrow" Size="16" Decorative="true" />
-        </a>
-    </header>
+<div class="@CardClass">
+  <header class="looker-card__head">
+    <span class="looker-card__icon" aria-hidden="true">
+      <Icon Name="Report.Icon" Size="18" Decorative="true" />
+    </span>
+    <h3 class="looker-card__title">@Report.Title</h3>
+    <span class="looker-card__badge">@Badge</span>
+    <a class="looker-card__open" href="@FullUrl" target="_blank" rel="noopener noreferrer"
+       aria-label="Abrir «@Report.Title» en Looker Studio (pestaña nueva)">
+      <Icon Name="IconName.Arrow" Size="16" Decorative="true" />
+    </a>
+  </header>
 
-    <div class="looker-card__frame">
-        @* Viewport del reporte: proporción nativa360/340 declarada en el CSS
-           del frame (nunca en el header). El iframe llena el viewport al
-           100 %: sin min-width, sin scroll y sin tamaño fijo. *@
-        <iframe src="@Report.ReportUrl" title="@Report.Title" loading="lazy" allowfullscreen
-                sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
+  @* Explicación breve del gráfico (solo si el catálogo la define): va
+       debajo del título y por encima del iframe, en texto no técnico. *@
+  @if (!string.IsNullOrWhiteSpace(Report.Description))
+  {
+    <p class="looker-card__desc">@Report.Description</p>
+  }
+
+  @* Viewport del reporte. La fuente única del tamaño es WalletLookerReports:
+       la relación NATIVA del lienzo (aspect-ratio inline, p. ej. 320/340 o
+       600/450) hace que el alto crezca con el ancho de la card: sin alturas
+       fijas no queda aire sobrante por abajo y sin ancho máximo no se recorta
+       el informe. El iframe es width: 100% + height: 100 %. *@
+  <div class="looker-card__frame" style="@FrameInlineStyle">
+    <iframe src="@Report.ReportUrl" title="@Report.Title" loading="lazy" allowfullscreen
+            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
 </div>
 
 @code {
-    /// <summary>Reporte del catálogo: título, URL oficial y lienzo nativo.</summary>
-    [Parameter, EditorRequired]
-    public WalletLookerReport Report { get; set; } = default!;
+  /// <summary>Reporte del catálogo: título, URL oficial y lienzo nativo.</summary>
+  [Parameter, EditorRequired]
+  public WalletLookerReport Report { get; set; } = default!;
 
-    /// <summary>Etiqueta breve del encabezado (por defecto "Looker Studio").</summary>
-    [Parameter]
-    public string Badge { get; set; } = "Looker Studio";
+  /// <summary>Etiqueta breve del encabezado (por defecto "Looker Studio").</summary>
+  [Parameter]
+  public string Badge { get; set; } = "Looker Studio";
 
-    /// <summary>URL pública del reporte (misma fuente: catálogo, sin /embed).</summary>
-    private string FullUrl => WalletLookerReports.FullReportUrl(Report);
+  /// <summary>
+  /// Ocupa todo el ancho de la grilla: se usa para el informe principal del
+  /// dashboard («Movimientos por día»), que necesita más ancho para que los
+  /// ejes se lean con comodidad.
+  /// </summary>
+  [Parameter]
+  public bool FullWidth { get; set; }
+
+  /// <summary>URL pública del reporte (misma fuente: catálogo, sin /embed).</summary>
+  private string FullUrl => WalletLookerReports.FullReportUrl(Report);
+
+  /// <summary>Clase de la card: a todo el ancho o al ancho de su columna.</summary>
+  private string CardClass => FullWidth ? "looker-card looker-card--full" : "looker-card";
+
+  /// <summary>
+  /// Tamaño del viewport: la relación NATIVA del lienzo que declara el
+  /// catálogo (p. ej. <c>320 / 340</c> o <c>600 / 450</c>). El alto crece
+  /// con el ancho de la card: sin altura fija no queda aire sobrante ni
+  /// scroll interno, y sin ancho máximo no se recorta el informe.
+  /// </summary>
+  private string FrameInlineStyle => $"aspect-ratio: {Report.Width} / {Report.Height}";
 }

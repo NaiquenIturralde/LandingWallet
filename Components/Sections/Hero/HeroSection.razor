@@ -3,8 +3,11 @@
 @* ==========================================================================
    Sección 01 — Hero
    Portada de la landing. Excepción al patrón de encabezado: contiene el
-   ÚNICO <h1> de la página. La Wallet real se muestra en la sección
-   siguiente (ShowcaseSection): el Hero no lleva maquetas ni capturas.
+   ÚNICO <h1> de la página. Además del texto, lleva el mockup del proyecto
+   (hero__media) como elemento visual de referencia de la wallet: a la
+   derecha del contenido en desktop y apilado debajo del texto en móvil. La
+   demo de la Wallet —con datos de BigQuery y gráficos de Looker Studio— se
+   muestra en la sección siguiente (ShowcaseSection).
    ========================================================================== *@
 
 <SectionShell Id="inicio" HeadingId="hero-title" CssClass="hero-section">
@@ -29,8 +32,14 @@
                     </h1>
 
                     <p class="hero__lead">
-                        Wallet centraliza cuentas, transferencias, monedas y operaciones financieras
-                        en una experiencia digital simple, clara y trazable.
+                        Wallet Aura es una demo responsive de billetera digital que organiza cuentas,
+                        movimientos e inversiones en una experiencia clara y fácil de explorar. El
+                        proyecto integra desarrollo web, visualización de datos y diseño de interfaces.
+                    </p>
+
+                    <p class="hero__note">
+                        Demo académica con datos ficticios conectados a un dataset creado por el
+                        equipo en BigQuery.
                     </p>
 
                     <p class="hero__meta">
@@ -50,9 +59,42 @@
                         @* La bandera es decorativa: el texto ya nombra el país. *@
                         <span class="hero__origin-flag" aria-hidden="true">🇦🇷</span>
                     </p>
-
                 </div>
 
+                @* ---------- Columna del mockup (derecha en desktop) ---------- *@
+                @* Mockup del proyecto como elemento visual de referencia de la
+               wallet. Se apila debajo del texto hasta 1024px y pasa a la
+               columna derecha en desktop. width/height nativos evitan el salto
+               de layout; el CSS fija el ancho y deja el alto automático con
+               object-fit: contain, así la imagen vertical nunca se deforma. *@
+                <div class="hero__media">
+                    @* El asset del mockup vive en img/AuraWalletQR.png (el
+                       archivo anterior, MockupWalletQR.jpeg, ya no existe y la
+                       imagen se rompía mostrando solo el texto alternativo). *@
+                    <img class="hero__mockup" src="img/AuraWalletQR.png"
+                         alt="Mockup de Wallet Aura en un teléfono: saldo, cuentas en pesos y dólares, y un QR para explorar el proyecto."
+                         width="906" height="1737" decoding="async" />
+
+                    @* Tarjeta Aura: representa una funcionalidad FUTURA. Bloque
+                       visual sin enlace, sin flecha y sin comportamiento de botón:
+                       la etiqueta «Próximamente» comunica que todavía no está
+                       disponible. *@
+                    <article class="hero__aura">
+                        <div class="hero__aura-head">
+                            <img class="hero__aura-logo" src="img/AroAura.png" alt="" width="1254" height="1254"
+                                 decoding="async" />
+                            <div class="hero__aura-id">
+                                <p class="hero__aura-name">Aura</p>
+                                <p class="hero__aura-role">Asistente de onboarding</p>
+                            </div>
+                            <span class="hero__aura-tag">Próximamente</span>
+                        </div>
+                        <p class="hero__aura-desc">
+                            Una futura guía para acompañar a las personas durante sus primeros
+                            pasos dentro de la aplicación.
+                        </p>
+                    </article>
+                </div>
             </div>
         </div>
     </SectionShell>

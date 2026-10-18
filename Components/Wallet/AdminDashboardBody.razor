@@ -1,5 +1,5 @@
 @* ==========================================================================
-   AdminDashboardBody — contenido REAL del Panel de Administración.
+   AdminDashboardBody — contenido del Panel de Administración (demo).
 
    ÚNICA implementación del panel admin: la consume la ruta /admin/dashboard
    (dentro de WalletAppShell, con su lista de navegación) Y la Landing
@@ -8,10 +8,11 @@
 
    No incluye el chrome de la app ni NavigationItems: eso pertenece a la ruta.
 
-   KPIs y gráficos: datos REALES de BigQuery vía IWalletDashboardService
+   KPIs y gráficos: datos consultados en BigQuery vía IWalletDashboardService
    (wallet_core.dim_usuarios, vw_cuentas_activas, fct_transacciones,
    fct_inversiones, fct_auditorias, fct_alertas y wallet_mart
-   .vw_transacciones_reporting). Los volúmenes van separados por moneda.
+   .vw_transacciones_reporting), parte del dataset de prueba del equipo. Los
+   volúmenes van separados por moneda.
    ========================================================================== *@
 
 @inject IWalletDashboardService DashboardService
@@ -80,21 +81,22 @@ else
 @* Cada reporte individual de Looker vive en SU card (WalletLookerCard), en
    tres filas: sistema / operación / auditoría — los SEIS gráficos Admin son
    reportes Looker oficiales (9/9 habilitados). No queda ningún donut nativo
-   ni métrica duplicada: todos los lienzos miden360×340, así que las filas
+   ni métrica duplicada: todos los lienzos miden320×340, así que las filas
    usan columnas iguales y las dos cards terminan con la misma altura. *@
-<AnalyticsHeader HeadingId="admin-analytics-title" Title="Analítica del sistema" />
+<AnalyticsHeader HeadingId="admin-analytics-title" Title="Visualización de datos"
+                 Description="Los gráficos fueron construidos en Looker Studio a partir del dataset creado por el equipo en BigQuery. La integración con BigQuery es funcional; los registros utilizados son datos ficticios de prueba." />
 
-<div class="looker-row looker-row--feature">
+<div class="looker-row">
     <WalletLookerCard Report="WalletLookerReports.Admin[0]" />
     <WalletLookerCard Report="WalletLookerReports.Admin[1]" />
 </div>
 
-<div class="looker-row looker-row--pair">
+<div class="looker-row">
     <WalletLookerCard Report="WalletLookerReports.Admin[2]" />
     <WalletLookerCard Report="WalletLookerReports.Admin[3]" />
 </div>
 
-<div class="looker-row looker-row--audit">
+<div class="looker-row">
     <WalletLookerCard Report="WalletLookerReports.Admin[4]" />
     <WalletLookerCard Report="WalletLookerReports.Admin[5]" />
 </div>

@@ -1,64 +1,228 @@
 /* ==========================================================================
    Dashboard de Usuario — App Wallet
-   Mobile-first (430px de referencia). Una columna; desde 768px las cuentas, los
-   KPIs y la fila del saldo pasan a disposición multicolumna cuando hay ancho
-   real para sostenerla.
+   Mobile-first (430px de referencia). Una columna; desde 768px las cuentas y
+   la fila del saldo pasan a disposición multicolumna cuando hay ancho real
+   para sostenerla.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Selector de moneda [ ARS | USD ].
-   En móvil va debajo del título y antes de las métricas; en desktop se alinea
-   a la derecha de la fila superior. El estado activo se comunica con
-   aria-pressed, texto y gradiente: nunca solo con el color.
+   Presentación de la pantalla: contexto de la demo antes de los datos
    -------------------------------------------------------------------------- */
-.wallet-dashboard__currency {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: var(--ws-space-6);
-    min-width: 0;
-}
-
-@media (min-width: 1024px) {
-    .wallet-dashboard__currency {
-        justify-content: flex-end;
-    }
+.wallet-dashboard__intro {
+    margin: 0;
+    max-width: 72ch;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
 }
 
 /* --------------------------------------------------------------------------
-   Fila superior: saldo disponible (protagonista) + resumen del período.
-   En móvil se apila y el saldo va primero, más grande. Desde 1024px comparten
-   la fila: el saldo conserva el ancho mayor para no perder jerarquía.
+   Fila superior: saldo disponible (protagonista) + contexto del período
+   (selector de moneda + rango real que informa la fuente).
+   En móvil se apila y el saldo va primero. Desde 1024px comparten la fila: el
+   saldo conserva el ancho mayor para no perder jerarquía.
    -------------------------------------------------------------------------- */
 .wallet-dashboard__top {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--ws-space-6);
+    gap: var(--ws-space-3);
     min-width: 0;
 }
 
 @media (min-width: 1024px) {
     .wallet-dashboard__top {
-        /* El saldo (1.15fr) pesa más que el resumen (1fr) sin dejar de compartir
-           la fila: mantiene el protagonismo visual que pide la pantalla.
-           align-items en su valor por defecto (stretch): ambas cards toman la
-           MISMA altura de fila (la card menor crece hasta la mayor), sin
-           heights fijos. En móvil —una columna— cada fila mantiene su alto
-           natural porque la fila se define por su propio contenido. */
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        /* Dos tarjetas en la MISMA fila: saldo disponible ~40 % y resumen del
+           período ~60 %. El grid las estira a la misma altura (stretch por
+           defecto), así que las dos cards quedan parejas sin alturas fijas. */
+        grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+        align-items: stretch;
     }
 }
 
 /* --------------------------------------------------------------------------
-   Desktop grande (1280px en adelante): el resumen del período pasa a mandar
-   en la fila superior para que sus TRES KPIs (Ingresos, Egresos, Balance)
-   quepan en UNA fila compacta — el balance necesita ~660px de contenedor
-   (medido en la etapa de pulido). El saldo conserva el ancho suficiente para
-   su cifra de display en la columna izquierda.
+   Bloque «Período seleccionado»: título + rango real de la fuente + selector
+   de moneda + (solo si hay movimiento real) ingresos y egresos. Va ARRIBA de
+   los gráficos, nunca suelto al lado del saldo.
    -------------------------------------------------------------------------- */
-@media (min-width: 1280px) {
-    .wallet-dashboard__top {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+.wallet-dashboard__period {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-2);
+    padding: var(--ws-space-3) var(--ws-space-4);
+    border: var(--ws-hairline) solid var(--ws-border);
+    border-radius: var(--ws-radius-md);
+    background-color: var(--ws-card-translucent);
+    min-width: 0;
+}
+
+.wallet-dashboard__period-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ws-space-2) var(--ws-space-4);
+    min-width: 0;
+}
+
+.wallet-dashboard__period-title {
+    margin: 0;
+    font-family: var(--ws-font-body);
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+}
+
+.wallet-dashboard__period-range {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-lg);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    white-space: nowrap;
+}
+
+/* Estado honesto: la fuente informa el período pero no registra ingresos ni
+   egresos en ese rango. No se muestran ceros ni cifras inventadas. */
+.wallet-dashboard__period-empty {
+    margin: 0;
+    font-size: var(--ws-fs-sm);
+    line-height: var(--ws-lh-relaxed);
+    color: var(--ws-text-muted);
+}
+
+/* Separador visible entre la fecha inicial y la final (a la vista; para
+   lectores de pantalla las fechas ya llevan «Del … al …»). */
+.wallet-dashboard__period-sep {
+    margin-inline: var(--ws-space-2);
+    color: var(--ws-text-muted);
+}
+
+.wallet-dashboard__period-flows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ws-space-2) var(--ws-space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+}
+
+.wallet-dashboard__period-flow {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ws-space-2);
+    min-width: 0;
+}
+
+.wallet-dashboard__period-flow-label {
+    font-size: var(--ws-fs-xs);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-wide);
+    text-transform: uppercase;
+    color: var(--ws-text-muted);
+}
+
+.wallet-dashboard__period-flow-value {
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-base);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Analítica Looker: DOS COLUMNAS INDEPENDIENTES en desktop; una columna en
+   tablet y móvil.
+   · Estructura: dos wrappers .wallet-dashboard__looker-col con flujo vertical
+     PROPIO (flex column, gap 16px). NO hay filas compartidas, así que una
+     card más baja no deja un hueco al lado de la más alta de la otra columna.
+   · Orden: izquierda «Movimientos por día» + «Actividad diaria»; derecha
+     «Ingresos y egresos» + «Distribución de egresos».
+   · ≥1024px: columnas fluidas 1.7fr / 1fr. La izquierda agrupa reportes de
+     proporción baja (0,5 y 1,06 de alto por px de ancho) y la derecha los
+     altos (0,94 y 1,75): ese reparto es el que hace que las DOS columnas
+     terminen a similar altura (medido: ~80px de diferencia a 1366px y ~85px
+     a 1920px) mientras llenan el 100 % del ancho disponible, sin márgenes
+     laterales.
+   · <1024px: una sola columna (tablet y móvil), gap uniforme de 16px en
+     todo el bloque.
+   · Cada card conserva SU relación de aspecto: alturas naturales, sin
+     igualar, sin recortes ni scroll interno. El espacio vacío que pertenezca
+     al lienzo propio de Looker Studio NO se oculta desde CSS.
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__looker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-4);
+    align-items: start;
+    min-width: 0;
+}
+
+/* Columna con flujo vertical independiente: gap uniforme entre sus cards. */
+.wallet-dashboard__looker-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-4);
+    min-width: 0;
+}
+
+@media (min-width: 1024px) {
+    .wallet-dashboard__looker {
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
     }
+}
+
+
+/* --------------------------------------------------------------------------
+   Cuentas + Acciones rápidas: APILADOS en todos los breakpoints. «Tus
+   cuentas» conserva su panel a todo el ancho; debajo, «Acciones rápidas» va
+   SIN card exterior —solo título y la fila de los cuatro accesos—. Los
+   wrappers .duo-* pertenecen a ESTE componente, así que su CSS scoped sí los
+   estiliza (el panel de cuentas sigue siendo un hijo estirado por ::deep).
+   -------------------------------------------------------------------------- */
+.wallet-dashboard__duo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-dashboard__duo-main,
+.wallet-dashboard__duo-side {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.wallet-dashboard__duo-main ::deep .wallet-panel {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Bloque «Acciones rápidas» sin card: título (mismo nivel h2 que el resto
+   de los bloques del dashboard) + fila de los cuatro accesos. La fila usa la
+   grilla BASE de WalletQuickActions: 4 columnas con gap uniforme en todos los
+   breakpoints (4 en fila en desktop/tablet y en móvil, como ya venía).
+   El nombre es .__quick (y NO .__actions, que ya existe para las acciones del
+   panel de movimientos y aporta padding/centrado propios). */
+.wallet-dashboard__quick {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ws-space-3);
+    min-width: 0;
+}
+
+.wallet-dashboard__quick-title {
+    margin: 0;
+    font-family: var(--ws-font-display);
+    font-size: var(--ws-fs-lg);
+    font-weight: var(--ws-weight-semibold);
+    letter-spacing: var(--ws-ls-tight);
+    color: var(--ws-text);
 }
 
 /* --------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Sección — Proyecto (cierre breve)
-   Tres puntos compactos: la sección mide lo que ocupa su contenido.
+   Sección — Proyecto (cierre)
+   Cinco puntos compactos: la sección mide lo que ocupa su contenido.
    ========================================================================== */
 
 .project {
@@ -23,6 +23,12 @@
 @media (min-width: 768px) {
     .project__points {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Si la última fila queda con dos puntos, el cierre ocupa el ancho de los
+       dos: no queda una celda vacía al final de la grilla. */
+    .project__point:last-child:nth-child(3n + 2) {
+        grid-column: span 2;
     }
 }
 
